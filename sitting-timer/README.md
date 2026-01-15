@@ -16,13 +16,12 @@
 
 0 次医療(予防医療)の推進が叫ばれる今、最も必要なのは「わかっているけどできない」を「自然とできる」に変えることです。多くの方が座りすぎの害を知りながらも、「めんどくさい」「まだ大丈夫」「忘れてしまう」「何をしたらいいかわからない」という理由で行動に移せていません。
 
-このアプリは、専門家としての知見を活かし、誰もが無理なく座りすぎを防ぎ、健康的な習慣を身につけられるようサポートします。
+このアプリは、理学療法士としての専門知識を活かし、デスクワーカーが無理なく座りすぎを防ぎ、健康的な習慣を継続できるようサポートします。
 
-参考文献
+**参考文献**：
 
-https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810
-
-https://pubmed.ncbi.nlm.nih.gov/21767731/
+- [Sitting Time and All-Cause Mortality Risk in 222,497 Australian Adults](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810)
+- [Sedentary time and its association with risk for disease incidence, mortality, and hospitalization in adults](https://pubmed.ncbi.nlm.nih.gov/21767731/)
 
 ## ユーザー層について
 
@@ -141,9 +140,10 @@ YMYL, E-E-A-T への留意が必要になる
 
 ### **バックエンド**
 
-- **Ruby on Rails 8.x 　 Ruby 4.0.x(最新の安定版)**
+- **Ruby on Rails 8.x Ruby 4.0.x(最新の安定版)**
   - フルスタックフレームワークとして採用
   - Solid Queue によるキューイングシステムを利用するため
+  - Rails8 の新機能を活用し、インフラをシンプルに保つ
 
 ### **フロントエンド**
 
