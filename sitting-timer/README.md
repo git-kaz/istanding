@@ -218,4 +218,4 @@ YMYL, E-E-A-T への留意が必要になる
 
 ## **ER 図**
 
-[ER図](https://gyazo.com/1c527807172519ad93e2cb7c574b2b43)
+[![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
