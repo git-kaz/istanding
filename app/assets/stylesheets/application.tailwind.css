@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+@theme {
+  /* メイン（ペールグリーン） */
+  --color-primary: #AFC3B1;
+  --color-primary-hover: #9FB6A4;
+
+  /* 背景 */
+  --color-background-light: #F6F3EE;
+  --color-background-dark: #E3ECE6;
+
+  /* テキスト */
+  --color-text-main: #3E4A44;
+  --color-text-secondary: #6B756F;
+
+  /* UI補助 */
+  --color-border-light: #D6DED8;
+  --color-input-bg-light: #FFFFFF;
+}
