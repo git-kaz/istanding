@@ -27,6 +27,16 @@
   </head>
 
   <body>
+     <!-- header -->
+  <header class="flex justify-end items-center px-8 py-4">
+    <%= link_to "新規登録",
+      new_user_registration_path,
+      class: "mr-4 text-sm text-text-secondary" %>
+
+    <%= link_to "ログイン",
+      new_user_session_path,
+      class: "px-4 py-2 rounded-full bg-primary text-white text-sm hover:bg-primary-hover transition" %>
+  </header>
     <%= yield %>
   </body>
 </html>
