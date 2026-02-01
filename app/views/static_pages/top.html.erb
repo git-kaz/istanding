@@ -1,2 +1,66 @@
-<h1>StaticPages#top</h1>
-<p>Find me in app/views/static_pages/top.html.erb</p>
+<div class="min-h-screen bg-background-light text-text-main">
+
+  <!-- main -->
+  <main class="max-w-5xl mx-auto px-6 text-center">
+
+    <!-- catch copy -->
+    <h1 class="text-xl md:text-2xl font-semibold leading-relaxed mt-12">
+      座りすぎは喫煙について身体に悪影響を及ぼすとされています<br>
+      定期的に立ちあがり健康的な生活を目指しましょう
+    </h1>
+
+    <!-- cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-14">
+
+      <!-- card -->
+      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
+        <div class="flex justify-center mb-4 text-primary">
+          <span class="material-symbols-outlined text-5xl">chair</span>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed">
+          座りすぎは脳梗塞やヘルニアなどの<br>
+          リスクを高める
+        </p>
+        <p class="text-sm text-text-secondary mt-4">
+          1時間座ると22分寿命が縮むと言われている
+        </p>
+      </div>
+
+      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
+        <div class="flex justify-center mb-4 text-primary">
+          <span class="material-symbols-outlined text-5xl">timer</span>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed">
+          タイマーを設定して定期的に立ち上がったり、
+          運動を行うようサポートするアプリです
+        </p>
+      </div>
+
+      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
+        <div class="flex justify-center mb-4 text-primary">
+          <span class="material-symbols-outlined text-5xl">notifications</span>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed">
+          時間になると通知がきて、
+          今するべき行動を理学療法士監修の元に提案します
+        </p>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-16">
+      <%= link_to "登録して始める",
+        new_user_registration_path,
+        class: "inline-block px-10 py-4 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition" %>
+
+      <div class="mt-4">
+        <%= link_to "ゲストユーザーとして始める",
+        #   guest_sign_in_path,
+        #   method: :post,
+          class: "text-sm text-text-secondary underline hover:text-text-main transition" %>
+      </div>
+    </div>
+
+  </main>
+</div>
