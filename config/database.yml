@@ -23,8 +23,15 @@ default: &default
   password: password
 
 development:
-  <<: *default
-  database: myapp_development
+  primary:
+    <<: *default
+    database: myapp_development
+
+  # Solid Queue用の設定
+  queue:
+    <<: *default
+    database: myapp_development
+    migrations_paths: db/queue_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
