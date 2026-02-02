@@ -9,7 +9,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.1]
 
       ## usernameの追加
       t.string :username, null: false, default: ""
-      
+
       ## Recoverable
       t.string   :reset_password_token
       t.datetime :reset_password_sent_at
@@ -17,7 +17,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.1]
       ## Rememberable
       t.datetime :remember_created_at
 
-      
+
       ## Trackable
       # t.integer  :sign_in_count, default: 0, null: false
       # t.datetime :current_sign_in_at
