@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
+
+two:
+  user: two
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
