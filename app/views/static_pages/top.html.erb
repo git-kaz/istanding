@@ -55,10 +55,10 @@
         class: "inline-block px-10 py-4 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition" %>
 
       <div class="mt-4">
-        <%= link_to "ゲストユーザーとして始める",
-        #   guest_sign_in_path,
-        #   method: :post,
-          class: "text-sm text-text-secondary underline hover:text-text-main transition" %>
+        <%= button_to "ゲストユーザーとして始める",
+            guest_login_path,
+            method: :post,
+            class: "text-sm text-text-secondary underline hover:text-text-main transition" %>
       </div>
     </div>
 
