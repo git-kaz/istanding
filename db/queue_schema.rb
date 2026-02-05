@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_123308) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,6 +26,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_123308) do
   create_table "sitting_sessions", force: :cascade do |t|
     t.string "auth"
     t.datetime "created_at", null: false
+    t.integer "duration"
     t.string "endpoint"
     t.boolean "notified"
     t.datetime "notify_at"
