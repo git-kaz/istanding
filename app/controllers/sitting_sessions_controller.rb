@@ -13,14 +13,12 @@ class SittingSessionsController < ApplicationController
       #座位時間が保存されたら運動をランダムに提案
       @recommended_exercise = Exercise.all.sample
 
-      render json: {
-        status: :created,
-        exercise: @recommended_exercise
-      }
-    else
-      render json: {
-        status: :unprocessable_entity,
-      }, status: :unprocessable_entity
+      respond_to do |format|
+        #create.turbo_stream.erbを呼び出す
+        format.turbo_stream
+        #モーダル表示されない場合はshowへ
+        format.html { redirect_to sitting_session_path(@sitting_session) }
+      end
     end
   end
 

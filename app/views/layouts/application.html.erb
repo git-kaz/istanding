@@ -50,5 +50,9 @@
 
 </header>
     <%= yield %>
+    #どのページにいてもモーダルを表示するため
+    <div id="modal_container"></div>
+    <%# 動作確認用 %>
+    <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
   </body>
 </html>
