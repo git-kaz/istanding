@@ -4,21 +4,63 @@ import { Turbo } from "@hotwired/turbo-rails"
 // Connects to data-controller="timer"
 export default class extends Controller {
     static targets = ["display"]
-    connect() {
-        //開始時間
-        this.startTime = new Date()
-        this.startTimer()
+    connect() {h
+        this.remainingTime = 0
+        this.timer = null
+        this.isModalOpen = false
     }
-    
-    startTimer() {
+
+    start(event) {
+        //既存のタイマーを止める
+        this.stop()
+
+        const minutes = event.params.minutes
+        //秒数に変換
+        //テスト用に5秒後でminutes * 60置き換え
+        this.selectedSeconds = 5
+        this.remainingTime = this.selectedSeconds
+        this.startTime = new Date()
+
+        this.updateDisplay()
+
+        //1秒ごとにカウントダウン
         this.timer = setInterval(() => {
+            this.remainingTime -= 1
+            this.updateDisplay()
+
+            if (this.remainingTime <= 0) {
+                //fetch,モーダル表示
+                if (!this.isModalOpen) {
+                    this.finish()
+                    this.isModalOpen = true
+                }
+            
+                this.remainingTime = this.selectedSeconds
+            } 
 
         }, 1000)
     }
+
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer)
+            this.timer = null
+        }
+    }
+    
+    updateDisplay() {
+        const m = Math.floor(this.remainingTime / 60)
+        const s = this.remainingTime % 60
+        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    }
+    
     //運動の選択orスキップ後の処理
-    async finish(event) {
+    async finish() {
         const endTime = new Date()
         const duration = Math.floor((endTime - this.startTime) / 1000)
+
+        const recordedStartTime = this.startTime
+        this.startTime = new Date()
 
         //RailsのAPIにデータを飛ばす
         const response = await fetch("/sitting_sessions", {
@@ -31,7 +73,7 @@ export default class extends Controller {
             body: JSON.stringify({
                 sitting_session: {
                     duration: duration,
-                    start_at: this.startTime
+                    start_at: recordedStartTime
                 }
             })
         })
@@ -40,5 +82,15 @@ export default class extends Controller {
             const streamMessage = await response.text()
             Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
         }
+    }
+
+    resetModalFlag() {
+        this.isModalOpen = false
+    }
+
+    //詳細画面に遷移した時にタイマーを止める
+    stopAndNavigate() {
+        this.stop()
+        this.isModalOpen = false
     }
 }

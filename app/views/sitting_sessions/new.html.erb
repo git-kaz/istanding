@@ -33,26 +33,20 @@
 
     <!-- controls -->
     <div class="mt-12 w-full space-y-4">
-
-      <div class="grid grid-cols-2 gap-4">
-        <button data-action="click->timer#start" data-seconds="1800"
-                class="py-4 rounded-2xl font-medium
-                       bg-primary/20 text-text-main
-                       border border-primary/30
-                       hover:bg-primary/30 transition
-                       active:scale-95">
-          30分
-        </button>
-
-        <button data-action="click->timer#start" data-seconds="3600"
-                class="py-4 rounded-2xl font-medium
-                       bg-primary/20 text-text-main
-                       border border-primary/30
-                       hover:bg-primary/30 transition
-                       active:scale-95">
-          60分
-        </button>
+      <div class="flex gap-4 justify-center">
+        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+          <button type="button"
+                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition"
+                  data-action="click->timer#start"
+                  data-timer-minutes-param="<%= minutes %>">
+            <%= minutes %>分
+          </button>
+        <% end %>
       </div>
+
+      <button type="button" class="text-sm text-gray-400 underline" data-action="click->timer#finish">
+        いますぐ終了
+      </button>
 
       <button data-action="click->timer#stop"
               class="w-full py-4 rounded-2xl font-medium
@@ -63,15 +57,7 @@
         リセット
       </button>
     </div>
-    <h1 data-timer-target="display">00:00</h1>
-
-  <button 
-    type="button" 
-    class="bg-blue-500 text-white px-4 py-2 rounded"
-    data-action="click->timer#finish"
-  >
-    保存テスト（25分座ったと仮定）
-  </button>
+   
   </div>
   <div id="modal_container"></div>
   <!-- footer accent -->

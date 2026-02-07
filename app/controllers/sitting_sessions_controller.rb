@@ -11,7 +11,7 @@ class SittingSessionsController < ApplicationController
 
     if @sitting_session.save
       #座位時間が保存されたら運動をランダムに提案
-      @recommended_exercise = Exercise.all.sample
+      @exercises = Exercise.order("RANDOM()").limit(3)
 
       respond_to do |format|
         #create.turbo_stream.erbを呼び出す
