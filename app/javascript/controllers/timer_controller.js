@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
 
 // Connects to data-controller="timer"
 export default class extends Controller {
@@ -15,14 +16,15 @@ export default class extends Controller {
         }, 1000)
     }
     //運動の選択orスキップ後の処理
-    finish(event) {
+    async finish(event) {
         const endTime = new Date()
         const duration = Math.floor((endTime - this.startTime) / 1000)
 
         //RailsのAPIにデータを飛ばす
-        fetch("/sitting_sessions", {
+        const response = await fetch("/sitting_sessions", {
             method: "POST",
             headers: {
+                "Accept": "text/vnd.turbo-stream.html",
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
             },
@@ -33,10 +35,10 @@ export default class extends Controller {
                 }
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                //data.exerciseの運動をモーダル表示
-                this.showRecommendationModal(data.exercise)
-            })
+
+        if (response.ok) {
+            const streamMessage = await response.text()
+            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
+        }
     }
 }

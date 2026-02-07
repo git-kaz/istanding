@@ -63,15 +63,17 @@
         リセット
       </button>
     </div>
+    <h1 data-timer-target="display">00:00</h1>
 
+  <button 
+    type="button" 
+    class="bg-blue-500 text-white px-4 py-2 rounded"
+    data-action="click->timer#finish"
+  >
+    保存テスト（25分座ったと仮定）
+  </button>
   </div>
-    <%= cl_image_tag("latissimus", 
-        class: "object-cover 
-            rounded-[2rem] 
-            shadow-[0_20px_50px_rgba(0,0,0,0.3)] 
-            ring-1 ring-white/30 
-            bg-white/10 
-            backdrop-blur-sm ") %>
+  <div id="modal_container"></div>
   <!-- footer accent -->
   <div class="mt-8 w-32 h-1.5 bg-border-light rounded-full"></div>
 </div>

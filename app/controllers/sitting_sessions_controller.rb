@@ -22,8 +22,6 @@ class SittingSessionsController < ApplicationController
     end
   end
 
-  end
-
   def show
   end
 
