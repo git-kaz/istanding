@@ -1,0 +1,46 @@
+<%# app/views/shared/_modal.html.erb %>
+<div class="fixed inset-0 bg-background-dark/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-input-bg-light border border-border-light shadow-xl rounded-3xl max-w-md w-full p-6 animate-[fadeIn_.2s_ease-out]">
+        <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-text-main">お疲れ様でした！</h3>
+            <p class="text-sm text-text-secondary mt-1">次のセッションが始まる前に、少し体を動かしましょう</p>
+        </div>
+
+        <div class="space-y-4">
+            <% @exercises.each do |exercise| %>
+                <%# Stimulusのアクションを紐付け、タイマーを止めてから遷移させる %>
+                <%= link_to exercise_path(exercise), 
+                    class: "group flex items-center gap-4 p-4 rounded-2xl border border-border-light hover:border-primary hover:bg-orange-50 transition active:scale-[0.98]",
+                    data: { action: "click->timer#stopAndNavigate" } do %>
+                    
+                    <div class="flex-shrink-0 w-16 h-16">
+                        <% if exercise.cloudinary_public_id.present? %>
+                            <%= cl_image_tag(exercise.cloudinary_public_id, 
+                                class: "w-full h-full object-cover rounded-xl shadow-sm") %>
+                        <% else %>
+                            <div class="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">No Image</div>
+                        <% end %>
+                    </div>
+
+                    <div class="flex-grow text-left">
+                        <div class="font-bold text-text-main group-hover:text-primary transition"><%= exercise.name %></div>
+                        <p class="text-xs text-text-secondary line-clamp-1"><%= exercise.description %></p>
+                    </div>
+
+                    <div class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                <% end %>
+            <% end %>
+        </div>
+
+        <%# 何もしないでタイマーを続けたい場合の閉じるボタン %>
+        <button
+            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium"
+            onClick="this.closest('#modal_container').innerHTML=''">
+            今は何もしない（計測を続ける）
+        </button>
+    </div>
+</div>

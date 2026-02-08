@@ -1,0 +1,5568 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  workflows/
+    ci.yml
+  dependabot.yml
+.kamal/
+  hooks/
+    docker-setup.sample
+    post-app-boot.sample
+    post-deploy.sample
+    post-proxy-reboot.sample
+    pre-app-boot.sample
+    pre-build.sample
+    pre-connect.sample
+    pre-deploy.sample
+    pre-proxy-reboot.sample
+  secrets
+app/
+  assets/
+    builds/
+      .keep
+    images/
+      .keep
+      header_logo.png
+    stylesheets/
+      application.tailwind.css
+  controllers/
+    concerns/
+      .keep
+    users/
+      confirmations_controller.rb
+      guest_sessions_controller.rb
+      omniauth_callbacks_controller.rb
+      passwords_controller.rb
+      registrations_controller.rb
+      sessions_controller.rb
+      unlocks_controller.rb
+    application_controller.rb
+    exercises_controller.rb
+    sitting_sessions_controller.rb
+    static_pages_controller.rb
+  helpers/
+    users/
+      guest_sessions_helper.rb
+    application_helper.rb
+    exercises_helper.rb
+    sitting_sessions_helper.rb
+    static_pages_helper.rb
+  javascript/
+    controllers/
+      application.js
+      hello_controller.js
+      index.js
+      timer_controller.js
+    application.js
+  jobs/
+    application_job.rb
+  mailers/
+    application_mailer.rb
+  models/
+    concerns/
+      .keep
+    application_record.rb
+    exercise.rb
+    sitting_session.rb
+    suggested_action.rb
+    user.rb
+  views/
+    devise/
+      confirmations/
+        new.html.erb
+      mailer/
+        confirmation_instructions.html.erb
+        email_changed.html.erb
+        password_change.html.erb
+        reset_password_instructions.html.erb
+        unlock_instructions.html.erb
+      passwords/
+        edit.html.erb
+        new.html.erb
+      registrations/
+        edit.html.erb
+        new.html.erb
+      sessions/
+        new.html.erb
+      shared/
+        _error_messages.html.erb
+        _links.html.erb
+      unlocks/
+        new.html.erb
+    exercises/
+      index.html.erb
+      show.html.erb
+    layouts/
+      application.html.erb
+      mailer.html.erb
+      mailer.text.erb
+    pwa/
+      manifest.json.erb
+      service-worker.js
+    shared/
+      _modal.html.erb
+    sitting_sessions/
+      create.turbo_stream.erb
+      new.html.erb
+      show.html.erb
+    static_pages/
+      top.html.erb
+bin/
+  brakeman
+  bundler-audit
+  ci
+  dev
+  docker-entrypoint
+  jobs
+  kamal
+  rails
+  rake
+  rubocop
+  setup
+  thrust
+config/
+  environments/
+    development.rb
+    production.rb
+    test.rb
+  initializers/
+    assets.rb
+    cloudinay.rb
+    content_security_policy.rb
+    devise.rb
+    filter_parameter_logging.rb
+    inflections.rb
+  locales/
+    devise.en.yml
+    en.yml
+  application.rb
+  boot.rb
+  bundler-audit.yml
+  cable.yml
+  cache.yml
+  ci.rb
+  cloudinary.yml
+  credentials.yml.enc
+  database.yml
+  deploy.yml
+  environment.rb
+  puma.rb
+  queue.yml
+  recurring.yml
+  routes.rb
+  storage.yml
+db/
+  migrate/
+    20260201010209_devise_create_users.rb
+    20260202122701_create_sitting_sessions.rb
+    20260202123136_create_exercises.rb
+    20260202123308_create_suggested_actions.rb
+    20260205214818_add_duration_to_sitting_sessions.rb
+  cable_schema.rb
+  cache_schema.rb
+  queue_schema.rb
+  schema.rb
+  seeds.rb
+lib/
+  tasks/
+    .keep
+log/
+  .keep
+public/
+  400.html
+  404.html
+  406-unsupported-browser.html
+  422.html
+  500.html
+  icon.png
+  icon.svg
+  robots.txt
+script/
+  .keep
+sitting-timer/
+  README.md
+storage/
+  .keep
+test/
+  controllers/
+    users/
+      guest_sessions_controller_test.rb
+    .keep
+    exercises_controller_test.rb
+    sitting_sessions_controller_test.rb
+    static_pages_controller_test.rb
+  fixtures/
+    files/
+      .keep
+    exercises.yml
+    sitting_sessions.yml
+    suggested_actions.yml
+    users.yml
+  helpers/
+    .keep
+  integration/
+    .keep
+  mailers/
+    .keep
+  models/
+    .keep
+    exercise_test.rb
+    sitting_session_test.rb
+    suggested_action_test.rb
+    user_test.rb
+  test_helper.rb
+.dockerignore
+.gitattributes
+.gitignore
+.node-version
+.rubocop.yml
+.ruby-version
+compose.yml
+config.ru
+Dockerfile
+Dockerfile.dev
+Gemfile
+package.json
+Procfile.dev
+Rakefile
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/dependabot.yml">
+version: 2
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+</file>
+
+<file path=".kamal/hooks/docker-setup.sample">
+#!/bin/sh
+
+echo "Docker set up on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/hooks/post-app-boot.sample">
+#!/bin/sh
+
+echo "Booted app version $KAMAL_VERSION on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/hooks/post-deploy.sample">
+#!/bin/sh
+
+# A sample post-deploy hook
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+# KAMAL_RUNTIME
+
+echo "$KAMAL_PERFORMER deployed $KAMAL_VERSION to $KAMAL_DESTINATION in $KAMAL_RUNTIME seconds"
+</file>
+
+<file path=".kamal/hooks/post-proxy-reboot.sample">
+#!/bin/sh
+
+echo "Rebooted kamal-proxy on $KAMAL_HOSTS"
+</file>
+
+<file path=".kamal/hooks/pre-app-boot.sample">
+#!/bin/sh
+
+echo "Booting app version $KAMAL_VERSION on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/hooks/pre-build.sample">
+#!/bin/sh
+
+# A sample pre-build hook
+#
+# Checks:
+# 1. We have a clean checkout
+# 2. A remote is configured
+# 3. The branch has been pushed to the remote
+# 4. The version we are deploying matches the remote
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Git checkout is not clean, aborting..." >&2
+  git status --porcelain >&2
+  exit 1
+fi
+
+first_remote=$(git remote)
+
+if [ -z "$first_remote" ]; then
+  echo "No git remote set, aborting..." >&2
+  exit 1
+fi
+
+current_branch=$(git branch --show-current)
+
+if [ -z "$current_branch" ]; then
+  echo "Not on a git branch, aborting..." >&2
+  exit 1
+fi
+
+remote_head=$(git ls-remote $first_remote --tags $current_branch | cut -f1)
+
+if [ -z "$remote_head" ]; then
+  echo "Branch not pushed to remote, aborting..." >&2
+  exit 1
+fi
+
+if [ "$KAMAL_VERSION" != "$remote_head" ]; then
+  echo "Version ($KAMAL_VERSION) does not match remote HEAD ($remote_head), aborting..." >&2
+  exit 1
+fi
+
+exit 0
+</file>
+
+<file path=".kamal/hooks/pre-connect.sample">
+#!/usr/bin/env ruby
+
+# A sample pre-connect check
+#
+# Warms DNS before connecting to hosts in parallel
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+# KAMAL_RUNTIME
+
+hosts = ENV["KAMAL_HOSTS"].split(",")
+results = nil
+max = 3
+
+elapsed = Benchmark.realtime do
+  results = hosts.map do |host|
+    Thread.new do
+      tries = 1
+
+      begin
+        Socket.getaddrinfo(host, 0, Socket::AF_UNSPEC, Socket::SOCK_STREAM, nil, Socket::AI_CANONNAME)
+      rescue SocketError
+        if tries < max
+          puts "Retrying DNS warmup: #{host}"
+          tries += 1
+          sleep rand
+          retry
+        else
+          puts "DNS warmup failed: #{host}"
+          host
+        end
+      end
+
+      tries
+    end
+  end.map(&:value)
+end
+
+retries = results.sum - hosts.size
+nopes = results.count { |r| r == max }
+
+puts "Prewarmed %d DNS lookups in %.2f sec: %d retries, %d failures" % [ hosts.size, elapsed, retries, nopes ]
+</file>
+
+<file path=".kamal/hooks/pre-deploy.sample">
+#!/usr/bin/env ruby
+
+# A sample pre-deploy hook
+#
+# Checks the Github status of the build, waiting for a pending build to complete for up to 720 seconds.
+#
+# Fails unless the combined status is "success"
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_COMMAND
+# KAMAL_SUBCOMMAND
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+
+# Only check the build status for production deployments
+if ENV["KAMAL_COMMAND"] == "rollback" || ENV["KAMAL_DESTINATION"] != "production"
+  exit 0
+end
+
+require "bundler/inline"
+
+# true = install gems so this is fast on repeat invocations
+gemfile(true, quiet: true) do
+  source "https://rubygems.org"
+
+  gem "octokit"
+  gem "faraday-retry"
+end
+
+MAX_ATTEMPTS = 72
+ATTEMPTS_GAP = 10
+
+def exit_with_error(message)
+  $stderr.puts message
+  exit 1
+end
+
+class GithubStatusChecks
+  attr_reader :remote_url, :git_sha, :github_client, :combined_status
+
+  def initialize
+    @remote_url = github_repo_from_remote_url
+    @git_sha = `git rev-parse HEAD`.strip
+    @github_client = Octokit::Client.new(access_token: ENV["GITHUB_TOKEN"])
+    refresh!
+  end
+
+  def refresh!
+    @combined_status = github_client.combined_status(remote_url, git_sha)
+  end
+
+  def state
+    combined_status[:state]
+  end
+
+  def first_status_url
+    first_status = combined_status[:statuses].find { |status| status[:state] == state }
+    first_status && first_status[:target_url]
+  end
+
+  def complete_count
+    combined_status[:statuses].count { |status| status[:state] != "pending"}
+  end
+
+  def total_count
+    combined_status[:statuses].count
+  end
+
+  def current_status
+    if total_count > 0
+      "Completed #{complete_count}/#{total_count} checks, see #{first_status_url} ..."
+    else
+      "Build not started..."
+    end
+  end
+
+  private
+    def github_repo_from_remote_url
+      url = `git config --get remote.origin.url`.strip.delete_suffix(".git")
+      if url.start_with?("https://github.com/")
+        url.delete_prefix("https://github.com/")
+      elsif url.start_with?("git@github.com:")
+        url.delete_prefix("git@github.com:")
+      else
+        url
+      end
+    end
+end
+
+
+$stdout.sync = true
+
+begin
+  puts "Checking build status..."
+
+  attempts = 0
+  checks = GithubStatusChecks.new
+
+  loop do
+    case checks.state
+    when "success"
+      puts "Checks passed, see #{checks.first_status_url}"
+      exit 0
+    when "failure"
+      exit_with_error "Checks failed, see #{checks.first_status_url}"
+    when "pending"
+      attempts += 1
+    end
+
+    exit_with_error "Checks are still pending, gave up after #{MAX_ATTEMPTS * ATTEMPTS_GAP} seconds" if attempts == MAX_ATTEMPTS
+
+    puts checks.current_status
+    sleep(ATTEMPTS_GAP)
+    checks.refresh!
+  end
+rescue Octokit::NotFound
+  exit_with_error "Build status could not be found"
+end
+</file>
+
+<file path=".kamal/hooks/pre-proxy-reboot.sample">
+#!/bin/sh
+
+echo "Rebooting kamal-proxy on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/secrets">
+# Secrets defined here are available for reference under registry/password, env/secret, builder/secrets,
+# and accessories/*/env/secret in config/deploy.yml. All secrets should be pulled from either
+# password manager, ENV, or a file. DO NOT ENTER RAW CREDENTIALS HERE! This file needs to be safe for git.
+
+# Example of extracting secrets from 1password (or another compatible pw manager)
+# SECRETS=$(kamal secrets fetch --adapter 1password --account your-account --from Vault/Item KAMAL_REGISTRY_PASSWORD RAILS_MASTER_KEY)
+# KAMAL_REGISTRY_PASSWORD=$(kamal secrets extract KAMAL_REGISTRY_PASSWORD ${SECRETS})
+# RAILS_MASTER_KEY=$(kamal secrets extract RAILS_MASTER_KEY ${SECRETS})
+
+# Example of extracting secrets from Rails credentials
+# KAMAL_REGISTRY_PASSWORD=$(rails credentials:fetch kamal.registry_password)
+
+# Use a GITHUB_TOKEN if private repositories are needed for the image
+# GITHUB_TOKEN=$(gh config get -h github.com oauth_token)
+
+# Grab the registry password from ENV
+# KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
+
+# Improve security by using a password manager. Never check config/master.key into git!
+RAILS_MASTER_KEY=$(cat config/master.key)
+</file>
+
+<file path="app/assets/builds/.keep">
+
+</file>
+
+<file path="app/assets/images/.keep">
+
+</file>
+
+<file path="app/controllers/concerns/.keep">
+
+</file>
+
+<file path="app/controllers/users/confirmations_controller.rb">
+# frozen_string_literal: true
+
+class Users::ConfirmationsController < Devise::ConfirmationsController
+  # GET /resource/confirmation/new
+  # def new
+  #   super
+  # end
+
+  # POST /resource/confirmation
+  # def create
+  #   super
+  # end
+
+  # GET /resource/confirmation?confirmation_token=abcdef
+  # def show
+  #   super
+  # end
+
+  # protected
+
+  # The path used after resending confirmation instructions.
+  # def after_resending_confirmation_instructions_path_for(resource_name)
+  #   super(resource_name)
+  # end
+
+  # The path used after confirmation.
+  # def after_confirmation_path_for(resource_name, resource)
+  #   super(resource_name, resource)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/guest_sessions_controller.rb">
+class Users::GuestSessionsController < ApplicationController
+  def create
+    user = User.guest
+    sign_in user
+    redirect_to new_sitting_session_path, notice: "ゲストユーザーとしてログインしました。"
+  end
+end
+</file>
+
+<file path="app/controllers/users/omniauth_callbacks_controller.rb">
+# frozen_string_literal: true
+
+class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  # You should configure your model like this:
+  # devise :omniauthable, omniauth_providers: [:twitter]
+
+  # You should also create an action method in this controller like this:
+  # def twitter
+  # end
+
+  # More info at:
+  # https://github.com/heartcombo/devise#omniauth
+
+  # GET|POST /resource/auth/twitter
+  # def passthru
+  #   super
+  # end
+
+  # GET|POST /users/auth/twitter/callback
+  # def failure
+  #   super
+  # end
+
+  # protected
+
+  # The path used when OmniAuth fails
+  # def after_omniauth_failure_path_for(scope)
+  #   super(scope)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/passwords_controller.rb">
+# frozen_string_literal: true
+
+class Users::PasswordsController < Devise::PasswordsController
+  # GET /resource/password/new
+  # def new
+  #   super
+  # end
+
+  # POST /resource/password
+  # def create
+  #   super
+  # end
+
+  # GET /resource/password/edit?reset_password_token=abcdef
+  # def edit
+  #   super
+  # end
+
+  # PUT /resource/password
+  # def update
+  #   super
+  # end
+
+  # protected
+
+  # def after_resetting_password_path_for(resource)
+  #   super(resource)
+  # end
+
+  # The path used after sending reset password instructions
+  # def after_sending_reset_password_instructions_path_for(resource_name)
+  #   super(resource_name)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/registrations_controller.rb">
+# frozen_string_literal: true
+
+class Users::RegistrationsController < Devise::RegistrationsController
+  # before_action :configure_sign_up_params, only: [:create]
+  # before_action :configure_account_update_params, only: [:update]
+
+  # GET /resource/sign_up
+  # def new
+  #   super
+  # end
+
+  # POST /resource
+  # def create
+  #   super
+  # end
+
+  # GET /resource/edit
+  # def edit
+  #   super
+  # end
+
+  # PUT /resource
+  # def update
+  #   super
+  # end
+
+  # DELETE /resource
+  # def destroy
+  #   super
+  # end
+
+  # GET /resource/cancel
+  # Forces the session data which is usually expired after sign
+  # in to be expired now. This is useful if the user wants to
+  # cancel oauth signing in/up in the middle of the process,
+  # removing all OAuth session data.
+  # def cancel
+  #   super
+  # end
+
+  # protected
+
+  # If you have extra params to permit, append them to the sanitizer.
+  # def configure_sign_up_params
+  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
+  # end
+
+  # If you have extra params to permit, append them to the sanitizer.
+  # def configure_account_update_params
+  #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
+  # end
+
+  # The path used after sign up.
+  # def after_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+
+  # The path used after sign up for inactive accounts.
+  # def after_inactive_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/sessions_controller.rb">
+# frozen_string_literal: true
+
+class Users::SessionsController < Devise::SessionsController
+  # before_action :configure_sign_in_params, only: [:create]
+
+  # GET /resource/sign_in
+  # def new
+  #   super
+  # end
+
+  # POST /resource/sign_in
+  # def create
+  #   super
+  # end
+
+  # DELETE /resource/sign_out
+  # def destroy
+  #   super
+  # end
+
+  # protected
+
+  # If you have extra params to permit, append them to the sanitizer.
+  # def configure_sign_in_params
+  #   devise_parameter_sanitizer.permit(:sign_in, keys: [:attribute])
+  # end
+end
+</file>
+
+<file path="app/controllers/users/unlocks_controller.rb">
+# frozen_string_literal: true
+
+class Users::UnlocksController < Devise::UnlocksController
+  # GET /resource/unlock/new
+  # def new
+  #   super
+  # end
+
+  # POST /resource/unlock
+  # def create
+  #   super
+  # end
+
+  # GET /resource/unlock?unlock_token=abcdef
+  # def show
+  #   super
+  # end
+
+  # protected
+
+  # The path used after sending unlock password instructions
+  # def after_sending_unlock_instructions_path_for(resource)
+  #   super(resource)
+  # end
+
+  # The path used after unlocking the resource
+  # def after_unlock_path_for(resource)
+  #   super(resource)
+  # end
+end
+</file>
+
+<file path="app/controllers/exercises_controller.rb">
+class ExercisesController < ApplicationController
+  def index
+  end
+
+  def show
+  end
+end
+</file>
+
+<file path="app/controllers/static_pages_controller.rb">
+class StaticPagesController < ApplicationController
+  def top
+  end
+end
+</file>
+
+<file path="app/helpers/users/guest_sessions_helper.rb">
+module Users::GuestSessionsHelper
+end
+</file>
+
+<file path="app/helpers/application_helper.rb">
+module ApplicationHelper
+end
+</file>
+
+<file path="app/helpers/exercises_helper.rb">
+module ExercisesHelper
+end
+</file>
+
+<file path="app/helpers/sitting_sessions_helper.rb">
+module SittingSessionsHelper
+end
+</file>
+
+<file path="app/helpers/static_pages_helper.rb">
+module StaticPagesHelper
+end
+</file>
+
+<file path="app/javascript/controllers/application.js">
+import { Application } from "@hotwired/stimulus"
+
+const application = Application.start()
+
+// Configure Stimulus development experience
+application.debug = false
+window.Stimulus   = application
+
+export { application }
+</file>
+
+<file path="app/javascript/controllers/hello_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  connect() {
+    this.element.textContent = "Hello World!"
+  }
+}
+</file>
+
+<file path="app/javascript/application.js">
+// Entry point for the build script in your package.json
+import "@hotwired/turbo-rails"
+import "./controllers"
+</file>
+
+<file path="app/jobs/application_job.rb">
+class ApplicationJob < ActiveJob::Base
+  # Automatically retry jobs that encountered a deadlock
+  # retry_on ActiveRecord::Deadlocked
+
+  # Most jobs are safe to ignore if the underlying records are no longer available
+  # discard_on ActiveJob::DeserializationError
+end
+</file>
+
+<file path="app/mailers/application_mailer.rb">
+class ApplicationMailer < ActionMailer::Base
+  default from: "from@example.com"
+  layout "mailer"
+end
+</file>
+
+<file path="app/models/concerns/.keep">
+
+</file>
+
+<file path="app/models/application_record.rb">
+class ApplicationRecord < ActiveRecord::Base
+  primary_abstract_class
+end
+</file>
+
+<file path="app/models/suggested_action.rb">
+class SuggestedAction < ApplicationRecord
+  belongs_to :sitting_session
+  belongs_to :exercise
+end
+</file>
+
+<file path="app/views/devise/confirmations/new.html.erb">
+<h2>Resend confirmation instructions</h2>
+
+<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="field">
+    <p><%= f.label :email %></p>
+    <p><%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Resend confirmation instructions" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/devise/mailer/confirmation_instructions.html.erb">
+<p>Welcome <%= @email %>!</p>
+
+<p>You can confirm your account email through the link below:</p>
+
+<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+</file>
+
+<file path="app/views/devise/mailer/email_changed.html.erb">
+<p>Hello <%= @email %>!</p>
+
+<% if @resource.try(:unconfirmed_email?) %>
+  <p>We're contacting you to notify you that your email is being changed to <%= @resource.unconfirmed_email %>.</p>
+<% else %>
+  <p>We're contacting you to notify you that your email has been changed to <%= @resource.email %>.</p>
+<% end %>
+</file>
+
+<file path="app/views/devise/mailer/password_change.html.erb">
+<p>Hello <%= @resource.email %>!</p>
+
+<p>We're contacting you to notify you that your password has been changed.</p>
+</file>
+
+<file path="app/views/devise/mailer/reset_password_instructions.html.erb">
+<p>Hello <%= @resource.email %>!</p>
+
+<p>Someone has requested a link to change your password. You can do this through the link below.</p>
+
+<p><%= link_to 'Change my password', edit_password_url(@resource, reset_password_token: @token) %></p>
+
+<p>If you didn't request this, please ignore this email.</p>
+<p>Your password won't change until you access the link above and create a new one.</p>
+</file>
+
+<file path="app/views/devise/mailer/unlock_instructions.html.erb">
+<p>Hello <%= @resource.email %>!</p>
+
+<p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
+
+<p>Click the link below to unlock your account:</p>
+
+<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
+</file>
+
+<file path="app/views/devise/passwords/edit.html.erb">
+<h2>Change your password</h2>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+  <%= f.hidden_field :reset_password_token %>
+
+  <div class="field">
+    <p><%= f.label :password, "New password" %></p>
+    <% if @minimum_password_length %>
+      <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
+    <% end %>
+    <p><%= f.password_field :password, autofocus: true, autocomplete: "new-password" %></p>
+  </div>
+
+  <div class="field">
+    <p><%= f.label :password_confirmation, "Confirm new password" %></p>
+    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Change my password" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/devise/passwords/new.html.erb">
+<h2>Forgot your password?</h2>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="field">
+    <p><%= f.label :email %></p>
+    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Send me password reset instructions" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/devise/registrations/edit.html.erb">
+<h2>Edit <%= resource_name.to_s.humanize %></h2>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="field">
+    <p><%= f.label :email %></p>
+    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+  </div>
+
+  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+  <% end %>
+
+  <div class="field">
+    <p><%= f.label :password %> <i>(leave blank if you don't want to change it)</i></p>
+    <p><%= f.password_field :password, autocomplete: "new-password" %></p>
+    <% if @minimum_password_length %>
+      <p><em><%= @minimum_password_length %> characters minimum</em></p>
+    <% end %>
+  </div>
+
+  <div class="field">
+    <p><%= f.label :password_confirmation %></p>
+    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
+  </div>
+
+  <div class="field">
+    <p><%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i></p>
+    <p><%= f.password_field :current_password, autocomplete: "current-password" %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Update" %>
+  </div>
+<% end %>
+
+<h3>Cancel my account</h3>
+
+<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
+
+<%= link_to "Back", :back %>
+</file>
+
+<file path="app/views/devise/shared/_error_messages.html.erb">
+<% if resource.errors.any? %>
+  <div id="error_explanation" data-turbo-temporary>
+    <h2>
+      <%= I18n.t("errors.messages.not_saved",
+                 count: resource.errors.count,
+                 resource: resource.class.model_name.human.downcase)
+       %>
+    </h2>
+    <ul>
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+</file>
+
+<file path="app/views/devise/shared/_links.html.erb">
+<%- if controller_name != 'sessions' %>
+  <p><%= link_to "Log in", new_session_path(resource_name) %></p>
+<% end %>
+
+<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+  <p><%= link_to "Sign up", new_registration_path(resource_name) %></p>
+<% end %>
+
+<%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+  <p><%= link_to "Forgot your password?", new_password_path(resource_name) %></p>
+<% end %>
+
+<%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
+  <p><%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name) %></p>
+<% end %>
+
+<%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
+  <p><%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name) %></p>
+<% end %>
+
+<%- if devise_mapping.omniauthable? %>
+  <%- resource_class.omniauth_providers.each do |provider| %>
+    <p><%= button_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider), data: { turbo: false } %></p>
+  <% end %>
+<% end %>
+</file>
+
+<file path="app/views/devise/unlocks/new.html.erb">
+<h2>Resend unlock instructions</h2>
+
+<%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="field">
+    <p><%= f.label :email %></p>
+    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Resend unlock instructions" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/exercises/index.html.erb">
+<h1>Exercises#index</h1>
+<p>Find me in app/views/exercises/index.html.erb</p>
+</file>
+
+<file path="app/views/exercises/show.html.erb">
+<h1>Exercises#show</h1>
+<p>Find me in app/views/exercises/show.html.erb</p>
+</file>
+
+<file path="app/views/layouts/mailer.html.erb">
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      /* Email styles need to be inline */
+    </style>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>
+</file>
+
+<file path="app/views/layouts/mailer.text.erb">
+<%= yield %>
+</file>
+
+<file path="app/views/pwa/manifest.json.erb">
+{
+  "name": "Myapp",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "description": "Myapp.",
+  "theme_color": "red",
+  "background_color": "red"
+}
+</file>
+
+<file path="app/views/pwa/service-worker.js">
+// Add a service worker for processing Web Push notifications:
+//
+// self.addEventListener("push", async (event) => {
+//   const { title, options } = await event.data.json()
+//   event.waitUntil(self.registration.showNotification(title, options))
+// })
+//
+// self.addEventListener("notificationclick", function(event) {
+//   event.notification.close()
+//   event.waitUntil(
+//     clients.matchAll({ type: "window" }).then((clientList) => {
+//       for (let i = 0; i < clientList.length; i++) {
+//         let client = clientList[i]
+//         let clientPath = (new URL(client.url)).pathname
+//
+//         if (clientPath == event.notification.data.path && "focus" in client) {
+//           return client.focus()
+//         }
+//       }
+//
+//       if (clients.openWindow) {
+//         return clients.openWindow(event.notification.data.path)
+//       }
+//     })
+//   )
+// })
+</file>
+
+<file path="app/views/sitting_sessions/create.turbo_stream.erb">
+<%= turbo_stream.update "modal_container" do%>
+    <%= render partial: "shared/modal", locals: { exercise: @recommended_exercise} %>
+<% end %>
+</file>
+
+<file path="app/views/sitting_sessions/show.html.erb">
+<h1>SittingSessions#show</h1>
+<p>Find me in app/views/sitting_sessions/show.html.erb</p>
+</file>
+
+<file path="bin/brakeman">
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+ARGV.unshift("--ensure-latest")
+
+load Gem.bin_path("brakeman", "brakeman")
+</file>
+
+<file path="bin/bundler-audit">
+#!/usr/bin/env ruby
+require_relative "../config/boot"
+require "bundler/audit/cli"
+
+ARGV.concat %w[ --config config/bundler-audit.yml ] if ARGV.empty? || ARGV.include?("check")
+Bundler::Audit::CLI.start
+</file>
+
+<file path="bin/ci">
+#!/usr/bin/env ruby
+require_relative "../config/boot"
+require "active_support/continuous_integration"
+
+CI = ActiveSupport::ContinuousIntegration
+require_relative "../config/ci.rb"
+</file>
+
+<file path="bin/dev">
+#!/usr/bin/env sh
+
+if gem list --no-installed --exact --silent foreman; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
+
+# Default to port 3000 if not specified
+export PORT="${PORT:-3000}"
+
+exec foreman start -f Procfile.dev --env /dev/null "$@"
+</file>
+
+<file path="bin/docker-entrypoint">
+#!/bin/bash -e
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"
+</file>
+
+<file path="bin/jobs">
+#!/usr/bin/env ruby
+
+require_relative "../config/environment"
+require "solid_queue/cli"
+
+SolidQueue::Cli.start(ARGV)
+</file>
+
+<file path="bin/kamal">
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# This file was generated by Bundler.
+#
+# The application 'kamal' is installed as part of a gem, and
+# this file is here to facilitate running it.
+#
+
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+require "rubygems"
+require "bundler/setup"
+
+load Gem.bin_path("kamal", "kamal")
+</file>
+
+<file path="bin/rails">
+#!/usr/bin/env ruby
+APP_PATH = File.expand_path("../config/application", __dir__)
+require_relative "../config/boot"
+require "rails/commands"
+</file>
+
+<file path="bin/rake">
+#!/usr/bin/env ruby
+require_relative "../config/boot"
+require "rake"
+Rake.application.run
+</file>
+
+<file path="bin/rubocop">
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+# Explicit RuboCop config increases performance slightly while avoiding config confusion.
+ARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))
+
+load Gem.bin_path("rubocop", "rubocop")
+</file>
+
+<file path="bin/setup">
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args)
+  system(*args, exception: true)
+end
+
+FileUtils.chdir APP_ROOT do
+  # This script is a way to set up or update your development environment automatically.
+  # This script is idempotent, so that you can run it at any time and get an expectable outcome.
+  # Add necessary setup steps to this file.
+
+  puts "== Installing dependencies =="
+  system("bundle check") || system!("bundle install")
+
+  # Install JavaScript dependencies
+  system("yarn install --check-files")
+
+  # puts "\n== Copying sample files =="
+  # unless File.exist?("config/database.yml")
+  #   FileUtils.cp "config/database.yml.sample", "config/database.yml"
+  # end
+
+  puts "\n== Preparing database =="
+  system! "bin/rails db:prepare"
+  system! "bin/rails db:reset" if ARGV.include?("--reset")
+
+  puts "\n== Removing old logs and tempfiles =="
+  system! "bin/rails log:clear tmp:clear"
+
+  unless ARGV.include?("--skip-server")
+    puts "\n== Starting development server =="
+    STDOUT.flush # flush the output before exec(2) so that it displays
+    exec "bin/dev"
+  end
+end
+</file>
+
+<file path="bin/thrust">
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+load Gem.bin_path("thruster", "thrust")
+</file>
+
+<file path="config/environments/development.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Make code changes take effect immediately without server restart.
+  config.enable_reloading = true
+
+  # Do not eager load code on boot.
+  config.eager_load = false
+
+  # Show full error reports.
+  config.consider_all_requests_local = true
+
+  # Enable server timing.
+  config.server_timing = true
+
+  # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
+  # Run rails dev:cache to toggle Action Controller caching.
+  if Rails.root.join("tmp/caching-dev.txt").exist?
+    config.action_controller.perform_caching = true
+    config.action_controller.enable_fragment_cache_logging = true
+    config.public_file_server.headers = { "cache-control" => "public, max-age=#{2.days.to_i}" }
+  else
+    config.action_controller.perform_caching = false
+  end
+
+  # Change to :null_store to avoid any caching.
+  config.cache_store = :memory_store
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Don't care if the mailer can't send.
+  config.action_mailer.raise_delivery_errors = false
+
+  # Make template changes take effect immediately.
+  config.action_mailer.perform_caching = false
+
+  # Set localhost to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+
+  # Print deprecation notices to the Rails logger.
+  config.active_support.deprecation = :log
+
+  # Raise an error on page load if there are pending migrations.
+  config.active_record.migration_error = :page_load
+
+  # Highlight code that triggered database queries in logs.
+  config.active_record.verbose_query_logs = true
+
+  # Append comments with runtime information tags to SQL queries in logs.
+  config.active_record.query_log_tags_enabled = true
+
+  # Highlight code that enqueued background job in logs.
+  config.active_job.verbose_enqueue_logs = true
+
+  # Highlight code that triggered redirect in logs.
+  config.action_dispatch.verbose_redirect_logs = true
+
+  # Suppress logger output for asset requests.
+  config.assets.quiet = true
+
+  # Raises error for missing translations.
+  # config.i18n.raise_on_missing_translations = true
+
+  # Annotate rendered view with file names.
+  config.action_view.annotate_rendered_view_with_filenames = true
+
+  # Uncomment if you wish to allow Action Cable access from any origin.
+  # config.action_cable.disable_request_forgery_protection = true
+
+  # Raise error when a before_action's only/except options reference missing actions.
+  config.action_controller.raise_on_missing_callback_actions = true
+
+  # Apply autocorrection by RuboCop to files generated by `bin/rails generate`.
+  # config.generators.apply_rubocop_autocorrect_after_generate!
+end
+</file>
+
+<file path="config/environments/production.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
+
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
+
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
+  config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # config.assume_ssl = true
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+  # Replace the default in-process memory cache store with a durable alternative.
+  config.cache_store = :solid_cache_store
+
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Ignore bad email addresses and do not raise email delivery errors.
+  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # config.action_mailer.smtp_settings = {
+  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
+  #   password: Rails.application.credentials.dig(:smtp, :password),
+  #   address: "smtp.example.com",
+  #   port: 587,
+  #   authentication: :plain
+  # }
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  config.active_record.attributes_for_inspect = [ :id ]
+
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  # config.hosts = [
+  #   "example.com",     # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
+  #
+  # Skip DNS rebinding protection for the default health check endpoint.
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+end
+</file>
+
+<file path="config/environments/test.rb">
+# The test environment is used exclusively to run your application's
+# test suite. You never need to work with it otherwise. Remember that
+# your test database is "scratch space" for the test suite and is wiped
+# and recreated between test runs. Don't rely on the data there!
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # While tests run files are not watched, reloading is not necessary.
+  config.enable_reloading = false
+
+  # Eager loading loads your entire application. When running a single test locally,
+  # this is usually not necessary, and can slow down your test suite. However, it's
+  # recommended that you enable it in continuous integration systems to ensure eager
+  # loading is working properly before deploying your code.
+  config.eager_load = ENV["CI"].present?
+
+  # Configure public file server for tests with cache-control for performance.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
+
+  # Show full error reports.
+  config.consider_all_requests_local = true
+  config.cache_store = :null_store
+
+  # Render exception templates for rescuable exceptions and raise for other exceptions.
+  config.action_dispatch.show_exceptions = :rescuable
+
+  # Disable request forgery protection in test environment.
+  config.action_controller.allow_forgery_protection = false
+
+  # Store uploaded files on the local file system in a temporary directory.
+  config.active_storage.service = :test
+
+  # Tell Action Mailer not to deliver emails to the real world.
+  # The :test delivery method accumulates sent emails in the
+  # ActionMailer::Base.deliveries array.
+  config.action_mailer.delivery_method = :test
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Print deprecation notices to the stderr.
+  config.active_support.deprecation = :stderr
+
+  # Raises error for missing translations.
+  # config.i18n.raise_on_missing_translations = true
+
+  # Annotate rendered view with file names.
+  # config.action_view.annotate_rendered_view_with_filenames = true
+
+  # Raise error when a before_action's only/except options reference missing actions.
+  config.action_controller.raise_on_missing_callback_actions = true
+end
+</file>
+
+<file path="config/initializers/assets.rb">
+# Be sure to restart your server when you modify this file.
+
+# Version of your assets, change this if you want to expire all your assets.
+Rails.application.config.assets.version = "1.0"
+
+# Add additional assets to the asset load path.
+# Rails.application.config.assets.paths << Emoji.images_path
+</file>
+
+<file path="config/initializers/content_security_policy.rb">
+# Be sure to restart your server when you modify this file.
+
+# Define an application-wide content security policy.
+# See the Securing Rails Applications Guide for more information:
+# https://guides.rubyonrails.org/security.html#content-security-policy-header
+
+# Rails.application.configure do
+#   config.content_security_policy do |policy|
+#     policy.default_src :self, :https
+#     policy.font_src    :self, :https, :data
+#     policy.img_src     :self, :https, :data
+#     policy.object_src  :none
+#     policy.script_src  :self, :https
+#     policy.style_src   :self, :https
+#     # Specify URI for violation reports
+#     # policy.report_uri "/csp-violation-report-endpoint"
+#   end
+#
+#   # Generate session nonces for permitted importmap, inline scripts, and inline styles.
+#   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
+#   config.content_security_policy_nonce_directives = %w(script-src style-src)
+#
+#   # Automatically add `nonce` to `javascript_tag`, `javascript_include_tag`, and `stylesheet_link_tag`
+#   # if the corresponding directives are specified in `content_security_policy_nonce_directives`.
+#   # config.content_security_policy_nonce_auto = true
+#
+#   # Report violations without enforcing the policy.
+#   # config.content_security_policy_report_only = true
+# end
+</file>
+
+<file path="config/initializers/filter_parameter_logging.rb">
+# Be sure to restart your server when you modify this file.
+
+# Configure parameters to be partially matched (e.g. passw matches password) and filtered from the log file.
+# Use this to limit dissemination of sensitive information.
+# See the ActiveSupport::ParameterFilter documentation for supported notations and behaviors.
+Rails.application.config.filter_parameters += [
+  :passw, :email, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn, :cvv, :cvc
+]
+</file>
+
+<file path="config/initializers/inflections.rb">
+# Be sure to restart your server when you modify this file.
+
+# Add new inflection rules using the following format. Inflections
+# are locale specific, and you may define rules for as many different
+# locales as you wish. All of these examples are active by default:
+# ActiveSupport::Inflector.inflections(:en) do |inflect|
+#   inflect.plural /^(ox)$/i, "\\1en"
+#   inflect.singular /^(ox)en/i, "\\1"
+#   inflect.irregular "person", "people"
+#   inflect.uncountable %w( fish sheep )
+# end
+
+# These inflection rules are supported but not enabled by default:
+# ActiveSupport::Inflector.inflections(:en) do |inflect|
+#   inflect.acronym "RESTful"
+# end
+</file>
+
+<file path="config/locales/devise.en.yml">
+# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
+
+en:
+  devise:
+    confirmations:
+      confirmed: "Your email address has been successfully confirmed."
+      send_instructions: "You will receive an email with instructions for how to confirm your email address in a few minutes."
+      send_paranoid_instructions: "If your email address exists in our database, you will receive an email with instructions for how to confirm your email address in a few minutes."
+    failure:
+      already_authenticated: "You are already signed in."
+      inactive: "Your account is not activated yet."
+      invalid: "Invalid %{authentication_keys} or password."
+      locked: "Your account is locked."
+      last_attempt: "You have one more attempt before your account is locked."
+      not_found_in_database: "Invalid %{authentication_keys} or password."
+      timeout: "Your session expired. Please sign in again to continue."
+      unauthenticated: "You need to sign in or sign up before continuing."
+      unconfirmed: "You have to confirm your email address before continuing."
+    mailer:
+      confirmation_instructions:
+        subject: "Confirmation instructions"
+      reset_password_instructions:
+        subject: "Reset password instructions"
+      unlock_instructions:
+        subject: "Unlock instructions"
+      email_changed:
+        subject: "Email Changed"
+      password_change:
+        subject: "Password Changed"
+    omniauth_callbacks:
+      failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
+      success: "Successfully authenticated from %{kind} account."
+    passwords:
+      no_token: "You can't access this page without coming from a password reset email. If you do come from a password reset email, please make sure you used the full URL provided."
+      send_instructions: "You will receive an email with instructions on how to reset your password in a few minutes."
+      send_paranoid_instructions: "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes."
+      updated: "Your password has been changed successfully. You are now signed in."
+      updated_not_active: "Your password has been changed successfully."
+    registrations:
+      destroyed: "Bye! Your account has been successfully cancelled. We hope to see you again soon."
+      signed_up: "Welcome! You have signed up successfully."
+      signed_up_but_inactive: "You have signed up successfully. However, we could not sign you in because your account is not yet activated."
+      signed_up_but_locked: "You have signed up successfully. However, we could not sign you in because your account is locked."
+      signed_up_but_unconfirmed: "A message with a confirmation link has been sent to your email address. Please follow the link to activate your account."
+      update_needs_confirmation: "You updated your account successfully, but we need to verify your new email address. Please check your email and follow the confirmation link to confirm your new email address."
+      updated: "Your account has been updated successfully."
+      updated_but_not_signed_in: "Your account has been updated successfully, but since your password was changed, you need to sign in again."
+    sessions:
+      signed_in: "Signed in successfully."
+      signed_out: "Signed out successfully."
+      already_signed_out: "Signed out successfully."
+    unlocks:
+      send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
+      send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."
+      unlocked: "Your account has been unlocked successfully. Please sign in to continue."
+  errors:
+    messages:
+      already_confirmed: "was already confirmed, please try signing in"
+      confirmation_period_expired: "needs to be confirmed within %{period}, please request a new one"
+      expired: "has expired, please request a new one"
+      not_found: "not found"
+      not_locked: "was not locked"
+      not_saved:
+        one: "1 error prohibited this %{resource} from being saved:"
+        other: "%{count} errors prohibited this %{resource} from being saved:"
+</file>
+
+<file path="config/locales/en.yml">
+# Files in the config/locales directory are used for internationalization and
+# are automatically loaded by Rails. If you want to use locales other than
+# English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t "hello"
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t("hello") %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more about the API, please read the Rails Internationalization guide
+# at https://guides.rubyonrails.org/i18n.html.
+#
+# Be aware that YAML interprets the following case-insensitive strings as
+# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
+# must be quoted to be interpreted as strings. For example:
+#
+#     en:
+#       "yes": yup
+#       enabled: "ON"
+
+en:
+  hello: "Hello world"
+</file>
+
+<file path="config/application.rb">
+require_relative "boot"
+
+require "rails/all"
+
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
+
+module Myapp
+  class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 8.1
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: %w[assets tasks])
+
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
+    # config.time_zone = "Central Time (US & Canada)"
+    # config.eager_load_paths << Rails.root.join("extras")
+  end
+end
+</file>
+
+<file path="config/boot.rb">
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+require "bundler/setup" # Set up gems listed in the Gemfile.
+require "bootsnap/setup" # Speed up boot time by caching expensive operations.
+</file>
+
+<file path="config/bundler-audit.yml">
+# Audit all gems listed in the Gemfile for known security problems by running bin/bundler-audit.
+# CVEs that are not relevant to the application can be enumerated on the ignore list below.
+
+ignore:
+  - CVE-THAT-DOES-NOT-APPLY
+</file>
+
+<file path="config/cable.yml">
+# Async adapter only works within the same process, so for manually triggering cable updates from a console,
+# and seeing results in the browser, you must do so from the web console (running inside the dev process),
+# not a terminal started via bin/rails console! Add "console" to any action or any ERB template view
+# to make the web console appear.
+development:
+  adapter: async
+
+test:
+  adapter: test
+
+production:
+  adapter: solid_cable
+  connects_to:
+    database:
+      writing: cable
+  polling_interval: 0.1.seconds
+  message_retention: 1.day
+</file>
+
+<file path="config/cache.yml">
+default: &default
+  store_options:
+    # Cap age of oldest cache entry to fulfill retention policies
+    # max_age: <%= 60.days.to_i %>
+    max_size: <%= 256.megabytes %>
+    namespace: <%= Rails.env %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  database: cache
+  <<: *default
+</file>
+
+<file path="config/ci.rb">
+# Run using bin/ci
+
+CI.run do
+  step "Setup", "bin/setup --skip-server"
+
+  step "Style: Ruby", "bin/rubocop"
+
+  step "Security: Gem audit", "bin/bundler-audit"
+  step "Security: Yarn vulnerability audit", "yarn audit"
+  step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
+  step "Tests: Rails", "bin/rails test"
+  step "Tests: Seeds", "env RAILS_ENV=test bin/rails db:seed:replant"
+
+  # Optional: Run system tests
+  # step "Tests: System", "bin/rails test:system"
+
+  # Optional: set a green GitHub commit status to unblock PR merge.
+  # Requires the `gh` CLI and `gh extension install basecamp/gh-signoff`.
+  # if success?
+  #   step "Signoff: All systems go. Ready for merge and deploy.", "gh signoff"
+  # else
+  #   failure "Signoff: CI failed. Do not merge or deploy.", "Fix the issues and try again."
+  # end
+end
+</file>
+
+<file path="config/cloudinary.yml">
+development:
+  cloud_name: <%= Rails.application.credentials.dig(:cloudinary, :cloud_name) %>
+  api_key: <%= Rails.application.credentials.dig(:cloudinary, :api_key) %>
+  api_secret: <%= Rails.application.credentials.dig(:cloudinary, :api_secret) %>
+  enhance_image_tag: true
+  static_file_support: false
+
+production:
+  cloud_name: Rails.application.credentials.cloudinary[:cloud_name]
+  api_key: Rails.application.credentials.cloudinary[:api_key]
+  api_secret: Rails.application.credentials.cloudinary[:api_secret]
+  enhance_image_tag: true
+  static_file_support: true
+</file>
+
+<file path="config/deploy.yml">
+# Name of your application. Used to uniquely configure containers.
+service: myapp
+
+# Name of the container image (use your-user/app-name on external registries).
+image: myapp
+
+# Deploy to these servers.
+servers:
+  web:
+    - 192.168.0.1
+  # job:
+  #   hosts:
+  #     - 192.168.0.1
+  #   cmd: bin/jobs
+
+# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
+# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+#
+# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
+#
+# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
+#
+# proxy:
+#   ssl: true
+#   host: app.example.com
+
+# Where you keep your container images.
+registry:
+  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
+  server: localhost:5555
+
+  # Needed for authenticated registries.
+  # username: your-user
+
+  # Always use an access token rather than real password when possible.
+  # password:
+  #   - KAMAL_REGISTRY_PASSWORD
+
+# Inject ENV variables into containers (secrets come from .kamal/secrets).
+env:
+  secret:
+    - RAILS_MASTER_KEY
+  clear:
+    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
+    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    SOLID_QUEUE_IN_PUMA: true
+
+    # Set number of processes dedicated to Solid Queue (default: 1)
+    # JOB_CONCURRENCY: 3
+
+    # Set number of cores available to the application on each server (default: 1).
+    # WEB_CONCURRENCY: 2
+
+    # Match this to any external database server to configure Active Record correctly
+    # Use myapp-db for a db accessory server on same machine via local kamal docker network.
+    # DB_HOST: 192.168.0.2
+
+    # Log everything from Rails
+    # RAILS_LOG_LEVEL: debug
+
+# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
+# "bin/kamal logs -r job" will tail logs from the first server in the job section.
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+
+# Use a persistent storage volume for sqlite database files and local Active Storage files.
+# Recommended to change this to a mounted volume path that is backed up off server.
+volumes:
+  - "myapp_storage:/rails/storage"
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+asset_path: /rails/public/assets
+
+# Configure the image builder.
+builder:
+  arch: amd64
+
+  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
+  # remote: ssh://docker@docker-builder-server
+  #
+  # # Pass arguments and secrets to the Docker build process
+  # args:
+  #   RUBY_VERSION: ruby-4.0.1
+  # secrets:
+  #   - GITHUB_TOKEN
+  #   - RAILS_MASTER_KEY
+
+# Use a different ssh user than root
+# ssh:
+#   user: app
+
+# Use accessory services (secrets come from .kamal/secrets).
+# accessories:
+#   db:
+#     image: mysql:8.0
+#     host: 192.168.0.2
+#     # Change to 3306 to expose port to the world instead of just local network.
+#     port: "127.0.0.1:3306:3306"
+#     env:
+#       clear:
+#         MYSQL_ROOT_HOST: '%'
+#       secret:
+#         - MYSQL_ROOT_PASSWORD
+#     files:
+#       - config/mysql/production.cnf:/etc/mysql/my.cnf
+#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+#     directories:
+#       - data:/var/lib/mysql
+#   redis:
+#     image: valkey/valkey:8
+#     host: 192.168.0.2
+#     port: 6379
+#     directories:
+#       - data:/data
+</file>
+
+<file path="config/environment.rb">
+# Load the Rails application.
+require_relative "application"
+
+# Initialize the Rails application.
+Rails.application.initialize!
+</file>
+
+<file path="config/puma.rb">
+# This configuration file will be evaluated by Puma. The top-level methods that
+# are invoked here are part of Puma's configuration DSL. For more information
+# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
+#
+# Puma starts a configurable number of processes (workers) and each process
+# serves each request in a thread from an internal thread pool.
+#
+# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
+# should only set this value when you want to run 2 or more workers. The
+# default is already 1. You can set it to `auto` to automatically start a worker
+# for each available processor.
+#
+# The ideal number of threads per worker depends both on how much time the
+# application spends waiting for IO operations and on how much you wish to
+# prioritize throughput over latency.
+#
+# As a rule of thumb, increasing the number of threads will increase how much
+# traffic a given process can handle (throughput), but due to CRuby's
+# Global VM Lock (GVL) it has diminishing returns and will degrade the
+# response time (latency) of the application.
+#
+# The default is set to 3 threads as it's deemed a decent compromise between
+# throughput and latency for the average Rails application.
+#
+# Any libraries that use a connection pool or another resource pool should
+# be configured to provide at least as many connections as the number of
+# threads. This includes Active Record's `pool` parameter in `database.yml`.
+threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
+threads threads_count, threads_count
+
+# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+port ENV.fetch("PORT", 3000)
+
+# Allow puma to be restarted by `bin/rails restart` command.
+plugin :tmp_restart
+
+# Run the Solid Queue supervisor inside of Puma for single-server deployments.
+plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
+
+# Specify the PID file. Defaults to tmp/pids/server.pid in development.
+# In other environments, only set the PID file if requested.
+pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+</file>
+
+<file path="config/queue.yml">
+default: &default
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 500
+  workers:
+    - queues: "*"
+      threads: 3
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      polling_interval: 0.1
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+</file>
+
+<file path="config/recurring.yml">
+# examples:
+#   periodic_cleanup:
+#     class: CleanSoftDeletedRecordsJob
+#     queue: background
+#     args: [ 1000, { batch_size: 500 } ]
+#     schedule: every hour
+#   periodic_cleanup_with_command:
+#     command: "SoftDeletedRecord.due.delete_all"
+#     priority: 2
+#     schedule: at 5am every day
+
+production:
+  clear_solid_queue_finished_jobs:
+    command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
+    schedule: every hour at minute 12
+</file>
+
+<file path="config/storage.yml">
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+
+# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
+# amazon:
+#   service: S3
+#   access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
+#   secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
+#   region: us-east-1
+#   bucket: your_own_bucket-<%= Rails.env %>
+
+# Remember not to checkin your GCS keyfile to a repository
+# google:
+#   service: GCS
+#   project: your_project
+#   credentials: <%= Rails.root.join("path/to/gcs.keyfile") %>
+#   bucket: your_own_bucket-<%= Rails.env %>
+
+# mirror:
+#   service: Mirror
+#   primary: local
+#   mirrors: [ amazon, google, microsoft ]
+</file>
+
+<file path="db/migrate/20260202122701_create_sitting_sessions.rb">
+class CreateSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    create_table :sitting_sessions do |t|
+      t.references :user, null: false, foreign_key: true
+      t.datetime :start_at
+      t.datetime :notify_at
+      t.boolean :notified
+      t.string :endpoint
+      t.string :p256dh
+      t.string :auth
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260202123136_create_exercises.rb">
+class CreateExercises < ActiveRecord::Migration[8.1]
+  def change
+    create_table :exercises do |t|
+      t.string :name
+      t.integer :category
+      t.text :description
+      t.string :cloudinary_public_id
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260202123308_create_suggested_actions.rb">
+class CreateSuggestedActions < ActiveRecord::Migration[8.1]
+  def change
+    create_table :suggested_actions do |t|
+      t.references :sitting_session, null: false, foreign_key: true
+      t.references :exercise, null: false, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260205214818_add_duration_to_sitting_sessions.rb">
+class AddDurationToSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    add_column :sitting_sessions, :duration, :integer
+  end
+end
+</file>
+
+<file path="db/cable_schema.rb">
+ActiveRecord::Schema[7.1].define(version: 1) do
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", limit: 1024, null: false
+    t.binary "payload", limit: 536870912, null: false
+    t.datetime "created_at", null: false
+    t.integer "channel_hash", limit: 8, null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+end
+</file>
+
+<file path="db/cache_schema.rb">
+ActiveRecord::Schema[7.2].define(version: 1) do
+  create_table "solid_cache_entries", force: :cascade do |t|
+    t.binary "key", limit: 1024, null: false
+    t.binary "value", limit: 536870912, null: false
+    t.datetime "created_at", null: false
+    t.integer "key_hash", limit: 8, null: false
+    t.integer "byte_size", limit: 4, null: false
+    t.index ["byte_size"], name: "index_solid_cache_entries_on_byte_size"
+    t.index ["key_hash", "byte_size"], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
+    t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash", unique: true
+  end
+end
+</file>
+
+<file path="lib/tasks/.keep">
+
+</file>
+
+<file path="log/.keep">
+
+</file>
+
+<file path="public/400.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>The server cannot process the request due to a client error (400 Bad Request)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/400.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm115.583 168.69891c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm140.456 133.2831c-40.823 0-64.884-35.146-64.884-85.7015 0-50.5554 24.061-85.700907 64.884-85.700907 40.822 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.062 85.7015-64.884 85.7015zm0-133.2831c-17.573 0-22.71 21.8984-22.71 47.5816 0 25.6835 5.137 47.5815 22.71 47.5815 17.302 0 22.709-21.898 22.709-47.5815 0-25.6832-5.407-47.5816-22.709-47.5816z" id="error-id"/><path d="m123.606 85.4445c3.212 1.0523 5.538 4.2089 5.538 8.0301 0 6.1472-4.209 9.5254-11.298 9.5254h-15.617v-34.0033h14.565c7.089 0 11.353 3.1566 11.353 9.2484 0 3.6551-2.049 6.3134-4.541 7.1994zm-12.904-2.9905h5.095c2.603 0 3.988-.9968 3.988-3.1013 0-2.1044-1.385-3.0459-3.988-3.0459h-5.095zm0 6.6456v6.5902h5.981c2.492 0 3.877-1.3291 3.877-3.2674 0-2.049-1.385-3.3228-3.877-3.3228zm43.786 13.9004h-8.362v-1.274c-.831.831-3.323 1.717-5.981 1.717-4.929 0-9.083-2.769-9.083-8.0301 0-4.818 4.154-7.9193 9.581-7.9193 2.049 0 4.486.6646 5.483 1.3845v-1.606c0-1.606-.942-2.9905-3.046-2.9905-1.606 0-2.548.7199-2.935 1.8275h-8.197c.72-4.8181 4.985-8.6393 11.409-8.6393 7.088 0 11.131 3.7659 11.131 10.2453zm-8.362-6.9779v-1.4399c-.554-1.0522-2.049-1.7167-3.655-1.7167-1.717 0-3.434.7199-3.434 2.3813 0 1.7168 1.717 2.4367 3.434 2.4367 1.606 0 3.101-.6645 3.655-1.6614zm27.996 6.9779v-1.994c-1.163 1.329-3.599 2.548-6.147 2.548-7.199 0-11.131-5.8151-11.131-13.0145s3.932-13.0143 11.131-13.0143c2.548 0 4.984 1.2184 6.147 2.5475v-13.0697h8.695v35.997zm0-9.1931v-6.5902c-.664-1.3291-2.159-2.326-3.821-2.326-2.99 0-4.763 2.4368-4.763 5.6488s1.773 5.5934 4.763 5.5934c1.717 0 3.157-.9415 3.821-2.326zm35.471-2.049h-3.101v11.2421h-8.806v-34.0033h15.285c7.31 0 12.35 4.1535 12.35 11.5744 0 5.1503-2.603 8.6947-6.757 10.2453l7.975 12.1836h-9.858zm-3.101-15.2849v8.1962h5.538c3.156 0 4.596-1.606 4.596-4.0981s-1.44-4.0981-4.596-4.0981zm36.957 17.8323h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.515-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.822-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm30.98 27.5234v-10.799c-1.163 1.329-3.6 2.548-6.147 2.548-7.2 0-11.132-5.9259-11.132-13.0145 0-7.144 3.932-13.0143 11.132-13.0143 2.547 0 4.984 1.2184 6.147 2.5475v-1.9937h8.695v33.726zm0-17.9981v-6.5902c-.665-1.3291-2.105-2.326-3.821-2.326-2.991 0-4.763 2.4368-4.763 5.6488s1.772 5.5934 4.763 5.5934c1.661 0 3.156-.9415 3.821-2.326zm36.789-15.7279v24.921h-8.695v-2.16c-1.329 1.551-3.821 2.714-6.646 2.714-5.482 0-8.75-3.5999-8.75-9.1379v-16.3371h8.64v14.288c0 2.1045.996 3.5997 3.212 3.5997 1.606 0 3.101-1.0522 3.544-2.769v-15.1187zm19.084 16.2263h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.515-13.0143 7.643 0 11.963 5.095 11.963 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.822-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm13.428 11.0206h8.474c.387 1.3845 1.606 2.1598 3.156 2.1598 1.44 0 2.548-.5538 2.548-1.7168 0-.9414-.72-1.2737-1.939-1.5506l-4.873-.9969c-4.154-.886-6.867-2.8797-6.867-7.2547 0-5.3165 4.762-8.4178 10.633-8.4178 6.812 0 10.522 3.1567 11.297 8.0855h-8.03c-.277-1.0522-1.052-1.9937-3.046-1.9937-1.273 0-2.326.5538-2.326 1.6614 0 .7753.554 1.163 1.717 1.3845l4.929 1.163c4.541 1.0522 6.978 3.4335 6.978 7.4763 0 5.3168-4.818 8.2518-10.91 8.2518-6.369 0-10.965-2.88-11.741-8.2518zm27.538-.8861v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.205v6.7564h-5.205v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.993-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.871 0-9.193-2.769-9.193-9.0819z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>The server cannot process the request due to a client error.</strong> Please check the request and try again. If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/404.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>The page you were looking for doesn't exist (404 Not found)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/404.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm115.583 168.69891c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm165.328-35.41581-45.689 100.02991h26.224v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.184v-31.901l50.285-103.27391z" id="error-id"/><path d="m157.758 68.9967v34.0033h-7.199l-14.233-19.8814v19.8814h-8.584v-34.0033h8.307l13.125 18.7184v-18.7184zm28.454 21.5428c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.528 0c0-3.4336-1.496-5.8703-4.209-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.209-2.3813 4.209-5.8149zm13.184 3.8766v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.205v6.7564h-5.205v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm37.027 8.5839h-8.806v-34.0033h23.924v7.6978h-15.118v6.7564h13.9v7.5316h-13.9zm41.876-12.4605c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.529 0c0-3.4336-1.495-5.8703-4.208-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.208-2.3813 4.208-5.8149zm35.337-12.4605v24.921h-8.695v-2.16c-1.329 1.551-3.821 2.714-6.646 2.714-5.482 0-8.75-3.5999-8.75-9.1379v-16.3371h8.64v14.288c0 2.1045.997 3.5997 3.212 3.5997 1.606 0 3.101-1.0522 3.544-2.769v-15.1187zm4.076 24.921v-24.921h8.694v2.1598c1.385-1.5506 3.822-2.7136 6.701-2.7136 5.538 0 8.806 3.5997 8.806 9.1377v16.3371h-8.639v-14.2327c0-2.049-1.053-3.5443-3.268-3.5443-1.717 0-3.156.9969-3.6 2.7136v15.0634zm44.113 0v-1.994c-1.163 1.329-3.6 2.548-6.147 2.548-7.2 0-11.132-5.8151-11.132-13.0145s3.932-13.0143 11.132-13.0143c2.547 0 4.984 1.2184 6.147 2.5475v-13.0697h8.695v35.997zm0-9.1931v-6.5902c-.665-1.3291-2.16-2.326-3.821-2.326-2.991 0-4.763 2.4368-4.763 5.6488s1.772 5.5934 4.763 5.5934c1.717 0 3.156-.9415 3.821-2.326z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>The page you were looking for doesn't exist.</strong> You may have mistyped the address or the page may have moved. If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/406-unsupported-browser.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>Your browser is not supported (406 Not Acceptable)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/406-unsupported-browser.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm115.583 168.69891c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm202.906 9.7326h-41.093c-2.433-7.2994-7.84-12.4361-17.302-12.4361-16.221 0-25.413 17.5728-25.954 34.8752v1.3517c5.137-7.0291 16.221-12.4361 30.82-12.4361 33.524 0 54.881 24.0612 54.881 53.7998 0 33.253-23.791 58.396-61.64 58.396-21.628 0-39.741-10.003-50.825-27.576-9.733-14.599-13.788-32.442-13.788-54.3406 0-51.9072 24.331-89.485807 66.236-89.485807 32.712 0 53.258 18.654107 58.665 47.851907zm-82.727 66.2355c0 13.247 9.463 22.439 22.71 22.439 12.977 0 22.439-9.192 22.439-22.439 0-13.517-9.462-22.7091-22.439-22.7091-13.247 0-22.71 9.1921-22.71 22.7091z" id="error-id"/><path d="m100.761 68.9967v34.0033h-7.1991l-14.2326-19.8814v19.8814h-8.5839v-34.0033h8.307l13.125 18.7184v-18.7184zm28.454 21.5428c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.529 0c0-3.4336-1.495-5.8703-4.208-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.208-2.3813 4.208-5.8149zm13.185 3.8766v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.205v6.7564h-5.205v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm39.02-25.4194h9.083l12.958 34.0033h-9.027l-2.436-6.5902h-12.35l-2.381 6.5902h-8.806zm4.431 10.5222-3.489 9.5807h6.978zm17.44 11.0206c0-7.6978 5.095-13.0143 12.572-13.0143 6.701 0 10.854 3.9874 11.574 9.8023h-8.418c-.221-1.4953-1.384-2.6029-3.156-2.6029-2.437 0-3.988 2.2706-3.988 5.8149s1.551 5.7595 3.988 5.7595c1.772 0 2.935-1.0522 3.156-2.5475h8.418c-.72 5.7596-4.873 9.8025-11.574 9.8025-7.477 0-12.572-5.3167-12.572-13.0145zm25.676 0c0-7.6978 5.095-13.0143 12.572-13.0143 6.701 0 10.854 3.9874 11.574 9.8023h-8.418c-.221-1.4953-1.384-2.6029-3.156-2.6029-2.437 0-3.988 2.2706-3.988 5.8149s1.551 5.7595 3.988 5.7595c1.772 0 2.935-1.0522 3.156-2.5475h8.418c-.72 5.7596-4.873 9.8025-11.574 9.8025-7.477 0-12.572-5.3167-12.572-13.0145zm42.013 3.7658h8.031c-.887 5.7597-5.206 9.2487-11.686 9.2487-7.642 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.317-13.0143 12.516-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.319 4.5965 1.773 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm23.4 16.7244v10.799h-8.694v-33.726h8.694v1.9937c1.163-1.3291 3.6-2.5475 6.148-2.5475 7.199 0 11.131 5.8703 11.131 13.0143 0 7.0886-3.932 13.0145-11.131 13.0145-2.548 0-4.985-1.219-6.148-2.548zm0-13.7893v6.5902c.665 1.3845 2.16 2.326 3.822 2.326 2.99 0 4.762-2.3814 4.762-5.5934s-1.772-5.6488-4.762-5.6488c-1.717 0-3.157.9969-3.822 2.326zm21.892 7.1994v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.206v6.7564h-5.206v8.307c0 1.9383.941 2.769 2.658 2.769.942 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm39.458 8.5839h-8.363v-1.274c-.83.831-3.322 1.717-5.981 1.717-4.928 0-9.082-2.769-9.082-8.0301 0-4.818 4.154-7.9193 9.581-7.9193 2.049 0 4.486.6646 5.482 1.3845v-1.606c0-1.606-.941-2.9905-3.045-2.9905-1.606 0-2.548.7199-2.936 1.8275h-8.196c.72-4.8181 4.984-8.6393 11.408-8.6393 7.089 0 11.132 3.7659 11.132 10.2453zm-8.363-6.9779v-1.4399c-.553-1.0522-2.049-1.7167-3.655-1.7167-1.716 0-3.433.7199-3.433 2.3813 0 1.7168 1.717 2.4367 3.433 2.4367 1.606 0 3.102-.6645 3.655-1.6614zm20.742 4.9839v1.994h-8.694v-35.997h8.694v13.0697c1.163-1.3291 3.6-2.5475 6.148-2.5475 7.199 0 11.131 5.8149 11.131 13.0143s-3.932 13.0145-11.131 13.0145c-2.548 0-4.985-1.219-6.148-2.548zm0-13.7893v6.5902c.665 1.3845 2.105 2.326 3.822 2.326 2.99 0 4.762-2.3814 4.762-5.5934s-1.772-5.6488-4.762-5.6488c-1.662 0-3.157.9969-3.822 2.326zm28.759-20.2137v35.997h-8.695v-35.997zm19.172 27.3023h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.516-13.0143 7.642 0 11.962 5.095 11.962 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.434 1.2737-3.988 3.5997h7.532c-.111-2.0491-1.384-3.5997-3.544-3.5997z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>Your browser is not supported.</strong><br> Please upgrade your browser to continue.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/422.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>The change you wanted was rejected (422 Unprocessable Entity)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/422.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm130.453 51.63681c0-8.9215-6.218-15.4099-15.681-15.4099-10.273 0-15.95 7.5698-16.491 16.4913h-44.608c3.244-30.8199 25.683-55.421707 61.099-55.421707 36.498 0 59.477 20.816907 59.477 51.636807 0 21.3577-14.869 36.7676-31.901 52.7186l-27.305 27.035h59.747v37.308h-120.306v-27.846l57.044-56.7736c11.084-11.8954 18.925-20.0059 18.925-29.7385zm140.455 0c0-8.9215-6.218-15.4099-15.68-15.4099-10.274 0-15.951 7.5698-16.492 16.4913h-44.608c3.245-30.8199 25.684-55.421707 61.1-55.421707 36.497 0 59.477 20.816907 59.477 51.636807 0 21.3577-14.87 36.7676-31.902 52.7186l-27.305 27.035h59.747v37.308h-120.305v-27.846l57.043-56.7736c11.085-11.8954 18.925-20.0059 18.925-29.7385z" id="error-id"/><path d="m19.3936 103.554c-8.9715 0-14.84183-5.0952-14.84183-14.4544v-20.1029h8.86083v19.3276c0 4.8181 2.2706 7.3102 5.981 7.3102 3.6551 0 5.9257-2.4921 5.9257-7.3102v-19.3276h8.8608v20.1583c0 9.3038-5.8149 14.399-14.7865 14.399zm18.734-.554v-24.921h8.6947v2.1598c1.3845-1.5506 3.8212-2.7136 6.701-2.7136 5.538 0 8.8054 3.5997 8.8054 9.1377v16.3371h-8.6393v-14.2327c0-2.049-1.0522-3.5443-3.2674-3.5443-1.7168 0-3.1567.9969-3.5997 2.7136v15.0634zm36.8584-1.994v10.799h-8.6946v-33.726h8.6946v1.9937c1.163-1.3291 3.5997-2.5475 6.1472-2.5475 7.1994 0 11.1314 5.8703 11.1314 13.0143 0 7.0886-3.932 13.0145-11.1314 13.0145-2.5475 0-4.9842-1.219-6.1472-2.548zm0-13.7893v6.5902c.6646 1.3845 2.1599 2.326 3.8213 2.326 2.9905 0 4.7626-2.3814 4.7626-5.5934s-1.7721-5.6488-4.7626-5.6488c-1.7168 0-3.1567.9969-3.8213 2.326zm36.789-9.2485v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.6949v-24.921h8.6949v2.2152c1.218-1.6614 3.156-2.769 5.648-2.769 1.108 0 1.994.2215 2.382.443zm26.769 12.5713c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.528 0c0-3.4336-1.496-5.8703-4.209-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.209-2.3813 4.209-5.8149zm10.352 0c0-7.6978 5.095-13.0143 12.571-13.0143 6.701 0 10.855 3.9874 11.574 9.8023h-8.417c-.222-1.4953-1.385-2.6029-3.157-2.6029-2.437 0-3.987 2.2706-3.987 5.8149s1.55 5.7595 3.987 5.7595c1.772 0 2.935-1.0522 3.157-2.5475h8.417c-.719 5.7596-4.873 9.8025-11.574 9.8025-7.476 0-12.571-5.3167-12.571-13.0145zm42.013 3.7658h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.516-13.0143 7.642 0 11.962 5.095 11.962 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.434 1.2737-3.988 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.544-3.5997zm13.428 11.0206h8.473c.387 1.3845 1.606 2.1598 3.156 2.1598 1.44 0 2.548-.5538 2.548-1.7168 0-.9414-.72-1.2737-1.938-1.5506l-4.874-.9969c-4.153-.886-6.867-2.8797-6.867-7.2547 0-5.3165 4.763-8.4178 10.633-8.4178 6.812 0 10.522 3.1567 11.297 8.0855h-8.03c-.277-1.0522-1.052-1.9937-3.046-1.9937-1.273 0-2.326.5538-2.326 1.6614 0 .7753.554 1.163 1.717 1.3845l4.929 1.163c4.541 1.0522 6.978 3.4335 6.978 7.4763 0 5.3168-4.818 8.2518-10.91 8.2518-6.369 0-10.965-2.88-11.74-8.2518zm24.269 0h8.474c.387 1.3845 1.606 2.1598 3.156 2.1598 1.44 0 2.548-.5538 2.548-1.7168 0-.9414-.72-1.2737-1.939-1.5506l-4.873-.9969c-4.154-.886-6.867-2.8797-6.867-7.2547 0-5.3165 4.763-8.4178 10.633-8.4178 6.812 0 10.522 3.1567 11.297 8.0855h-8.03c-.277-1.0522-1.052-1.9937-3.046-1.9937-1.273 0-2.326.5538-2.326 1.6614 0 .7753.554 1.163 1.717 1.3845l4.929 1.163c4.541 1.0522 6.978 3.4335 6.978 7.4763 0 5.3168-4.818 8.2518-10.91 8.2518-6.369 0-10.965-2.88-11.741-8.2518zm47.918 7.6978h-8.363v-1.274c-.831.831-3.323 1.717-5.981 1.717-4.929 0-9.082-2.769-9.082-8.0301 0-4.818 4.153-7.9193 9.581-7.9193 2.049 0 4.485.6646 5.482 1.3845v-1.606c0-1.606-.941-2.9905-3.046-2.9905-1.606 0-2.547.7199-2.935 1.8275h-8.196c.72-4.8181 4.984-8.6393 11.408-8.6393 7.089 0 11.132 3.7659 11.132 10.2453zm-8.363-6.9779v-1.4399c-.554-1.0522-2.049-1.7167-3.655-1.7167-1.717 0-3.434.7199-3.434 2.3813 0 1.7168 1.717 2.4367 3.434 2.4367 1.606 0 3.101-.6645 3.655-1.6614zm20.742 4.9839v1.994h-8.695v-35.997h8.695v13.0697c1.163-1.3291 3.6-2.5475 6.147-2.5475 7.2 0 11.132 5.8149 11.132 13.0143s-3.932 13.0145-11.132 13.0145c-2.547 0-4.984-1.219-6.147-2.548zm0-13.7893v6.5902c.665 1.3845 2.105 2.326 3.821 2.326 2.991 0 4.763-2.3814 4.763-5.5934s-1.772-5.6488-4.763-5.6488c-1.661 0-3.156.9969-3.821 2.326zm28.759-20.2137v35.997h-8.695v-35.997zm19.172 27.3023h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.515-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.822-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm25.461-15.2849h24.311v7.6424h-15.561v5.3165h14.232v7.4763h-14.232v5.8703h15.561v7.6978h-24.311zm27.942 34.0033v-24.921h8.694v2.1598c1.385-1.5506 3.822-2.7136 6.701-2.7136 5.538 0 8.806 3.5997 8.806 9.1377v16.3371h-8.639v-14.2327c0-2.049-1.053-3.5443-3.268-3.5443-1.717 0-3.157.9969-3.6 2.7136v15.0634zm29.991-8.5839v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.206v6.7564h-5.206v8.307c0 1.9383.941 2.769 2.658 2.769.942 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm26.161-16.3371v24.921h-8.694v-24.921zm.61-6.7564c0 2.8244-2.271 4.652-4.929 4.652s-4.929-1.8276-4.929-4.652c0-2.8797 2.271-4.7073 4.929-4.7073s4.929 1.8276 4.929 4.7073zm5.382 23.0935v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.206v6.7564h-5.206v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm29.22 17.3889h-8.584l3.655-9.414-9.303-24.312h9.026l4.763 14.1773 4.652-14.1773h8.639z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>The change you wanted was rejected.</strong> Maybe you tried to change something you didn't have access to. If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/500.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>We're sorry, but something went wrong (500 Internal Server Error)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/500.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m101.23 93.8427c-8.1103 0-15.4098 3.7849-19.7354 8.3813h-36.2269v-99.21891h103.8143v37.03791h-68.3984v24.8722c5.1366-2.7035 15.1396-5.9477 24.6014-5.9477 35.146 0 56.233 22.7094 56.233 55.4215 0 34.605-23.791 57.315-60.558 57.315-37.8492 0-61.64-22.169-63.8028-55.963h42.9857c1.0814 10.814 9.1919 19.195 21.6281 19.195 11.355 0 19.465-8.381 19.465-20.547 0-11.625-7.299-20.5463-20.006-20.5463zm138.833 77.8613c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm140.456 133.2831c-40.823 0-64.884-35.146-64.884-85.7015 0-50.5554 24.061-85.700907 64.884-85.700907 40.822 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.062 85.7015-64.884 85.7015zm0-133.2831c-17.573 0-22.71 21.8984-22.71 47.5816 0 25.6835 5.137 47.5815 22.71 47.5815 17.302 0 22.709-21.898 22.709-47.5815 0-25.6832-5.407-47.5816-22.709-47.5816z" id="error-id"/><path d="m23.1377 68.9967v34.0033h-8.9162v-34.0033zm4.3157 34.0033v-24.921h8.6947v2.1598c1.3845-1.5506 3.8212-2.7136 6.701-2.7136 5.538 0 8.8054 3.5997 8.8054 9.1377v16.3371h-8.6393v-14.2327c0-2.049-1.0522-3.5443-3.2674-3.5443-1.7168 0-3.1567.9969-3.5997 2.7136v15.0634zm29.9913-8.5839v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.5839v6.8671h5.2058v6.7564h-5.2058v8.307c0 1.9383.9415 2.769 2.6583 2.769.9414 0 1.9937-.2216 2.769-.5538v7.3654c-.9969.443-2.8798.775-4.8181.775-5.8703 0-9.1931-2.769-9.1931-9.0819zm32.3666-.1108h8.0301c-.8861 5.7597-5.2057 9.2487-11.6852 9.2487-7.6424 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.3165-13.0143 12.5159-13.0143 7.6424 0 11.9621 5.095 11.9621 12.5159v2.1598h-16.1156c.2769 2.9905 1.8275 4.5965 4.3196 4.5965 1.7722 0 3.1567-.7753 3.6551-2.4921zm-3.8212-10.0237c-2.0491 0-3.4336 1.2737-3.9874 3.5997h7.5317c-.1107-2.0491-1.3845-3.5997-3.5443-3.5997zm31.4299-6.3134v8.3624c-1.052-.5538-2.215-.7753-3.599-.7753-2.382 0-3.988 1.0522-4.431 2.8244v14.6203h-8.694v-24.921h8.694v2.2152c1.219-1.6614 3.157-2.769 5.649-2.769 1.108 0 1.994.2215 2.381.443zm2.949 25.0318v-24.921h8.694v2.1598c1.385-1.5506 3.821-2.7136 6.701-2.7136 5.538 0 8.806 3.5997 8.806 9.1377v16.3371h-8.64v-14.2327c0-2.049-1.052-3.5443-3.267-3.5443-1.717 0-3.157.9969-3.6 2.7136v15.0634zm50.371 0h-8.363v-1.274c-.83.831-3.323 1.717-5.981 1.717-4.929 0-9.082-2.769-9.082-8.0301 0-4.818 4.153-7.9193 9.581-7.9193 2.049 0 4.485.6646 5.482 1.3845v-1.606c0-1.606-.941-2.9905-3.046-2.9905-1.606 0-2.547.7199-2.935 1.8275h-8.196c.72-4.8181 4.984-8.6393 11.408-8.6393 7.089 0 11.132 3.7659 11.132 10.2453zm-8.363-6.9779v-1.4399c-.554-1.0522-2.049-1.7167-3.655-1.7167-1.717 0-3.433.7199-3.433 2.3813 0 1.7168 1.716 2.4367 3.433 2.4367 1.606 0 3.101-.6645 3.655-1.6614zm20.742-29.0191v35.997h-8.694v-35.997zm13.036 25.9178h9.248c.72 2.326 2.714 3.489 5.483 3.489 2.713 0 4.596-1.163 4.596-3.2674 0-1.6061-1.052-2.326-3.212-2.8244l-6.534-1.3845c-4.985-1.1076-8.751-3.7105-8.751-9.47 0-6.6456 5.538-11.0206 13.07-11.0206 8.307 0 13.014 4.5411 13.956 10.4114h-8.695c-.72-1.8829-2.27-3.3228-5.205-3.3228-2.548 0-4.265 1.1076-4.265 2.9905 0 1.4953 1.052 2.326 2.825 2.7137l6.645 1.5506c5.815 1.3845 9.027 4.5412 9.027 9.8023 0 6.9778-5.87 10.9654-13.291 10.9654-8.141 0-13.679-3.9322-14.897-10.6332zm46.509 1.3845h8.031c-.887 5.7597-5.206 9.2487-11.686 9.2487-7.642 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.317-13.0143 12.516-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.319 4.5965 1.773 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm31.431-6.3134v8.3624c-1.053-.5538-2.216-.7753-3.6-.7753-2.381 0-3.988 1.0522-4.431 2.8244v14.6203h-8.694v-24.921h8.694v2.2152c1.219-1.6614 3.157-2.769 5.649-2.769 1.108 0 1.994.2215 2.382.443zm18.288 25.0318h-7.809l-9.47-24.921h8.861l4.763 14.288 4.652-14.288h8.528zm25.614-8.6947h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.642 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.516-13.0143 7.642 0 11.962 5.095 11.962 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.434 1.2737-3.988 3.5997h7.532c-.111-2.0491-1.384-3.5997-3.544-3.5997zm31.43-6.3134v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.157-2.769 5.649-2.769 1.107 0 1.993.2215 2.381.443zm13.703-8.9715h24.312v7.6424h-15.562v5.3165h14.232v7.4763h-14.232v5.8703h15.562v7.6978h-24.312zm44.667 8.9715v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.156-2.769 5.648-2.769 1.108 0 1.994.2215 2.382.443zm19.673 0v8.3624c-1.053-.5538-2.216-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.156-2.769 5.648-2.769 1.108 0 1.994.2215 2.382.443zm26.769 12.5713c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.529 0c0-3.4336-1.495-5.8703-4.208-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.208-2.3813 4.208-5.8149zm28.082-12.5713v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.157-2.769 5.649-2.769 1.107 0 1.993.2215 2.381.443z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>We're sorry, but something went wrong.</strong><br> If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/icon.svg">
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="256" cy="256" r="256" fill="red"/>
+</svg>
+</file>
+
+<file path="public/robots.txt">
+# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+</file>
+
+<file path="script/.keep">
+
+</file>
+
+<file path="storage/.keep">
+
+</file>
+
+<file path="test/controllers/users/guest_sessions_controller_test.rb">
+require "test_helper"
+
+class Users::GuestSessionsControllerTest < ActionDispatch::IntegrationTest
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/controllers/.keep">
+
+</file>
+
+<file path="test/controllers/exercises_controller_test.rb">
+require "test_helper"
+
+class ExercisesControllerTest < ActionDispatch::IntegrationTest
+  test "should get index" do
+    get exercises_index_url
+    assert_response :success
+  end
+
+  test "should get show" do
+    get exercises_show_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/sitting_sessions_controller_test.rb">
+require "test_helper"
+
+class SittingSessionsControllerTest < ActionDispatch::IntegrationTest
+  test "should get new" do
+    get sitting_sessions_new_url
+    assert_response :success
+  end
+
+  test "should get show" do
+    get sitting_sessions_show_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/static_pages_controller_test.rb">
+require "test_helper"
+
+class StaticPagesControllerTest < ActionDispatch::IntegrationTest
+  test "should get top" do
+    get static_pages_top_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/fixtures/files/.keep">
+
+</file>
+
+<file path="test/fixtures/exercises.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  category: 1
+  description: MyText
+  cloudinary_public_id: MyString
+
+two:
+  name: MyString
+  category: 1
+  description: MyText
+  cloudinary_public_id: MyString
+</file>
+
+<file path="test/fixtures/sitting_sessions.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
+
+two:
+  user: two
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
+</file>
+
+<file path="test/fixtures/suggested_actions.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sitting_settion: one
+  exercise: one
+
+two:
+  sitting_settion: two
+  exercise: two
+</file>
+
+<file path="test/fixtures/users.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the "{}" from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value
+</file>
+
+<file path="test/helpers/.keep">
+
+</file>
+
+<file path="test/integration/.keep">
+
+</file>
+
+<file path="test/mailers/.keep">
+
+</file>
+
+<file path="test/models/.keep">
+
+</file>
+
+<file path="test/models/exercise_test.rb">
+require "test_helper"
+
+class ExerciseTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/sitting_session_test.rb">
+require "test_helper"
+
+class SittingSessionTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/suggested_action_test.rb">
+require "test_helper"
+
+class SuggestedActionTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/user_test.rb">
+require "test_helper"
+
+class UserTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/test_helper.rb">
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
+require "rails/test_help"
+
+module ActiveSupport
+  class TestCase
+    # Run tests in parallel with specified workers
+    parallelize(workers: :number_of_processors)
+
+    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
+    fixtures :all
+
+    # Add more helper methods to be used by all tests here...
+  end
+end
+</file>
+
+<file path=".dockerignore">
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+# Ignore git directory.
+/.git/
+/.gitignore
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files.
+/.env*
+
+# Ignore all default key files.
+/config/master.key
+/config/credentials/*.key
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
+# Ignore assets.
+/node_modules/
+/app/assets/builds/*
+!/app/assets/builds/.keep
+/public/assets
+
+# Ignore CI service files.
+/.github
+
+# Ignore Kamal files.
+/config/deploy*.yml
+/.kamal
+
+# Ignore development files
+/.devcontainer
+
+# Ignore Docker-related files
+/.dockerignore
+/Dockerfile*
+</file>
+
+<file path=".gitattributes">
+# See https://git-scm.com/docs/gitattributes for more about git attribute files.
+
+# Mark the database schema as having been generated.
+db/schema.rb linguist-generated
+
+# Mark any vendored files as having been vendored.
+vendor/* linguist-vendored
+config/credentials/*.yml.enc diff=rails_credentials
+config/credentials.yml.enc diff=rails_credentials
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files for more about ignoring files.
+#
+# Temporary files generated by your text editor or operating system
+# belong in git's global ignore instead:
+# `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files.
+/.env*
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+/public/assets
+
+# Ignore key files for decrypting credentials and more.
+/config/*.key
+
+
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+/node_modules
+</file>
+
+<file path=".node-version">
+20.20.0
+</file>
+
+<file path=".rubocop.yml">
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+# Overwrite or add rules to create your own house style
+#
+# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
+# Layout/SpaceInsideArrayLiteralBrackets:
+#   Enabled: false
+</file>
+
+<file path=".ruby-version">
+ruby-4.0.1
+</file>
+
+<file path="compose.yml">
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      TZ: Asia/Tokyo
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgresql_data:/var/lib/postgresql
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d myapp_development -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bash -c "bundle install && bundle exec rails db:prepare && rm -f tmp/pids/server.pid && ./bin/dev"
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/myapp
+      - bundle_data:/usr/local/bundle:cached
+      - node_modules:/myapp/node_modules
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  bundle_data:
+  postgresql_data:
+  node_modules:
+</file>
+
+<file path="config.ru">
+# This file is used by Rack-based servers to start the application.
+
+require_relative "config/environment"
+
+run Rails.application
+Rails.application.load_server
+</file>
+
+<file path="Dockerfile">
+# syntax=docker/dockerfile:1
+# check=error=true
+
+# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# docker build -t myapp .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name myapp myapp
+
+# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
+ARG RUBY_VERSION=4.0.1
+FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+
+# Rails app lives here
+WORKDIR /rails
+
+# Install base packages
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Set production environment variables and enable jemalloc for reduced memory usage and latency.
+ENV RAILS_ENV="production" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development" \
+    LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+
+# Throw-away build stage to reduce size of final image
+FROM base AS build
+
+# Install packages needed to build gems and node modules
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev node-gyp pkg-config python-is-python3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install JavaScript dependencies
+ARG NODE_VERSION=20.20.0
+ARG YARN_VERSION=1.22.22
+ENV PATH=/usr/local/node/bin:$PATH
+RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
+    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
+    npm install -g yarn@$YARN_VERSION && \
+    rm -rf /tmp/node-build-master
+
+# Install application gems
+COPY vendor/* ./vendor/
+COPY Gemfile Gemfile.lock ./
+
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
+    bundle exec bootsnap precompile -j 1 --gemfile
+
+# Install node modules
+COPY package.json yarn.lock ./
+RUN yarn install --immutable
+
+# Copy application code
+COPY . .
+
+# Precompile bootsnap code for faster boot times.
+# -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
+RUN bundle exec bootsnap precompile -j 1 app/ lib/
+
+# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+
+
+RUN rm -rf node_modules
+
+
+# Final stage for app image
+FROM base
+
+# Run and own only the runtime files as a non-root user for security
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
+USER 1000:1000
+
+# Copy built artifacts: gems, application
+COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+COPY --chown=rails:rails --from=build /rails /rails
+
+# Entrypoint prepares the database.
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+# Start server via Thruster by default, this can be overwritten at runtime
+EXPOSE 80
+CMD ["./bin/thrust", "./bin/rails", "server"]
+</file>
+
+<file path="Dockerfile.dev">
+FROM ruby:4.0.1  
+ENV LANG C.UTF-8
+ENV TZ Asia/Tokyo
+
+# apt-keyを使わない方法でYarnのリポジトリを追加
+RUN apt-get update -qq \
+&& apt-get install -y ca-certificates curl gnupg \
+&& mkdir -p /etc/apt/keyrings \
+&& curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+&& NODE_MAJOR=20 \
+&& echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+&& curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /etc/apt/keyrings/yarn.gpg \
+&& echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs yarn vim
+RUN mkdir /myapp
+WORKDIR /myapp
+RUN gem install bundler
+COPY . /myapp
+</file>
+
+<file path="package.json">
+{
+  "name": "app",
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.27.2"
+  },
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
+    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.23",
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  }
+}
+</file>
+
+<file path="Procfile.dev">
+web: env RUBY_DEBUG_OPEN=true bin/rails server -b 0.0.0.0 -p 3000
+js: yarn build --watch
+css: yarn build:css --watch
+</file>
+
+<file path="Rakefile">
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
+
+require_relative "config/application"
+
+Rails.application.load_tasks
+</file>
+
+<file path="README.md">
+# 卒業制作
+
+「iStanding(仮称)」
+
+## サービス概要
+
+デスクワーカーの「座りすぎ」を防ぐタイマーアプリ。
+
+医学的根拠に基づいた通知タイミングと効果的な行動提案で健康習慣をサポート。
+
+通知機能や座位時間の可視化により、健康的な習慣を無理なく継続できます。
+
+## このサービスへの思い・作りたい理由
+
+理学療法士として整形外科で働く中で、腰痛や首の痛みを訴える患者様から「デスクワークで一日中座っています」という言葉を何度も耳にしてきました。日本は座位時間が世界トップレベルで、WHO や厚生労働省も座りすぎによる肥満、心筋梗塞、脳梗塞、ヘルニア、高血圧、糖尿病などのリスクを警告しています。
+
+0 次医療(予防医療)の推進が叫ばれる今、最も必要なのは「わかっているけどできない」を「自然とできる」に変えることです。多くの方が座りすぎの害を知りながらも、「めんどくさい」「まだ大丈夫」「忘れてしまう」「何をしたらいいかわからない」という理由で行動に移せていません。
+
+このアプリは、理学療法士としての専門知識を活かし、デスクワーカーが無理なく座りすぎを防ぎ、健康的な習慣を継続できるようサポートします。
+
+**参考文献**：
+
+- [Sitting Time and All-Cause Mortality Risk in 222,497 Australian Adults](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810)
+- [Sedentary time and its association with risk for disease incidence, mortality, and hospitalization in adults](https://pubmed.ncbi.nlm.nih.gov/21767731/)
+
+## ユーザー層について
+
+**メインターゲット**：デスクワークが多い 20〜40 代の会社員・フリーランス
+
+この層を対象にした理由：
+
+1 日 8 時間以上座って仕事をする人が多く、座りすぎによる健康リスクが高い
+仕事に集中すると立ち上がることを忘れがちで、客観的なアラートが必要
+SNS を日常的に使用しており、達成実績のシェアによるモチベーション維持が期待できる
+スマートフォンや PC を常時使用しているため、アプリの導入・利用ハードルが低い
+健康意識が高まる年代で、予防的な健康管理に関心がある
+
+## サービスの利用イメージ
+
+1. **作業中のサポート**：設定した間隔（例：60 分）で座りすぎアラートが通知される
+2. **休憩時間の内容提案**：休憩アクションを提案（ストレッチ、歩く、立ち作業など）
+3. **1 日の振り返り**：座位時間の推移や休憩回数をグラフで確認
+4. **リマインドによる継続性**：自発的でなく受動的にアプリの利用を促す
+5. **健康コラムによる啓発**：医学的な情報をエビデンスに基づき掲載
+
+**得られる価値**：
+
+- 座りすぎによる健康リスクの軽減（肩こり、腰痛、生活習慣病予防）
+- データの可視化による行動変容の実感、健康意識の向上
+
+## ユーザーの獲得について
+
+- **SNS 拡散**
+
+X(旧 Twitter)での達成実績シェア機能を実装
+「#座りすぎ防止」「#デスクワーク改善」などのハッシュタグで拡散
+シェアされた投稿から新規ユーザーが流入する仕組み
+
+- **健康系コミュニティへのアプローチ**
+
+産業医、産業理学療法など、企業の健康増進に携わるコミュニティへのアプローチ
+
+その後、企業内の社員への普及というレバレッジが期待できる可能性
+
+- **エンジニアコミュニティ（Qiita、Zenn など）での紹介**
+
+デスクワーカーのコミュニティでの展開
+
+- **コンテンツマーケティング**
+
+座りすぎのリスクや改善方法に関する記事を SEO 対策を用いて Web サイトで発信
+
+YMYL, E-E-A-T への留意が必要になる
+実際の利用者の事例なども紹介
+
+## サービスの差別化ポイント・推しポイント
+
+### **類似サービスとの差別化**
+
+**既存のストレッチアプリとの違い**：
+
+- 「ストレッチの継続」ではなく「座位時間の削減」にフォーカス
+- 休憩の種類を強制せず、歩く・立ち作業など柔軟な休憩方法を記録可能
+- 座位時間の可視化により、行動変容を客観的に確認できる
+
+**ポモドーロアプリとの違い**：
+
+- 単なるポモドーロではなく、休憩時間にすべきことを提案、誘導
+- デイリーチャレンジ、ダメージ可視化によるゲーミフィケーション要素
+- SNS シェア機能による社会的なモチベーション維持
+
+### **推しポイント**
+
+1. **行動変容の可視化**：座位時間の推移グラフで改善を実感できる
+2. **柔軟な休憩スタイル**：ストレッチに限定せず、自分に合った休憩方法を選択可能
+3. **小さな成功体験の積み重ね**：毎日のチャレンジ達成で継続しやすい設計
+
+## 機能候補
+
+### **MVP リリース時（最小限の機能）**
+
+1. **ユーザー登録・ログイン機能（devise）**
+
+2. **座位時間アラート機能（Solid Queue + service worker）**
+
+- アラート間隔の調整（30 分、60 分、90 分など）
+
+3. **推奨行動モーダル**
+
+- 任意の設定時間になると休憩アクションを選択（タイプ選択：ストレッチ、歩く、立ち作業など）
+
+4. **基本的なダッシュボード（一日の総座位時間、休憩回数）**
+
+- 総座位時間の表示（寿命に影響を与えると言われている 11 時間を上限とし警告を促す）
+- 連続実施日時を表示
+
+5. **休憩時間の行動リスト（seed）**
+
+- 後に CRUD 実装し、admin 画面で追加編集予定
+
+6. **SNS 共有機能**
+
+- 静的 OGP にて共有
+
+### **本リリースまでに追加したい機能**
+
+1. **admin 用 CRUD の実装（休憩時間の要素の追加、編集）**
+2. **データ可視化**
+
+- 座位時間の推移グラフ（chartkick + chart.js）
+- 最長座位時間の記録と改善推移
+
+3. **ゲーミフィケーション要素**
+
+- 連続座位時間によりキャラクターなどの状態が変化、運動や起立で回復（自身の健康状態に対するメタファー）
+- 実績・バッジシステム（3 日連続、7 日連続、累計 100 回休憩など）
+- 連続達成日数（ストリーク）の表示
+
+4. **動的 OGP へのバージョンアップ**
+
+- 達成結果に応じて SNS 共有用の OGP 画像を生成
+
+5. **休憩時に行うアクション一覧**
+
+- 運動、ストレッチなどにカテゴリ分けされた行動一覧を閲覧可能
+
+## 使用する技術スタック
+
+### **バックエンド**
+
+- **Ruby on Rails 8.x Ruby 4.0.x(最新の安定版)**
+  - フルスタックフレームワークとして採用
+  - Solid Queue によるキューイングシステムを利用するため
+  - Rails8 の新機能を活用し、インフラをシンプルに保つ
+
+### **フロントエンド**
+
+- **Hotwire（Turbo + Stimulus）**
+  - リアルタイム更新（座位時間の自動更新、アラート表示）
+  - SPA 的な UX をシンプルに実装
+- **Tailwind CSS**
+  - レスポンシブデザインの実装
+  - 理由：高速な開発とモダンな UI の実現
+
+### **データベース**
+
+- **PostgreSQL**
+  - 理由：Render での標準的な DB のため
+
+### **認証**
+
+- **Devise**
+  - スピーディーに認証機能の実装
+  - 理由：すでにアプリ作成にて学習済み、ドキュメントが豊富
+
+### **インフラ・デプロイ**
+
+- **Render**
+  - 理由：無料枠でのデプロイが可能、Heroku より設定がシンプル
+
+- **Neon or Cloudinaly**
+  - 理由：推奨行動の説明画像をアップロード
+
+### **通知機能**
+
+- **Web Push Notification API**
+  - ブラウザプッシュ通知の実装
+  - ライブラリ：`web-push` gem
+- Solid Queue
+  - Redis+Sidekiq の代わりに Rails8 のデフォルト機能を採用
+- LINE Messaging API（検討中）
+  - LINE による通知も選択可能に
+
+### **グラフ・データ可視化**
+
+- **Chartkick + Chart.js**
+  - 座位時間の推移グラフ
+  - 休憩タイプ別の集計グラフ
+
+### **SNS シェア機能**
+
+- **OGP 画像の動的生成**
+  - ImageMagick / MiniMagick
+  - 達成実績をカード形式の画像として生成
+- **SNS 連携**
+  - Twitter/X API（投稿機能）
+
+### **テスト**
+
+- **RSpec**
+  - 単体テスト、統合テスト
+- **Capybara + Selenium**
+  - E2E テスト（ブラウザ通知のテストを含む）
+
+## **画面遷移図**
+
+[画面遷移図(Figma)](https://www.figma.com/design/w2Ja1NYp5x0rgziS95OJfP/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C-iStainding--MVP-?m=auto&t=nFjaib5eNBv7qT7t-6)
+
+## **ER 図**
+
+[![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
+</file>
+
+<file path="app/assets/stylesheets/application.tailwind.css">
+@import "tailwindcss";
+
+@theme {
+  /* メイン（ペールグリーン） */
+  --color-primary: #AFC3B1;
+  --color-primary-hover: #9FB6A4;
+
+  /* 背景 */
+  --color-background-light: #F6F3EE;
+  --color-background-dark: #E3ECE6;
+
+  /* テキスト */
+  --color-text-main: #3E4A44;
+  --color-text-secondary: #6B756F;
+
+  /* UI補助 */
+  --color-border-light: #D6DED8;
+  --color-input-bg-light: #FFFFFF;
+}
+</file>
+
+<file path="app/javascript/controllers/index.js">
+// This file is auto-generated by ./bin/rails stimulus:manifest:update
+// Run that command whenever you add a new controller or create them with
+// ./bin/rails generate stimulus controllerName
+
+import { application } from "./application"
+
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
+
+import TimerController from "./timer_controller"
+application.register("timer", TimerController)
+</file>
+
+<file path="app/javascript/controllers/timer_controller.js">
+import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
+
+// Connects to data-controller="timer"
+export default class extends Controller {
+    static targets = ["display"]
+    connect() {
+        this.remainingTime = 0
+        this.timer = null
+    }
+
+    start(event) {
+        //既存のタイマーを止める
+        this.stop()
+
+        const minutes = event.params.minutes
+        //秒数に変換
+        //テスト用に5秒後でminutes * 60置き換え
+        this.selectedSeconds = 5
+        this.remainingTime = this.selectedSeconds
+        this.startTime = new Date()
+
+        this.updateDisplay()
+
+        //1秒ごとにカウントダウン
+        this.timer = setInterval(() => {
+            this.remainingTime -= 1
+            this.updateDisplay()
+
+            if (this.remainingTime <= 0) {
+                //fetch,モーダル表示
+                this.finish()
+
+                this.remainingTime = this.selectedSeconds
+            } 
+
+        }, 1000)
+    }
+
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer)
+            this.timer = null
+        }
+    }
+    
+    updateDisplay() {
+        const m = Math.floor(this.remainingTime / 60)
+        const s = this.remainingTime % 60
+        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    }
+    
+    //運動の選択orスキップ後の処理
+    async finish() {
+        const endTime = new Date()
+        const duration = Math.floor((endTime - this.startTime) / 1000)
+
+        const recordedStartTime = this.startTime
+        this.startTime = new Date()
+
+        //RailsのAPIにデータを飛ばす
+        const response = await fetch("/sitting_sessions", {
+            method: "POST",
+            headers: {
+                "Accept": "text/vnd.turbo-stream.html",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                sitting_session: {
+                    duration: duration,
+                    start_at: recordedStartTime
+                }
+            })
+        })
+
+        if (response.ok) {
+            const streamMessage = await response.text()
+            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
+        }
+    }
+
+    //詳細画面に遷移した時にタイマーを止める
+    stopAndNavigate() {
+        this.stop()
+    }
+}
+</file>
+
+<file path="app/models/exercise.rb">
+class Exercise < ApplicationRecord
+  has_many :suggested_actions, dependent: :destroy
+  has_many :sitting_sessions, through: :suggested_actions
+
+  enum :category, { stretch: 0, training: 1, walk: 2 }
+
+  validates :name, presence: true
+  validates :category, presence: true
+end
+</file>
+
+<file path="app/models/sitting_session.rb">
+class SittingSession < ApplicationRecord
+  belongs_to :user
+
+  has_many :suggested_actions, dependent: :destroy
+  # 中間テーブルを介してexerciseへ
+  has_many :exercises, through: :suggested_actions
+
+  #タイマーの選択可能時間
+  SETTING_DURATIONS = [30, 60, 90].freeze
+end
+</file>
+
+<file path="app/views/devise/registrations/new.html.erb">
+<div class="flex min-h-screen items-center justify-center bg-background-light px-4 py-10">
+  <div class="w-full max-w-[480px] bg-white rounded-2xl shadow-xl border border-border-light overflow-hidden z-10">
+
+    <!-- Header -->
+    <div class="px-8 pt-10 pb-4 text-center">
+      <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
+        <span class="material-symbols-outlined md-20">person_add</span>
+      </div>
+
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">
+        アカウント作成
+      </h1>
+
+    </div>
+     <% if notice %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= notice %>
+      </div>
+    <% end %>
+    
+    <% if alert %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= alert %>
+      </div>
+    <% end %>
+   
+    <%# <%= render 'shared/error_messages', object: resource %>
+     
+    <div class="p-8 pt-4">
+
+      <% input_class = "form-input w-full rounded-lg border border-border-light
+                        bg-input-bg-light h-12 px-4 text-base
+                        focus:border-primary focus:ring-primary" %>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+                   html: { class: "flex flex-col gap-5" }) do |f| %>
+
+       
+        <!-- username -->
+        <div>
+          <label class="text-sm font-bold">ユーザー名</label>
+          <%= f.text_field :username,
+                autofocus: true,
+                autocomplete: "username",
+                placeholder: "例：立ち上がり太郎",
+                class: input_class %>
+        </div>
+
+        <!-- email -->
+        <div>
+          <label class="text-sm font-bold">メールアドレス</label>
+          <%= f.email_field :email,
+                autocomplete: "email",
+                placeholder: "your@email.com",
+                class: input_class %>
+        </div>
+
+        <!-- password -->
+        <div>
+          <label class="text-sm font-bold">
+            パスワード
+            <% if @minimum_password_length %>
+              <span class="text-xs text-text-secondary">
+                （<%= @minimum_password_length %>文字以上）
+              </span>
+            <% end %>
+          </label>
+
+          <%= f.password_field :password,
+                autocomplete: "new-password",
+                placeholder: "6文字以上で入力してください",
+                class: input_class %>
+        </div>
+
+        <!-- password confirmation -->
+        <div>
+          <label class="text-sm font-bold">パスワード（確認）</label>
+          <%= f.password_field :password_confirmation,
+                autocomplete: "new-password",
+                placeholder: "もう一度入力してください",
+                class: input_class %>
+        </div>
+        
+
+        <!-- submit -->
+        <%= f.submit "アカウントを作成",
+              class: "mt-4 w-full h-12 rounded-lg bg-primary
+                      hover:bg-primary-hover text-white font-bold
+                      transition shadow-md" %>
+
+        <!-- links -->
+        <div class="text-center text-sm mt-2">
+          <%= render "devise/shared/links" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="app/views/devise/sessions/new.html.erb">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-orange-50 to-amber-50">
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+    <!-- Header -->
+    <div class="px-8 pt-8 pb-4">
+      <h2 class="text-3xl font-bold text-[#1b140d] text-center">ログイン</h2>
+      <p class="mt-2 text-center text-sm text-[#9a734c]">
+        アカウントにログインしてください
+      </p>
+    </div>
+  <% if notice %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= notice %>
+      </div>
+      <% end %>
+    
+      <% if alert %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= alert %>
+      </div>
+      <% end %>
+      <%# <%= render 'shared/error_messages', object: resource %> 
+    <!-- Form Content -->
+    <div class="px-8 pb-8 pt-2">
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "flex flex-col gap-5" }) do |f| %>
+      
+        
+        <!-- Email Field -->
+        <label class="flex flex-col gap-1.5 w-full">
+          <span class="text-[#1b140d] text-base font-medium leading-normal">
+            <%= f.label :email, "メールアドレス" %>
+          </span>
+          <div class="relative">
+            <%= f.email_field :email, 
+              autofocus: true, 
+              autocomplete: "email",
+              placeholder: "user@example.com",
+              class: "form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1b140d] focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e7dbcf] bg-[#fcfaf8] focus:border-primary h-12 placeholder:text-[#9a734c] px-4 text-base font-normal leading-normal transition-all" 
+            %>
+          </div>
+        </label>
+
+        <!-- Password Field -->
+        <label class="flex flex-col gap-1.5 w-full">
+          <div class="flex justify-between items-center">
+            <span class="text-[#1b140d] text-base font-medium leading-normal">
+              <%= f.label :password, "パスワード" %>
+            </span>
+            <% if devise_mapping.recoverable? %>
+              <%= link_to "パスワードをお忘れですか？", 
+                new_password_path(resource_name), 
+                class: "text-sm font-medium text-primary hover:text-[#d67b20] transition-colors" 
+              %>
+            <% end %>
+          </div>
+          <div class="relative">
+            <%= f.password_field :password, 
+              autocomplete: "current-password",
+              placeholder: "••••••••",
+              class: "form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1b140d] focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e7dbcf] bg-[#fcfaf8] focus:border-primary h-12 placeholder:text-[#9a734c] px-4 text-base font-normal leading-normal transition-all" 
+            %>
+          </div>
+        </label>
+
+        <!-- Remember Me -->
+        <% if devise_mapping.rememberable? %>
+          <label class="flex items-center gap-2">
+            <%= f.check_box :remember_me, class: "rounded border-[#e7dbcf] text-primary focus:ring-primary" %>
+            <span class="text-[#1b140d] text-sm">ログイン状態を保持する</span>
+          </label>
+        <% end %>
+
+        <!-- Submit Button -->
+        <%= f.submit "ログインする", 
+          class: "flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary hover:bg-[#d67b20] transition-colors text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm" 
+        %>
+      <% end %>
+
+      <!-- Links -->
+      <div class="mt-6 text-center space-y-2">
+        <%= render "devise/shared/links" %>
+      </div>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="app/views/shared/_modal.html.erb">
+<%# app/views/shared/_modal.html.erb %>
+<div class="fixed inset-0 bg-background-dark/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-input-bg-light border border-border-light shadow-xl rounded-3xl max-w-md w-full p-6 animate-[fadeIn_.2s_ease-out]">
+        <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-text-main">お疲れ様でした！</h3>
+            <p class="text-sm text-text-secondary mt-1">次のセッションが始まる前に、少し体を動かしましょう</p>
+        </div>
+
+        <div class="space-y-4">
+            <% @exercises.each do |exercise| %>
+                <%# Stimulusのアクションを紐付け、タイマーを止めてから遷移させる %>
+                <%= link_to exercise_path(exercise), 
+                    class: "group flex items-center gap-4 p-4 rounded-2xl border border-border-light hover:border-primary hover:bg-orange-50 transition active:scale-[0.98]",
+                    data: { action: "click->timer#stopAndNavigate" } do %>
+                    
+                    <div class="flex-shrink-0 w-16 h-16">
+                        <% if exercise.cloudinary_public_id.present? %>
+                            <%= cl_image_tag(exercise.cloudinary_public_id, 
+                                class: "w-full h-full object-cover rounded-xl shadow-sm") %>
+                        <% else %>
+                            <div class="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">No Image</div>
+                        <% end %>
+                    </div>
+
+                    <div class="flex-grow text-left">
+                        <div class="font-bold text-text-main group-hover:text-primary transition"><%= exercise.name %></div>
+                        <p class="text-xs text-text-secondary line-clamp-1"><%= exercise.description %></p>
+                    </div>
+
+                    <div class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                <% end %>
+            <% end %>
+        </div>
+
+        <%# 何もしないでタイマーを続けたい場合の閉じるボタン %>
+        <button
+            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium"
+            onClick="this.closest('#modal_container').innerHTML=''">
+            今は何もしない（計測を続ける）
+        </button>
+    </div>
+</div>
+</file>
+
+<file path="config/initializers/cloudinay.rb">
+Cloudinary.config do |config|
+  config.cloud_name = Rails.application.credentials.dig(:cloudinary, :cloud_name)
+  config.api_key    = Rails.application.credentials.dig(:cloudinary, :api_key)
+  config.api_secret = Rails.application.credentials.dig(:cloudinary, :api_secret)
+  config.secure     = true
+end
+</file>
+
+<file path="config/initializers/devise.rb">
+# frozen_string_literal: true
+
+# Assuming you have not yet modified this file, each configuration option below
+# is set to its default value. Note that some are commented out while others
+# are not: uncommented lines are intended to protect your configuration from
+# breaking changes in upgrades (i.e., in the event that future versions of
+# Devise change the default values for those options).
+#
+# Use this hook to configure devise mailer, warden hooks and so forth.
+# Many of these configuration options can be set straight in your model.
+Devise.setup do |config|
+  # The secret key used by Devise. Devise uses this key to generate
+  # random tokens. Changing this key will render invalid all existing
+  # confirmation, reset password and unlock tokens in the database.
+  # Devise will use the `secret_key_base` as its `secret_key`
+  # by default. You can change it below and use your own secret key.
+  # config.secret_key = '1757685b874fdb6ad0eb99096d6364d8ef358bcb2959619f00c9913aef1d911ceec8e8b1c2cb46c3ff2acaa17e6641deeaf84c7d3e9bce17dadb74a8bd8316bc'
+
+  # ==> Controller configuration
+  # Configure the parent class to the devise controllers.
+  # config.parent_controller = 'DeviseController'
+
+  # ==> Mailer Configuration
+  # Configure the e-mail address which will be shown in Devise::Mailer,
+  # note that it will be overwritten if you use your own mailer class
+  # with default "from" parameter.
+  config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+
+  # Configure the class responsible to send e-mails.
+  # config.mailer = 'Devise::Mailer'
+
+  # Configure the parent class responsible to send e-mails.
+  # config.parent_mailer = 'ActionMailer::Base'
+
+  # ==> ORM configuration
+  # Load and configure the ORM. Supports :active_record (default) and
+  # :mongoid (bson_ext recommended) by default. Other ORMs may be
+  # available as additional gems.
+  require "devise/orm/active_record"
+
+  # ==> Configuration for any authentication mechanism
+  # Configure which keys are used when authenticating a user. The default is
+  # just :email. You can configure it to use [:username, :subdomain], so for
+  # authenticating a user, both parameters are required. Remember that those
+  # parameters are used only when authenticating and not when retrieving from
+  # session. If you need permissions, you should implement that in a before filter.
+  # You can also supply a hash where the value is a boolean determining whether
+  # or not authentication should be aborted when the value is not present.
+  # config.authentication_keys = [:email]
+
+  # Configure parameters from the request object used for authentication. Each entry
+  # given should be a request method and it will automatically be passed to the
+  # find_for_authentication method and considered in your model lookup. For instance,
+  # if you set :request_keys to [:subdomain], :subdomain will be used on authentication.
+  # The same considerations mentioned for authentication_keys also apply to request_keys.
+  # config.request_keys = []
+
+  # Configure which authentication keys should be case-insensitive.
+  # These keys will be downcased upon creating or modifying a user and when used
+  # to authenticate or find a user. Default is :email.
+  config.case_insensitive_keys = [ :email ]
+
+  # Configure which authentication keys should have whitespace stripped.
+  # These keys will have whitespace before and after removed upon creating or
+  # modifying a user and when used to authenticate or find a user. Default is :email.
+  config.strip_whitespace_keys = [ :email ]
+
+  # Tell if authentication through request.params is enabled. True by default.
+  # It can be set to an array that will enable params authentication only for the
+  # given strategies, for example, `config.params_authenticatable = [:database]` will
+  # enable it only for database (email + password) authentication.
+  # config.params_authenticatable = true
+
+  # Tell if authentication through HTTP Auth is enabled. False by default.
+  # It can be set to an array that will enable http authentication only for the
+  # given strategies, for example, `config.http_authenticatable = [:database]` will
+  # enable it only for database authentication.
+  # For API-only applications to support authentication "out-of-the-box", you will likely want to
+  # enable this with :database unless you are using a custom strategy.
+  # The supported strategies are:
+  # :database      = Support basic authentication with authentication key + password
+  # config.http_authenticatable = false
+
+  # If 401 status code should be returned for AJAX requests. True by default.
+  # config.http_authenticatable_on_xhr = true
+
+  # The realm used in Http Basic Authentication. 'Application' by default.
+  # config.http_authentication_realm = 'Application'
+
+  # It will change confirmation, password recovery and other workflows
+  # to behave the same regardless if the e-mail provided was right or wrong.
+  # Does not affect registerable.
+  # config.paranoid = true
+
+  # By default Devise will store the user in session. You can skip storage for
+  # particular strategies by setting this option.
+  # Notice that if you are skipping storage for all authentication paths, you
+  # may want to disable generating routes to Devise's sessions controller by
+  # passing skip: :sessions to `devise_for` in your config/routes.rb
+  config.skip_session_storage = [ :http_auth ]
+
+  # By default, Devise cleans up the CSRF token on authentication to
+  # avoid CSRF token fixation attacks. This means that, when using AJAX
+  # requests for sign in and sign up, you need to get a new CSRF token
+  # from the server. You can disable this option at your own risk.
+  # config.clean_up_csrf_token_on_authentication = true
+
+  # When false, Devise will not attempt to reload routes on eager load.
+  # This can reduce the time taken to boot the app but if your application
+  # requires the Devise mappings to be loaded during boot time the application
+  # won't boot properly.
+  # config.reload_routes = true
+
+  # ==> Configuration for :database_authenticatable
+  # For bcrypt, this is the cost for hashing the password and defaults to 12. If
+  # using other algorithms, it sets how many times you want the password to be hashed.
+  # The number of stretches used for generating the hashed password are stored
+  # with the hashed password. This allows you to change the stretches without
+  # invalidating existing passwords.
+  #
+  # Limiting the stretches to just one in testing will increase the performance of
+  # your test suite dramatically. However, it is STRONGLY RECOMMENDED to not use
+  # a value less than 10 in other environments. Note that, for bcrypt (the default
+  # algorithm), the cost increases exponentially with the number of stretches (e.g.
+  # a value of 20 is already extremely slow: approx. 60 seconds for 1 calculation).
+  config.stretches = Rails.env.test? ? 1 : 12
+
+  # Set up a pepper to generate the hashed password.
+  # config.pepper = '14be7d0b3c033761c398e19df6884e400a0ac72e9cb4d8ac5665e9e00f64101d243cd75aea4f02aaf17d15071b0cbe0ffa86f04de879bc2a90039c4719512953'
+
+  # Send a notification to the original email when the user's email is changed.
+  # config.send_email_changed_notification = false
+
+  # Send a notification email when the user's password is changed.
+  # config.send_password_change_notification = false
+
+  # ==> Configuration for :confirmable
+  # A period that the user is allowed to access the website even without
+  # confirming their account. For instance, if set to 2.days, the user will be
+  # able to access the website for two days without confirming their account,
+  # access will be blocked just in the third day.
+  # You can also set it to nil, which will allow the user to access the website
+  # without confirming their account.
+  # Default is 0.days, meaning the user cannot access the website without
+  # confirming their account.
+  # config.allow_unconfirmed_access_for = 2.days
+
+  # A period that the user is allowed to confirm their account before their
+  # token becomes invalid. For example, if set to 3.days, the user can confirm
+  # their account within 3 days after the mail was sent, but on the fourth day
+  # their account can't be confirmed with the token any more.
+  # Default is nil, meaning there is no restriction on how long a user can take
+  # before confirming their account.
+  # config.confirm_within = 3.days
+
+  # If true, requires any email changes to be confirmed (exactly the same way as
+  # initial account confirmation) to be applied. Requires additional unconfirmed_email
+  # db field (see migrations). Until confirmed, new email is stored in
+  # unconfirmed_email column, and copied to email column on successful confirmation.
+  # Also, when used in conjunction with `send_email_changed_notification`,
+  # the notification is sent to the original email when the change is requested,
+  # not when the unconfirmed email is confirmed.
+  config.reconfirmable = true
+
+  # Defines which key will be used when confirming an account
+  # config.confirmation_keys = [:email]
+
+  # ==> Configuration for :rememberable
+  # The time the user will be remembered without asking for credentials again.
+  # config.remember_for = 2.weeks
+
+  # Invalidates all the remember me tokens when the user signs out.
+  config.expire_all_remember_me_on_sign_out = true
+
+  # If true, extends the user's remember period when remembered via cookie.
+  # config.extend_remember_period = false
+
+  # Options to be passed to the created cookie. For instance, you can set
+  # secure: true in order to force SSL only cookies.
+  # config.rememberable_options = {}
+
+  # ==> Configuration for :validatable
+  # Range for password length.
+  config.password_length = 6..128
+
+  # Email regex used to validate email formats. It simply asserts that
+  # one (and only one) @ exists in the given string. This is mainly
+  # to give user feedback and not to assert the e-mail validity.
+  config.email_regexp = /\A[^@\s]+@[^@\s]+\z/
+
+  # ==> Configuration for :timeoutable
+  # The time you want to timeout the user session without activity. After this
+  # time the user will be asked for credentials again. Default is 30 minutes.
+  # config.timeout_in = 30.minutes
+
+  # ==> Configuration for :lockable
+  # Defines which strategy will be used to lock an account.
+  # :failed_attempts = Locks an account after a number of failed attempts to sign in.
+  # :none            = No lock strategy. You should handle locking by yourself.
+  # config.lock_strategy = :failed_attempts
+
+  # Defines which key will be used when locking and unlocking an account
+  # config.unlock_keys = [:email]
+
+  # Defines which strategy will be used to unlock an account.
+  # :email = Sends an unlock link to the user email
+  # :time  = Re-enables login after a certain amount of time (see :unlock_in below)
+  # :both  = Enables both strategies
+  # :none  = No unlock strategy. You should handle unlocking by yourself.
+  # config.unlock_strategy = :both
+
+  # Number of authentication tries before locking an account if lock_strategy
+  # is failed attempts.
+  # config.maximum_attempts = 20
+
+  # Time interval to unlock the account if :time is enabled as unlock_strategy.
+  # config.unlock_in = 1.hour
+
+  # Warn on the last attempt before the account is locked.
+  # config.last_attempt_warning = true
+
+  # ==> Configuration for :recoverable
+  #
+  # Defines which key will be used when recovering the password for an account
+  # config.reset_password_keys = [:email]
+
+  # Time interval you can reset your password with a reset password key.
+  # Don't put a too small interval or your users won't have the time to
+  # change their passwords.
+  config.reset_password_within = 6.hours
+
+  # When set to false, does not sign a user in automatically after their password is
+  # reset. Defaults to true, so a user is signed in automatically after a reset.
+  # config.sign_in_after_reset_password = true
+
+  # ==> Configuration for :encryptable
+  # Allow you to use another hashing or encryption algorithm besides bcrypt (default).
+  # You can use :sha1, :sha512 or algorithms from others authentication tools as
+  # :clearance_sha1, :authlogic_sha512 (then you should set stretches above to 20
+  # for default behavior) and :restful_authentication_sha1 (then you should set
+  # stretches to 10, and copy REST_AUTH_SITE_KEY to pepper).
+  #
+  # Require the `devise-encryptable` gem when using anything other than bcrypt
+  # config.encryptor = :sha512
+
+  # ==> Scopes configuration
+  # Turn scoped views on. Before rendering "sessions/new", it will first check for
+  # "users/sessions/new". It's turned off by default because it's slower if you
+  # are using only default views.
+  # config.scoped_views = false
+
+  # Configure the default scope given to Warden. By default it's the first
+  # devise role declared in your routes (usually :user).
+  # config.default_scope = :user
+
+  # Set this configuration to false if you want /users/sign_out to sign out
+  # only the current scope. By default, Devise signs out all scopes.
+  # config.sign_out_all_scopes = true
+
+  # ==> Navigation configuration
+  # Lists the formats that should be treated as navigational. Formats like
+  # :html should redirect to the sign in page when the user does not have
+  # access, but formats like :xml or :json, should return 401.
+  #
+  # If you have any extra navigational formats, like :iphone or :mobile, you
+  # should add them to the navigational formats lists.
+  #
+  # The "*/*" below is required to match Internet Explorer requests.
+  # config.navigational_formats = ['*/*', :html, :turbo_stream]
+
+  # The default HTTP method used to sign out a resource. Default is :delete.
+  config.sign_out_via = :delete
+
+  # ==> OmniAuth
+  # Add a new OmniAuth provider. Check the wiki for more information on setting
+  # up on your models and hooks.
+  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+
+  # ==> Warden configuration
+  # If you want to use other strategies, that are not supported by Devise, or
+  # change the failure app, you can configure them inside the config.warden block.
+  #
+  # config.warden do |warden_config|
+  #   warden_config.intercept_401 = false
+  #   warden_config.default_strategies(scope: :user).unshift :some_external_strategy
+  # end
+
+  # ==> Mountable engine configurations
+  # When using Devise inside an engine, let's call it `MyEngine`, and this engine
+  # is mountable, there are some extra configurations to be taken into account.
+  # The following options are available, assuming the engine is mounted as:
+  #
+  #     mount MyEngine, at: '/my_engine'
+  #
+  # The router that invoked `devise_for`, in the example above, would be:
+  # config.router_name = :my_engine
+  #
+  # When using OmniAuth, Devise cannot automatically set OmniAuth path,
+  # so you need to do it manually. For the users scope, it would be:
+  # config.omniauth_path_prefix = '/my_engine/users/auth'
+
+  # ==> Hotwire/Turbo configuration
+  # When using Devise with Hotwire/Turbo, the http status for error responses
+  # and some redirects must match the following. The default in Devise for existing
+  # apps is `200 OK` and `302 Found` respectively, but new apps are generated with
+  # these new defaults that match Hotwire/Turbo behavior.
+  # Note: These might become the new default in future versions of Devise.
+  config.responder.error_status = :unprocessable_content
+  config.responder.redirect_status = :see_other
+
+  # ==> Configuration for :registerable
+
+  # When set to false, does not sign a user in automatically after their password is
+  # changed. Defaults to true, so a user is signed in automatically after changing a password.
+  # config.sign_in_after_change_password = true
+end
+</file>
+
+<file path="db/migrate/20260201010209_devise_create_users.rb">
+# frozen_string_literal: true
+
+class DeviseCreateUsers < ActiveRecord::Migration[8.1]
+  def change
+    create_table :users do |t|
+      ## Database authenticatable
+      t.string :email,              null: false, default: ""
+      t.string :encrypted_password, null: false, default: ""
+
+      ## usernameの追加
+      t.string :username, null: false, default: ""
+
+      ## Recoverable
+      t.string   :reset_password_token
+      t.datetime :reset_password_sent_at
+
+      ## Rememberable
+      t.datetime :remember_created_at
+
+
+      ## Trackable
+      # t.integer  :sign_in_count, default: 0, null: false
+      # t.datetime :current_sign_in_at
+      # t.datetime :last_sign_in_at
+      # t.string   :current_sign_in_ip
+      # t.string   :last_sign_in_ip
+
+      ## Confirmable
+      # t.string   :confirmation_token
+      # t.datetime :confirmed_at
+      # t.datetime :confirmation_sent_at
+      # t.string   :unconfirmed_email # Only if using reconfirmable
+
+      ## Lockable
+      # t.integer  :failed_attempts, default: 0, null: false # Only if lock strategy is :failed_attempts
+      # t.string   :unlock_token # Only if unlock strategy is :email or :both
+      # t.datetime :locked_at
+
+
+      t.timestamps null: false
+    end
+
+    add_index :users, :email,                unique: true
+    add_index :users, :reset_password_token, unique: true
+    # add_index :users, :confirmation_token,   unique: true
+    # add_index :users, :unlock_token,         unique: true
+  end
+end
+</file>
+
+<file path="app/controllers/application_controller.rb">
+class ApplicationController < ActionController::Base
+  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
+  allow_browser versions: :modern
+
+  protected
+  # ログイン後のタイマー画面への遷移を共通化
+  def after_sign_in_path_for(resource)
+    new_sitting_session_path
+  end
+end
+</file>
+
+<file path="app/views/static_pages/top.html.erb">
+<div class="min-h-screen bg-background-light text-text-main">
+
+  <!-- main -->
+  <main class="max-w-5xl mx-auto px-6 text-center">
+
+    <!-- catch copy -->
+    <h1 class="text-xl md:text-2xl font-semibold leading-relaxed mt-12">
+      座りすぎは喫煙について身体に悪影響を及ぼすとされています<br>
+      定期的に立ちあがり健康的な生活を目指しましょう
+    </h1>
+
+    <!-- cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-14">
+
+      <!-- card -->
+      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
+        <div class="flex justify-center mb-4 text-primary">
+          <span class="material-symbols-outlined text-5xl">chair</span>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed">
+          座りすぎは脳梗塞やヘルニアなどの<br>
+          リスクを高める
+        </p>
+        <p class="text-sm text-text-secondary mt-4">
+          1時間座ると22分寿命が縮むと言われている
+        </p>
+      </div>
+
+      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
+        <div class="flex justify-center mb-4 text-primary">
+          <span class="material-symbols-outlined text-5xl">timer</span>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed">
+          タイマーを設定して定期的に立ち上がったり、
+          運動を行うようサポートするアプリです
+        </p>
+      </div>
+
+      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
+        <div class="flex justify-center mb-4 text-primary">
+          <span class="material-symbols-outlined text-5xl">notifications</span>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed">
+          時間になると通知がきて、
+          今するべき行動を理学療法士監修の元に提案します
+        </p>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-16">
+      <%= link_to "登録して始める",
+        new_user_registration_path,
+        class: "inline-block px-10 py-4 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition" %>
+
+      <div class="mt-4">
+        <%= button_to "ゲストユーザーとして始める",
+            guest_login_path,
+            method: :post,
+            class: "text-sm text-text-secondary underline hover:text-text-main transition" %>
+      </div>
+    </div>
+
+  </main>
+</div>
+</file>
+
+<file path="config/credentials.yml.enc">
+R0c+xloDF++oeI0jQGMDsQ6I20EYDLfu4GqOYADRBz24hPJxLH2FR8JSpC4+CzzNcnej+VotcJAGC4nPaz0+b03DQ1HTyScWJR7fJAlYy72Unxp/N1nMVdzR8KN+LD3G3VZE3Iyh8eZgvvEEIR+uPFfaYhKmoWsLC9K2yF6DJoMRUX379mfSihDBgiCHktWopsyuGWRCf7x6mNECTULMrcgyr56E+zLsKw3IKR3GUjj9dsIrkk8jFgt6D4HPRioBTLStnIdVcoJ6RB47lf+BpPBRMtF3NMzUynSe5kwsATrz/dThTVQBrFN355XeGjMfT8/0nh146bSpQF4FZlOdPgCSgZJR/ayzraBeBFZ8hcAB+I0GXWANeeL9IncXN/ZJkbc4mdaJD5MFI5qoLMGHA2a8YCgZ2BgN1ksmuqz7apkWEN5Vwiq6uQ+UE1KBM6vWH1PCO/FX9rKFA0TJMzf3/22uXW1nABFB7mbOkkSmxvcVoC9F6DDQtugU/VeNMOs0IQbkg7l0vFxeJIYkPvmNME32I5XtMvmm5d1aAxSJSPVcbIfWV57PMe1DZQIh4GLEwgYDOCRNBI3QH5tJ4MREySHd76754QzEwmujyWaC1jIiTSvqJd/BFvKmD8+BBhRZDH/09J8zsycSUmI=--YjBboch2dh0DVKLY--9pExmTvRG3nE3veOMI84Lg==
+</file>
+
+<file path="db/queue_schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "exercises", force: :cascade do |t|
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.string "endpoint"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.string "p256dh"
+    t.datetime "start_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "solid_queue_blocked_executions", force: :cascade do |t|
+    t.string "concurrency_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
+    t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
+    t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_claimed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.bigint "process_id"
+    t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
+    t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
+  end
+
+  create_table "solid_queue_failed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.bigint "job_id", null: false
+    t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_jobs", force: :cascade do |t|
+    t.string "active_job_id"
+    t.text "arguments"
+    t.string "class_name", null: false
+    t.string "concurrency_key"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at"
+    t.datetime "updated_at", null: false
+    t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
+    t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
+    t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
+    t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
+    t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
+  end
+
+  create_table "solid_queue_pauses", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "queue_name", null: false
+    t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
+  end
+
+  create_table "solid_queue_processes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "hostname"
+    t.string "kind", null: false
+    t.datetime "last_heartbeat_at", null: false
+    t.text "metadata"
+    t.string "name", null: false
+    t.integer "pid", null: false
+    t.bigint "supervisor_id"
+    t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
+    t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
+    t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
+  end
+
+  create_table "solid_queue_ready_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
+    t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
+    t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
+  end
+
+  create_table "solid_queue_recurring_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.datetime "run_at", null: false
+    t.string "task_key", null: false
+    t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
+    t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
+  end
+
+  create_table "solid_queue_recurring_tasks", force: :cascade do |t|
+    t.text "arguments"
+    t.string "class_name"
+    t.string "command", limit: 2048
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key", null: false
+    t.integer "priority", default: 0
+    t.string "queue_name"
+    t.string "schedule", null: false
+    t.boolean "static", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
+    t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
+  end
+
+  create_table "solid_queue_scheduled_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
+    t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
+  end
+
+  create_table "solid_queue_semaphores", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.integer "value", default: 1, null: false
+    t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
+    t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
+    t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+  end
+
+  create_table "suggested_actions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "sitting_sessions", "users"
+  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "suggested_actions", "exercises"
+  add_foreign_key "suggested_actions", "sitting_sessions"
+end
+</file>
+
+<file path="app/controllers/sitting_sessions_controller.rb">
+class SittingSessionsController < ApplicationController
+
+  before_action :authenticate_user!
+
+  def new
+  end
+
+  def create
+
+    @sitting_session = current_user.sitting_sessions.build(session_params)
+
+    if @sitting_session.save
+      #座位時間が保存されたら運動をランダムに提案
+      @recommended_exercise = Exercise.order("RANDOM()").limit(3)
+
+      respond_to do |format|
+        #create.turbo_stream.erbを呼び出す
+        format.turbo_stream
+        #モーダル表示されない場合はshowへ
+        format.html { redirect_to sitting_session_path(@sitting_session) }
+      end
+    end
+  end
+
+  def show
+  end
+
+  private
+
+  def session_params
+    params.require(:sitting_session).permit(:duration, :start_at)
+  end
+end
+</file>
+
+<file path="app/models/user.rb">
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  has_many :sitting_sessions, dependent: :destroy
+
+  # ゲストログインの実装
+  def self.guest
+    find_or_create_by!(email: "guest@example.com") do |user|
+      user.password = SecureRandom.urlsafe_base64
+      user.username = "ゲストユーザー"
+    end
+  end
+end
+</file>
+
+<file path="db/seeds.rb">
+puts "シードデータを投入中"
+
+exercises_data = [
+  {
+    name: "ウォーキング",
+    category: :walk,
+    cloudinary_public_id: "walk",
+    description: <<~TEXT
+      外に出て歩きましょう！
+      理想は20分以上とされていますが、まずは5分からでも大丈夫です。
+      - 効果的な方法
+      1. やや歩幅を広げる
+      2. ペースも少し早めに
+      3. 軽く息が上がるくらいが効果的
+
+      ちゃんと戻ってきてくださいね！
+    TEXT
+  },
+  {
+    name: "スクワット",
+    category: :training,
+    cloudinary_public_id: "squat",
+    description: <<~TEXT
+      1. 足を肩幅に開き、ゆっくり腰を下ろします。
+      2. 膝が爪先より前に出すぎないように意識してください。
+      3. 膝が90°まで曲がるとより効果的ですが、浅くても大丈夫です！
+      
+      下半身の血流を良くして、脳をリフレッシュさせましょう。
+    TEXT
+  },
+   {
+    name: "踵上げ",
+    category: :training,
+    cloudinary_public_id: "heel_raise",
+    description: <<~TEXT
+      1. 立ち上がり椅子やテーブルに軽く捕まりましょう
+      2. 足の指に力を入れながら踵を上げていきます
+      3. 下ろす時をゆっくり行うとより効果的です
+      4. 踵をつかないように続けるとさらに負荷が上がりますよ！
+
+      ふくらはぎは『第2の心臓』なので、全身の血流が良くなります
+    TEXT
+  },
+   {
+    name: "ヒップエクステンション",
+    category: :training,
+    cloudinary_public_id: "hip_extension",
+    description: <<~TEXT
+      1. 壁や机に手をついて姿勢を安定させる。(余裕があれば手を離してもOK)
+      2. 膝を伸ばしたまま、片脚を後ろにゆっくり蹴り出す。
+      3. お尻の力で脚を上げ、ゆっくり元の位置に戻す
+      4. 体が前に倒れないように注意！
+
+      座り続けるとお尻の筋肉が固まってくるので、とても効果的です
+    TEXT
+  },
+   {
+    name: "肩甲骨の運動",
+    category: :training,
+    cloudinary_public_id: "scapula",
+    description: <<~TEXT
+      1. 肘を90°に曲げます
+      2. 手のひらを自分の方に向けながら、腕をくっつけます
+      3. 手のひらを外に向けながら胸を開きます（肩甲骨を寄せるように）
+      4. 2~3を繰り返しましょう
+
+      長く座っていると背中が丸くなっていませんか？
+      肩甲骨をどんどん動かそう！
+    TEXT
+  },
+   {
+    name: "胸の壁ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "pectoralis",
+    description: <<~TEXT
+      1. 肘から手のひらを壁につけます
+      2. そのまま体を開いていきます
+      3. 胸を開いて前側が伸びるように
+      4. 腕の高さによって伸びる場所が変わるので、調整してみましょう
+
+      胸の硬さは『THE 猫背』の象徴です
+      顔のむくみがスッキリすることも
+    TEXT
+  },
+   {
+    name: "お尻のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "gluteus",
+    description: <<~TEXT
+      1. 
+      2. そのまま体を開いていきます
+      3. 胸を開いて前側が伸びるように
+      4. 腕の高さによって伸びる場所が変わるので、調整してみましょう
+
+      胸の硬さは『THE 猫背』の象徴です
+      顔のむくみがスッキリすることも
+    TEXT
+  },
+   {
+    name: "外側の全身ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "lateral_line",
+    description: <<~TEXT
+      1. 片手をテーブルや背もたれにつきます
+      2. 反対の足を前からクロスします
+      3. もう一方の手をバンザイして横に倒れていきましょう
+      4. 脇腹からお尻までが伸びるのを感じながら深呼吸
+
+      反対側も同様に行いましょう！
+      全身につながる『筋膜』を伸ばしていきます
+    TEXT
+  },
+  {
+    name: "肩のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "shoulder",
+    description: <<~TEXT
+      1. 両手を後ろで組みます（立って行ってもOK）
+      2. お辞儀をしながら手を天井の方へ伸ばしていきます
+      3. 肩甲骨を寄せながら、肩周りを伸ばしていきましょう
+      4. 首も下をむくとより伸びが感じられます
+
+      肩を痛めないようにゆっくり無理せず
+      息が止まらないように注意して行いましょう
+    TEXT
+  },
+  {
+    name: "後面の全身ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "back_line",
+    description: <<~TEXT
+      1. 両手をテーブルや背もたれにつきます
+      2. 背中はまっすぐのまま股関節から体を曲げていきましょう
+      3. 頭は両腕の間に入れるようにします
+      4. 背中から足までが伸びるのを感じます
+
+      辛い方は膝を少し曲げても大丈夫です
+      全身につながる『筋膜』を伸ばしていきます
+    TEXT
+  },
+  {
+    name: "背骨のひねりストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "thorax_rotation",
+    description: <<~TEXT
+      1. 座ったまま胸の前で腕を交叉します
+      2. 上半身を捻っていきましょう
+      3. 息を吐きながら捻っていきます
+      4. 背中が丸くならないように気をつけます
+
+      左右交互に行いましょう！
+      背骨を動かすことで自律神経にも働きかけます
+    TEXT
+  },
+  {
+    name: "背中のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "latissimus",
+    description: <<~TEXT
+      1. 床に膝立ちになり、両肘を椅子につきます
+      2. 顔を両腕の間に入れるように正座していきます
+      3. 背中が伸びるのを感じながらキープします
+      4. 肩を痛めないように無理せず行いましょう
+
+      デスクワークで丸まりがちな背中を伸ばしていきましょう
+      背骨が動くと自律神経にも良い影響があります
+    TEXT
+  },
+  {
+    name: "首のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "neck_side",
+    description: <<~TEXT
+      1. 片手で頭の反対側を抑えます
+      2. そのまま首を横に倒していきましょう
+      3. 首から肩にかけて伸びるのを感じます
+      4. 肩がすくまない様に注意
+
+      首は痛めやすいので強くやりすぎないように
+      首が硬くなると頭痛や眼精疲労の原因にも
+    TEXT
+  },
+]
+
+exercises_data.each do |data|
+  # find_or_create_byでseedの重複を避ける
+  Exercise.find_or_create_by!(name: data[:name]) do |e|
+    e.category = data[:category]
+    e.cloudinary_public_id = data[:cloudinary_public_id]
+    e.description = data[:description]
+  end
+end
+
+puts "完了！"
+</file>
+
+<file path="app/views/sitting_sessions/new.html.erb">
+<div class="flex flex-col items-center justify-center min-h-screen bg-background-dark p-8">
+
+  <div data-controller="timer"
+       class="flex flex-col items-center p-12 rounded-[3.5rem]
+              bg-input-bg-light/70 backdrop-blur-xl
+              border border-border-light
+              shadow-xl ring-1 ring-black/5">
+
+    <!-- timer circle -->
+    <div class="relative flex items-center justify-center w-72 h-72">
+      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-90">
+
+        <!-- base circle -->
+        <circle cx="150" cy="150" r="120"
+                stroke="currentColor" stroke-width="4" fill="transparent"
+                class="text-primary opacity-20" />
+
+        <!-- progress circle -->
+        <circle cx="150" cy="150" r="120"
+                stroke="currentColor" stroke-width="10" fill="transparent"
+                data-timer-target="circle"
+                class="text-primary transition-all duration-1000 ease-linear"
+                style="stroke-linecap: round;
+                       filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 60%, transparent));" />
+      </svg>
+
+      <!-- time display -->
+      <div class="absolute text-6xl font-sans font-light tracking-tight text-text-main"
+           data-timer-target="display">
+        00:00
+      </div>
+    </div>
+
+    <!-- controls -->
+    <div class="mt-12 w-full space-y-4">
+      <div class="flex gap-4 justify-center">
+        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+          <button type="button"
+                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition"
+                  data-action="click->timer#start"
+                  data-timer-minutes-param="<%= minutes %>">
+            <%= minutes %>分
+          </button>
+        <% end %>
+      </div>
+
+      <button type="button" class="text-sm text-gray-400 underline" data-action="click->timer#finish">
+        いますぐ終了
+      </button>
+
+      <button data-action="click->timer#stop"
+              class="w-full py-4 rounded-2xl font-medium
+                     bg-background-light text-text-secondary
+                     border border-border-light
+                     hover:bg-primary/20 hover:text-text-main
+                     transition active:scale-95">
+        リセット
+      </button>
+    </div>
+   
+  </div>
+  <div id="modal_container"></div>
+  <!-- footer accent -->
+  <div class="mt-8 w-32 h-1.5 bg-border-light rounded-full"></div>
+</div>
+</file>
+
+<file path="db/schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "exercises", force: :cascade do |t|
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.string "endpoint"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.string "p256dh"
+    t.datetime "start_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "suggested_actions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "sitting_sessions", "users"
+  add_foreign_key "suggested_actions", "exercises"
+  add_foreign_key "suggested_actions", "sitting_sessions"
+end
+</file>
+
+<file path="Gemfile">
+source "https://rubygems.org"
+
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 8.1.2"
+# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
+gem "propshaft"
+# Use postgresql as the database for Active Record
+gem "pg", "~> 1.1"
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", ">= 5.0"
+# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
+gem "jsbundling-rails"
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem "stimulus-rails"
+# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
+gem "cssbundling-rails"
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem "jbuilder"
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem "solid_cache"
+gem "solid_queue"
+gem "solid_cable"
+
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
+
+# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
+gem "kamal", require: false
+
+# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+gem "thruster", require: false
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "image_processing", "~> 1.2"
+
+# ユーザー認証
+gem "devise"
+
+# 画像CDN
+gem "cloudinary"
+
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
+  gem "bundler-audit", require: false
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+end
+
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+</file>
+
+<file path="app/views/layouts/application.html.erb">
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Myapp" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Myapp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <%# google material読み込み%>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+  </head>
+
+  <body>
+     <!-- header -->
+ <header class="flex items-center justify-between px-8 py-4">
+
+  <!-- left : logo -->
+  <%= link_to root_path, class: "flex items-center" do %>
+    <%= image_tag "header_logo.png",
+      alt: "ロゴ",
+      class: "max-h-12 w-auto" %>
+  <% end %>
+
+  <!-- right : auth -->
+  <div class="flex items-center">
+    <%= link_to "新規登録",
+      new_user_registration_path,
+      class: "mr-4 text-sm text-text-secondary" %>
+
+    <%= link_to "ログイン",
+      new_user_session_path,
+      class: "px-4 py-2 rounded-full bg-primary text-white text-sm hover:bg-primary-hover transition" %>
+  </div>
+
+</header>
+    <%= yield %>
+    <%# どのページにいてもモーダルを表示するため %>
+    <div id="modal_container"></div>
+    <%# 動作確認用 %>
+    <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
+  </body>
+</html>
+</file>
+
+<file path="config/routes.rb">
+Rails.application.routes.draw do
+  # topページ
+  root "static_pages#top"
+
+  resources :sitting_sessions, only: [ :new, :create, :show ]
+  resources :exercises, only: [ :index, :show ]
+
+  devise_for :users
+
+  post "guest_login", to: "users/guest_sessions#create"
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
+  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+
+  # Defines the root path route ("/")
+  # root "posts#index"
+end
+</file>
+
+<file path="sitting-timer/README.md">
+# 卒業制作
+
+「iStanding(仮称)」
+
+## サービス概要
+
+デスクワーカーの「座りすぎ」を防ぐタイマーアプリ。
+
+医学的根拠に基づいた通知タイミングと効果的な行動提案で健康習慣をサポート。
+
+通知機能や座位時間の可視化により、健康的な習慣を無理なく継続できます。
+
+## このサービスへの思い・作りたい理由
+
+理学療法士として整形外科で働く中で、腰痛や首の痛みを訴える患者様から「デスクワークで一日中座っています」という言葉を何度も耳にしてきました。日本は座位時間が世界トップレベルで、WHO や厚生労働省も座りすぎによる肥満、心筋梗塞、脳梗塞、ヘルニア、高血圧、糖尿病などのリスクを警告しています。
+
+0 次医療(予防医療)の推進が叫ばれる今、最も必要なのは「わかっているけどできない」を「自然とできる」に変えることです。多くの方が座りすぎの害を知りながらも、「めんどくさい」「まだ大丈夫」「忘れてしまう」「何をしたらいいかわからない」という理由で行動に移せていません。
+
+このアプリは、理学療法士としての専門知識を活かし、デスクワーカーが無理なく座りすぎを防ぎ、健康的な習慣を継続できるようサポートします。
+
+**参考文献**：
+
+- [Sitting Time and All-Cause Mortality Risk in 222,497 Australian Adults](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810)
+- [Sedentary time and its association with risk for disease incidence, mortality, and hospitalization in adults](https://pubmed.ncbi.nlm.nih.gov/21767731/)
+
+## ユーザー層について
+
+**メインターゲット**：デスクワークが多い 20〜40 代の会社員・フリーランス
+
+この層を対象にした理由：
+
+1 日 8 時間以上座って仕事をする人が多く、座りすぎによる健康リスクが高い
+仕事に集中すると立ち上がることを忘れがちで、客観的なアラートが必要
+SNS を日常的に使用しており、達成実績のシェアによるモチベーション維持が期待できる
+スマートフォンや PC を常時使用しているため、アプリの導入・利用ハードルが低い
+健康意識が高まる年代で、予防的な健康管理に関心がある
+
+## サービスの利用イメージ
+
+1. **作業中のサポート**：設定した間隔（例：60 分）で座りすぎアラートが通知される
+2. **休憩時間の内容提案**：休憩アクションを提案（ストレッチ、歩く、立ち作業など）
+3. **1 日の振り返り**：座位時間の推移や休憩回数をグラフで確認
+4. **リマインドによる継続性**：自発的でなく受動的にアプリの利用を促す
+5. **健康コラムによる啓発**：医学的な情報をエビデンスに基づき掲載
+
+**得られる価値**：
+
+- 座りすぎによる健康リスクの軽減（肩こり、腰痛、生活習慣病予防）
+- データの可視化による行動変容の実感、健康意識の向上
+
+## ユーザーの獲得について
+
+- **SNS 拡散**
+
+X(旧 Twitter)での達成実績シェア機能を実装
+「#座りすぎ防止」「#デスクワーク改善」などのハッシュタグで拡散
+シェアされた投稿から新規ユーザーが流入する仕組み
+
+- **健康系コミュニティへのアプローチ**
+
+産業医、産業理学療法など、企業の健康増進に携わるコミュニティへのアプローチ
+
+その後、企業内の社員への普及というレバレッジが期待できる可能性
+
+- **エンジニアコミュニティ（Qiita、Zenn など）での紹介**
+
+デスクワーカーのコミュニティでの展開
+
+- **コンテンツマーケティング**
+
+座りすぎのリスクや改善方法に関する記事を SEO 対策を用いて Web サイトで発信
+
+YMYL, E-E-A-T への留意が必要になる
+実際の利用者の事例なども紹介
+
+## サービスの差別化ポイント・推しポイント
+
+### **類似サービスとの差別化**
+
+**既存のストレッチアプリとの違い**：
+
+- 「ストレッチの継続」ではなく「座位時間の削減」にフォーカス
+- 休憩の種類を強制せず、歩く・立ち作業など柔軟な休憩方法を記録可能
+- 座位時間の可視化により、行動変容を客観的に確認できる
+
+**ポモドーロアプリとの違い**：
+
+- 単なるポモドーロではなく、休憩時間にすべきことを提案、誘導
+- デイリーチャレンジ、ダメージ可視化によるゲーミフィケーション要素
+- SNS シェア機能による社会的なモチベーション維持
+
+### **推しポイント**
+
+1. **行動変容の可視化**：座位時間の推移グラフで改善を実感できる
+2. **柔軟な休憩スタイル**：ストレッチに限定せず、自分に合った休憩方法を選択可能
+3. **小さな成功体験の積み重ね**：毎日のチャレンジ達成で継続しやすい設計
+
+## 機能候補
+
+### **MVP リリース時（最小限の機能）**
+
+1. **ユーザー登録・ログイン機能（devise）**
+
+2. **座位時間アラート機能（Solid Queue + service worker）**
+
+- アラート間隔の調整（30 分、60 分、90 分など）
+
+3. **推奨行動モーダル**
+
+- 任意の設定時間になると休憩アクションを選択（タイプ選択：ストレッチ、歩く、立ち作業など）
+
+4. **基本的なダッシュボード（一日の総座位時間、休憩回数）**
+
+- 総座位時間の表示（寿命に影響を与えると言われている 11 時間を上限とし警告を促す）
+- 連続実施日時を表示
+
+5. **休憩時間の行動リスト（seed）**
+
+- 後に CRUD 実装し、admin 画面で追加編集予定
+
+6. **SNS 共有機能**
+
+- 静的 OGP にて共有
+
+### **本リリースまでに追加したい機能**
+
+1. **admin 用 CRUD の実装（休憩時間の要素の追加、編集）**
+2. **データ可視化**
+
+- 座位時間の推移グラフ（chartkick + chart.js）
+- 最長座位時間の記録と改善推移
+
+3. **ゲーミフィケーション要素**
+
+- 連続座位時間によりキャラクターなどの状態が変化、運動や起立で回復（自身の健康状態に対するメタファー）
+- 実績・バッジシステム（3 日連続、7 日連続、累計 100 回休憩など）
+- 連続達成日数（ストリーク）の表示
+
+4. **動的 OGP へのバージョンアップ**
+
+- 達成結果に応じて SNS 共有用の OGP 画像を生成
+
+5. **休憩時に行うアクション一覧**
+
+- 運動、ストレッチなどにカテゴリ分けされた行動一覧を閲覧可能
+
+## 使用する技術スタック
+
+### **バックエンド**
+
+- **Ruby on Rails 8.x Ruby 4.0.x(最新の安定版)**
+  - フルスタックフレームワークとして採用
+  - Solid Queue によるキューイングシステムを利用するため
+  - Rails8 の新機能を活用し、インフラをシンプルに保つ
+
+### **フロントエンド**
+
+- **Hotwire（Turbo + Stimulus）**
+  - リアルタイム更新（座位時間の自動更新、アラート表示）
+  - SPA 的な UX をシンプルに実装
+- **Tailwind CSS**
+  - レスポンシブデザインの実装
+  - 理由：高速な開発とモダンな UI の実現
+
+### **データベース**
+
+- **PostgreSQL**
+  - 理由：Render での標準的な DB のため
+
+### **認証**
+
+- **Devise**
+  - スピーディーに認証機能の実装
+  - 理由：すでにアプリ作成にて学習済み、ドキュメントが豊富
+
+### **インフラ・デプロイ**
+
+- **Render**
+  - 理由：無料枠でのデプロイが可能、Heroku より設定がシンプル
+
+- **Neon or Cloudinaly**
+  - 理由：推奨行動の説明画像をアップロード
+
+### **通知機能**
+
+- **Web Push Notification API**
+  - ブラウザプッシュ通知の実装
+  - ライブラリ：`web-push` gem
+- Solid Queue
+  - Redis+Sidekiq の代わりに Rails8 のデフォルト機能を採用
+- LINE Messaging API（検討中）
+  - LINE による通知も選択可能に
+
+### **グラフ・データ可視化**
+
+- **Chartkick + Chart.js**
+  - 座位時間の推移グラフ
+  - 休憩タイプ別の集計グラフ
+
+### **SNS シェア機能**
+
+- **OGP 画像の動的生成**
+  - ImageMagick / MiniMagick
+  - 達成実績をカード形式の画像として生成
+- **SNS 連携**
+  - Twitter/X API（投稿機能）
+
+### **テスト**
+
+- **RSpec**
+  - 単体テスト、統合テスト
+- **Capybara + Selenium**
+  - E2E テスト（ブラウザ通知のテストを含む）
+
+## **画面遷移図**
+
+[画面遷移図(Figma)](https://www.figma.com/design/w2Ja1NYp5x0rgziS95OJfP/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C-iStainding--MVP-?m=auto&t=nFjaib5eNBv7qT7t-6)
+
+## **ER 図**
+
+[![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
+</file>
+
+</files>
