@@ -4,15 +4,26 @@ import { Turbo } from "@hotwired/turbo-rails"
 // Connects to data-controller="timer"
 export default class extends Controller {
     static targets = ["display"]
-    connect() {h
+    connect() {
         this.remainingTime = 0
         this.timer = null
         this.isModalOpen = false
+
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('reopen_modal')) {
+            this.finish()
+            this.isModalOpen = true
+
+            //タイマーに戻った時にURLからreopen_modal=trueを消す
+            const newUrl = window.location.pathname
+            window.history.replaceState({}, document.title, newUrl)
+        }
     }
 
     start(event) {
         //既存のタイマーを止める
         this.stop()
+        this.resetModalFlag()
 
         const minutes = event.params.minutes
         //秒数に変換
@@ -93,4 +104,5 @@ export default class extends Controller {
         this.stop()
         this.isModalOpen = false
     }
+
 }
