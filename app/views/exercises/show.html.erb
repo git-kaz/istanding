@@ -1,2 +1,61 @@
-<h1>Exercises#show</h1>
-<p>Find me in app/views/exercises/show.html.erb</p>
+<div class="max-w-2xl mx-auto p-6 space-y-6 text-text-main">
+
+  <h1 class="text-2xl font-bold">
+    <%= @exercise.name %>
+  </h1>
+
+  <!-- image -->
+  <div class="aspect-video bg-background-light border border-border-light rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5">
+    <% if @exercise.cloudinary_public_id.present? %>
+      <%= cl_image_tag(
+            @exercise.cloudinary_public_id,
+            class: "w-full h-full object-cover"
+          ) %>
+    <% end %>
+  </div>
+  <!-- description -->
+   <div class="p-8 rounded-3xl space-y-8
+                bg-input-bg-light/70 backdrop-blur-xl
+                border border-border-light
+                shadow-xl ring-1 ring-black/5">
+     <h2 class="font-bold text-2xl">やり方</h2>
+  <p class="text-text-main leading-loose">
+    <%= simple_format(@exercise.description) %>
+  </p>
+   <!-- 注意 -->
+      <div class="p-5 rounded-2xl
+                  bg-primary/30
+                  border border-primary/20">
+
+        <h3 class="font-semibold text-text-main mb-2">
+          ⚠ 注意点
+        </h3>
+
+        <p class="text-sm text-text-secondary leading-relaxed">
+            痛みのない範囲でやりましょう。
+        </p>
+      </div>
+</div>
+  <!-- buttons -->
+  <div class="pt-6 space-y-4">
+
+    <%= link_to "他の運動にする",
+        new_sitting_session_path(reopen_modal: true),
+        class: "block w-full py-4 text-center
+                bg-background-light text-text-main
+                border border-border-light
+                rounded-2xl
+                hover:bg-primary/15
+                transition" %>
+
+    <%= link_to "終了してタイマーに戻る",
+        new_sitting_session_path,
+        class: "block w-full py-4 text-center
+                bg-primary text-white
+                rounded-2xl
+                hover:bg-primary-hover
+                transition" %>
+
+  </div>
+
+</div>
