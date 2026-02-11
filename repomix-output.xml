@@ -97,6 +97,7 @@ app/
     application.js
   jobs/
     application_job.rb
+    send_notification_job.rb
   mailers/
     application_mailer.rb
   models/
@@ -246,6 +247,8 @@ test/
     .keep
   integration/
     .keep
+  jobs/
+    send_notification_job_test.rb
   mailers/
     .keep
   models/
@@ -892,74 +895,6 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   connect() {
     this.element.textContent = "Hello World!"
-  }
-}
-</file>
-
-<file path="app/javascript/controllers/notification_controller.js">
-import { Controller } from "@hotwired/stimulus"
-
-// Connects to data-controller="notification"
-export default class extends Controller {
-  static values = { publicKey: String }
-
-  connect() {
-    //許可、拒否済みの場合は通知を確認しない
-    if (Notification.permission === 'default') {
-      //すこし遅らせてから通知
-      setTimeout(() => {
-        this.subscribe()
-      }, 1000)
-    }
-  }
-
-
-  async subscribe() {
-    try {
-      const registration = await navigator.serviceWorker.ready
-      const convertedVapidKey = this.#urlBase64ToUint8Array(this.publicKeyValue)
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedVapidKey
-      })
-
-      await this.#sendSubscriptionToServer(subscription)
-      console.log("Push通知が有効になりました")
-    } catch (error) {
-      console.error("Push購読に失敗しました")
-      alert("通知許可ができませんした。ブラウザの設定を確認してください")
-    }
-  }
-  //サーバーへajaxで情報送信
-  async #sendSubscriptionToServer(subscription) {
-    const response = await fetch("/sitting_session/subscribe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({
-        subscription: subscription.toJSON()
-      })
-    })
-    return response
-  }
-
-  // 鍵の変換関数
-  #urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
   }
 }
 </file>
@@ -3056,34 +2991,6 @@ end
 # See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
 </file>
 
-<file path="public/service-worker.js">
-self.addEventListener('push', function (event) {
-    //サーバーからのJSONを取得
-    const data = event.data ? event.data.json() : {}
-    
-    const title = data.title || '休憩時間になりました！'
-
-    //通知の詳細オプション
-    const options = {
-        body: data.body || '身体を動かしましょう！',
-        icon: 'icon.png',
-        data: { url: data.url || '/' }//通知をクリックした遷移先url
-    }
-
-    //通知を表示するまでservice workerを終了させない
-    event.waitUntil(
-        self.registration.showNotification(title, options)
-    )
-})
-
-//通知をクリックしたら発火
-self.addEventListener('notificationclick', function (event) {
-    event.notification.close()
-    //指定されたurlを開く
-    event.waitUntil(clients.openWindow(event.notification.data.url))
-})
-</file>
-
 <file path="script/.keep">
 
 </file>
@@ -3223,6 +3130,16 @@ two: {}
 
 <file path="test/integration/.keep">
 
+</file>
+
+<file path="test/jobs/send_notification_job_test.rb">
+require "test_helper"
+
+class SendNotificationJobTest < ActiveJob::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
 </file>
 
 <file path="test/mailers/.keep">
@@ -3877,6 +3794,79 @@ class ExercisesController < ApplicationController
 end
 </file>
 
+<file path="app/javascript/controllers/notification_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="notification"
+export default class extends Controller {
+  static values = { publicKey: String }
+
+  connect() {
+    //許可、拒否済みの場合は通知を確認しない
+    if (Notification.permission === 'default') {
+      //すこし遅らせてから通知
+      setTimeout(() => {
+        this.subscribe()
+      }, 1000)
+    }
+  }
+
+
+  async subscribe() {
+    console.log("Starting subscribe...");
+    try {
+      
+      await navigator.serviceWorker.register('/service-worker.js');
+      
+      const registration = await navigator.serviceWorker.ready
+      
+      const convertedVapidKey = this.#urlBase64ToUint8Array(this.publicKeyValue)
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+      })
+
+      await this.#sendSubscriptionToServer(subscription)
+      console.log("Push通知が有効になりました")
+    } catch (error) {
+      console.error("Push購読に失敗しました")
+      alert("通知許可ができませんした。ブラウザの設定を確認してください")
+    }
+  }
+  //サーバーへajaxで情報送信
+  async #sendSubscriptionToServer(subscription) {
+    const response = await fetch("/sitting_sessions/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        subscription: subscription.toJSON()
+      })
+    })
+    return response
+  }
+
+  // 鍵の変換関数
+  #urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+}
+</file>
+
 <file path="app/models/exercise.rb">
 class Exercise < ApplicationRecord
   has_many :suggested_actions, dependent: :destroy
@@ -4457,6 +4447,44 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.1]
 end
 </file>
 
+<file path="public/service-worker.js">
+self.addEventListener('push', function (event) {
+    console.log('Push received!');
+    
+    let data = {};
+    if (event.data) {
+        try {
+            // まずはJSONとして解析を試みる
+            data = event.data.json();
+        } catch (e) {
+            // JSONでなければ、そのままテキストとしてbodyに格納
+            data = { body: event.data.text() };
+        }
+    }
+    
+    const title = data.title || '休憩時間になりました！';
+
+    const options = {
+        body: data.body || '身体を動かしましょう！',
+        icon: new URL('/icon.png', self.location.origin).href,
+        // RailsからURLが指定されていなければ、トップページを表示
+        data: { url: data.url || '/' }
+    };
+
+    //通知を表示するまでservice workerを終了させない
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    )
+})
+
+//通知をクリックしたら発火
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close()
+    //指定されたurlを開く
+    event.waitUntil(clients.openWindow(event.notification.data.url))
+})
+</file>
+
 <file path="app/controllers/application_controller.rb">
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
@@ -4485,6 +4513,47 @@ application.register("notification", NotificationController)
 
 import TimerController from "./timer_controller"
 application.register("timer", TimerController)
+</file>
+
+<file path="app/jobs/send_notification_job.rb">
+require "web-push"
+
+class SendNotificationJob < ApplicationJob
+  queue_as :default
+
+  def perform(sitting_session_id)
+    session = SittingSession.find_by(id: sitting_session_id)
+
+    return if session.nil?
+
+    return unless session.in_progress?
+
+    user = session.user
+    return if user.endpoint.blank?
+
+    begin
+      WebPush.payload_send(
+        message: "休憩しましょう！",
+        endpoint: user.endpoint,
+        p256dh: user.p256dh,
+        auth: user.auth,
+        vapid: {
+          public_key: Rails.application.credentials.dig(:webpush, :public_key),
+          private_key: Rails.application.credentials.dig(:webpush, :private_key),
+          subject: "mailto:okw.kzk@gmail.com"
+        }
+      )
+      session.update!(notified: true)
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
+
+      user.update(endpoint: nil, p256dh: nil, auth: nil)
+
+    rescue => e
+      Rails.logger.error "通信エラー: #{e.message}"
+
+    end
+  end
+end
 </file>
 
 <file path="app/views/exercises/show.html.erb">
@@ -4618,130 +4687,6 @@ application.register("timer", TimerController)
 
   </main>
 </div>
-</file>
-
-<file path="app/javascript/controllers/timer_controller.js">
-import { Controller } from "@hotwired/stimulus"
-import { Turbo } from "@hotwired/turbo-rails"
-
-// Connects to data-controller="timer"
-export default class extends Controller {
-    static targets = ["display"]
-    connect() {
-        this.remainingTime = 0
-        this.timer = null
-        this.isModalOpen = false
-
-        const params = new URLSearchParams(window.location.search)
-        if (params.get('reopen_modal')) {
-            this.finish()
-            this.isModalOpen = true
-
-            //タイマーに戻った時にURLからreopen_modal=trueを消す
-            const newUrl = window.location.pathname
-            window.history.replaceState({}, document.title, newUrl)
-        }
-    }
-
-    start(event) {
-        //既存のタイマーを止める
-        this.stop()
-        this.resetModalFlag()
-
-        const minutes = event.params.minutes
-        //秒数に変換
-        //テスト用に5秒後でminutes * 60置き換え
-        this.selectedSeconds = 5
-        this.remainingTime = this.selectedSeconds
-        this.startTime = new Date()
-
-        this.updateDisplay()
-
-        //1秒ごとにカウントダウン
-        this.timer = setInterval(() => {
-            this.remainingTime -= 1
-            this.updateDisplay()
-
-            if (this.remainingTime <= 0) {
-                //fetch,モーダル表示
-                if (!this.isModalOpen) {
-                    this.finish()
-                    this.isModalOpen = true
-                }
-            
-                this.remainingTime = this.selectedSeconds
-            } 
-
-        }, 1000)
-    }
-
-    stop() {
-        if (this.timer) {
-            clearInterval(this.timer)
-            this.timer = null
-        }
-    }
-    
-    updateDisplay() {
-        const m = Math.floor(this.remainingTime / 60)
-        const s = this.remainingTime % 60
-        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    }
-    
-    //運動の選択orスキップ後の処理
-    async finish() {
-        const endTime = new Date()
-        const duration = Math.floor((endTime - this.startTime) / 1000)
-
-        const recordedStartTime = this.startTime
-        this.startTime = new Date()
-
-        //RailsのAPIにデータを飛ばす
-        const response = await fetch("/sitting_sessions", {
-            method: "POST",
-            headers: {
-                "Accept": "text/vnd.turbo-stream.html",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                sitting_session: {
-                    duration: duration,
-                    start_at: recordedStartTime
-                }
-            })
-        })
-
-        if (response.ok) {
-            const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
-        }
-    }
-
-    resetModalFlag() {
-        this.isModalOpen = false
-    }
-
-    //詳細画面に遷移した時にタイマーを止める
-    stopAndNavigate() {
-        this.stop()
-        this.isModalOpen = false
-    }
-
-}
-</file>
-
-<file path="app/models/sitting_session.rb">
-class SittingSession < ApplicationRecord
-  belongs_to :user
-
-  has_many :suggested_actions, dependent: :destroy
-  # 中間テーブルを介してexerciseへ
-  has_many :exercises, through: :suggested_actions
-
-  # タイマーの選択可能時間
-  SETTING_DURATIONS = [ 30, 60, 90 ].freeze
-end
 </file>
 
 <file path="app/models/user.rb">
@@ -5012,6 +4957,118 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
 end
 </file>
 
+<file path="app/javascript/controllers/timer_controller.js">
+import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
+
+// Connects to data-controller="timer"
+export default class extends Controller {
+    static targets = ["display"]
+    connect() {
+        this.remainingTime = 0
+        this.timer = null
+        this.isModalOpen = false
+
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('reopen_modal')) {
+            this.finish()
+            this.isModalOpen = true
+
+            //タイマーに戻った時にURLからreopen_modal=trueを消す
+            const newUrl = window.location.pathname
+            window.history.replaceState({}, document.title, newUrl)
+        }
+    }
+
+    start(event) {
+        //既存のタイマーを止める
+        this.stop()
+        this.resetModalFlag()
+
+        const minutes = event.params.minutes
+        //秒数に変換
+        //デバッグ用
+        this.selectedSeconds = 5
+        // this.selectedSeconds = minutes * 60
+        this.remainingTime = this.selectedSeconds
+        this.startTime = new Date()
+
+        this.updateDisplay()
+
+        //1秒ごとにカウントダウン
+        this.timer = setInterval(() => {
+            this.remainingTime -= 1
+            this.updateDisplay()
+
+            if (this.remainingTime <= 0) {
+                //fetch,モーダル表示
+                if (!this.isModalOpen) {
+                    this.finish()
+                    this.isModalOpen = true
+                }
+            
+                this.remainingTime = this.selectedSeconds
+            } 
+
+        }, 1000)
+    }
+
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer)
+            this.timer = null
+        }
+    }
+    
+    updateDisplay() {
+        const m = Math.floor(this.remainingTime / 60)
+        const s = this.remainingTime % 60
+        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    }
+    
+    //運動の選択orスキップ後の処理
+    async finish() {
+        const endTime = new Date()
+        const duration = Math.floor((endTime - this.startTime) / 1000)
+
+        const recordedStartTime = this.startTime
+        this.startTime = new Date()
+
+        //RailsのAPIにデータを飛ばす
+        const response = await fetch("/sitting_sessions", {
+            method: "POST",
+            headers: {
+                "Accept": "text/vnd.turbo-stream.html",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                sitting_session: {
+                    duration: duration,
+                    start_at: recordedStartTime
+                }
+            })
+        })
+
+        if (response.ok) {
+            const streamMessage = await response.text()
+            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
+        }
+    }
+
+    resetModalFlag() {
+        this.isModalOpen = false
+    }
+
+    //詳細画面に遷移した時にタイマーを止める
+    stopAndNavigate() {
+        this.stop()
+        this.isModalOpen = false
+    }
+
+}
+</file>
+
 <file path="db/seeds.rb">
 puts "シードデータを投入中"
 
@@ -5209,50 +5266,29 @@ end
 puts "完了！"
 </file>
 
-<file path="app/controllers/sitting_sessions_controller.rb">
-class SittingSessionsController < ApplicationController
-  before_action :authenticate_user!
+<file path="app/models/sitting_session.rb">
+class SittingSession < ApplicationRecord
+  belongs_to :user
 
-  def new
+  has_many :suggested_actions, dependent: :destroy
+  # 中間テーブルを介してexerciseへ
+  has_many :exercises, through: :suggested_actions
+
+  # タイマーの選択可能時間
+  SETTING_DURATIONS = [ 30, 60, 90 ].freeze
+
+  # 終了時刻の計算
+  def end_time
+    # デバッグ用
+    created_at + duration.seconds
+    # secondsはminutesに戻す予定
+    # created_at + duration.minutes
   end
 
-  def create
-    @sitting_session = current_user.sitting_sessions.build(session_params)
-
-    if @sitting_session.save
-      # 座位時間が保存されたら運動をランダムに提案
-      @exercises = Exercise.order("RANDOM()").limit(3)
-
-      respond_to do |format|
-        # create.turbo_stream.erbを呼び出す
-        format.turbo_stream
-        # モーダル表示されない場合はshowへ
-        format.html { redirect_to sitting_session_path(@sitting_session) }
-      end
-    end
-  end
-
-  def show
-  end
-
-  def subscribe
-    auth_key = params[:subscription][:keys]
-
-    if current_user.update(
-      endpoint: params[:subscription][:endpoint],
-      p256dh: auth_key[:p256dh],
-      auth: auth_key[:auth]
-    )
-      head :ok
-    else
-      head :unprocessable_entity
-    end
-  end
-
-  private
-
-  def session_params
-    params.require(:sitting_session).permit(:duration, :start_at)
+  # 現在時刻が終了時刻より前ではないか？
+  def in_progress?
+    # デバッグ後にTime.current < end_time && 追加
+    !notified?
   end
 end
 </file>
@@ -5316,105 +5352,6 @@ end
     <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
   </body>
 </html>
-</file>
-
-<file path="config/routes.rb">
-Rails.application.routes.draw do
-  # topページ
-  root "static_pages#top"
-
-  resources :sitting_sessions, only: [ :new, :create, :show ] do
-    collection do
-      post :subscribe
-    end
-  end
-  
-  resources :exercises, only: [ :index, :show ]
-
-  devise_for :users
-
-  post "guest_login", to: "users/guest_sessions#create"
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
-end
-</file>
-
-<file path="db/schema.rb">
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
-#
-# This file is the source Rails uses to define your schema when running `bin/rails
-# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
-# be faster and is potentially less error prone than running all of your
-# migrations from scratch. Old migrations may fail to apply correctly if those
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
-  create_table "exercises", force: :cascade do |t|
-    t.integer "category"
-    t.string "cloudinary_public_id"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "sitting_sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.boolean "notified"
-    t.datetime "notify_at"
-    t.datetime "start_at"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
-  end
-
-  create_table "suggested_actions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "auth"
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "endpoint"
-    t.string "p256dh"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
-    t.datetime "updated_at", null: false
-    t.string "username", default: "", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  end
-
-  add_foreign_key "sitting_sessions", "users"
-  add_foreign_key "suggested_actions", "exercises"
-  add_foreign_key "suggested_actions", "sitting_sessions"
-end
 </file>
 
 <file path="sitting-timer/README.md">
@@ -5718,6 +5655,159 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+end
+</file>
+
+<file path="config/routes.rb">
+Rails.application.routes.draw do
+  # topページ
+  root "static_pages#top"
+
+  resources :sitting_sessions, only: [ :new, :create, :show ] do
+    collection do
+      post :subscribe
+    end
+  end
+
+  resources :exercises, only: [ :index, :show ]
+
+  devise_for :users
+
+  post "guest_login", to: "users/guest_sessions#create"
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
+  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+
+  # Defines the root path route ("/")
+  # root "posts#index"
+end
+</file>
+
+<file path="db/schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "exercises", force: :cascade do |t|
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.datetime "start_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "suggested_actions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.string "p256dh"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "sitting_sessions", "users"
+  add_foreign_key "suggested_actions", "exercises"
+  add_foreign_key "suggested_actions", "sitting_sessions"
+end
+</file>
+
+<file path="app/controllers/sitting_sessions_controller.rb">
+class SittingSessionsController < ApplicationController
+  before_action :authenticate_user!
+
+  def new
+  end
+
+  def create
+    @sitting_session = current_user.sitting_sessions.build(session_params)
+
+    if @sitting_session.save
+      # 座位時間が保存されたら運動をランダムに提案
+      @exercises = Exercise.order("RANDOM()").limit(3)
+      # デバッグ用
+      SendNotificationJob.set(wait_until: Time.current + 5.seconds)
+                         .perform_later(@sitting_session.id)
+      # タイマー終了時に通知jobを予約する
+      # SendNotificationJob.set(wait_until: Time.current +@sitting_session.end_time)
+      #                    .perform_later(@sitting_session.id)
+
+      respond_to do |format|
+        # create.turbo_stream.erbを呼び出す
+        format.turbo_stream
+        # モーダル表示されない場合はshowへ
+        format.html { redirect_to sitting_session_path(@sitting_session) }
+      end
+    end
+  end
+
+  def show
+  end
+
+  def subscribe
+    auth_key = params[:subscription][:keys]
+
+    if current_user.update(
+      endpoint: params[:subscription][:endpoint],
+      p256dh: auth_key[:p256dh],
+      auth: auth_key[:auth]
+    )
+      head :ok
+    else
+      head :unprocessable_entity
+    end
+  end
+
+  private
+
+  def session_params
+    params.require(:sitting_session).permit(:duration, :start_at)
+  end
 end
 </file>
 
