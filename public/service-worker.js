@@ -30,17 +30,21 @@ self.addEventListener('push', function (event) {
 //通知をクリックしたら発火
 self.addEventListener('notificationclick', function (event) {
     event.notification.close()
-
+    //通知のurl
+    const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
     //指定されたurlを開く
     event.waitUntil(
+        //開いているブラウザのタブを確認
         clients.matchAll({ type: 'window', includeUncontrolled: true })
             .then(function (windowClients) {
+                //アプリのタブを探す
                 for (let i = 0; i < windowClients.length; i++) {
                     if (clients.url === urlToOpen && 'Focus' in clients) {
+                        //あればフォーカス
                         return clients.focus()
                     }
                 }
-
+                //なければ新しいタブを開く
                 if (clients.openWindow) {
                     return clients.openWindow(urlToOpen)
                 }
