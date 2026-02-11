@@ -1,3 +1,5 @@
+require 'web-push'
+
 class SendNotificationJob < ApplicationJob
   queue_as :default
 
@@ -12,18 +14,19 @@ class SendNotificationJob < ApplicationJob
     return if user.endpoint.blank?
 
     begin
-      Webpush.payload_send(
+      WebPush.payload_send(
         message: "休憩しましょう！",
         endpoint: user.endpoint,
         p256dh: user.p256dh,
         auth: user.auth,
         vapid: {
-          public_key: Rails.application.credentials.dig(:vapid, :public_key),
-          private_key: Rails.application.credentials.dig(:vapid, :private_key),
+          public_key: Rails.application.credentials.dig(:webpush, :public_key),
+          private_key: Rails.application.credentials.dig(:webpush, :private_key),
           subject: "mailto:okw.kzk@gmail.com"
         }
       )
-    rescue Webpush::ExpiredSubscription, Webpush::InvalidSubscription => e
+      session.update!(notified: true)
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
       
       user.update(endpoint: nil, p256dh: nil, auth: nil)
     

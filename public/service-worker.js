@@ -1,15 +1,25 @@
 self.addEventListener('push', function (event) {
-    //サーバーからのJSONを取得
-    const data = event.data ? event.data.json() : {}
+    console.log('Push received!');
     
-    const title = data.title || '休憩時間になりました！'
+    let data = {};
+    if (event.data) {
+        try {
+            // まずはJSONとして解析を試みる
+            data = event.data.json();
+        } catch (e) {
+            // JSONでなければ、そのままテキストとしてbodyに格納
+            data = { body: event.data.text() };
+        }
+    }
+    
+    const title = data.title || '休憩時間になりました！';
 
-    //通知の詳細オプション
     const options = {
         body: data.body || '身体を動かしましょう！',
-        icon: 'icon.png',
-        data: { url: data.url || '/' }//通知をクリックした遷移先url
-    }
+        icon: new URL('/icon.png', self.location.origin).href,
+        // RailsからURLが指定されていなければ、トップページを表示
+        data: { url: data.url || '/' }
+    };
 
     //通知を表示するまでservice workerを終了させない
     event.waitUntil(

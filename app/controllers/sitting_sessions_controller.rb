@@ -10,6 +10,12 @@ class SittingSessionsController < ApplicationController
     if @sitting_session.save
       # 座位時間が保存されたら運動をランダムに提案
       @exercises = Exercise.order("RANDOM()").limit(3)
+      #デバッグ用
+      SendNotificationJob.set(wait_until: Time.current + 5.seconds)
+                         .perform_later(@sitting_session.id)
+      # タイマー終了時に通知jobを予約する
+      # SendNotificationJob.set(wait_until: Time.current +@sitting_session.end_time)
+      #                    .perform_later(@sitting_session.id)
 
       respond_to do |format|
         # create.turbo_stream.erbを呼び出す
