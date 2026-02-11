@@ -27,8 +27,9 @@ export default class extends Controller {
 
         const minutes = event.params.minutes
         //秒数に変換
-        //テスト用に5秒後でminutes * 60置き換え
+        //デバッグ用
         this.selectedSeconds = 5
+        // this.selectedSeconds = minutes * 60
         this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
 
