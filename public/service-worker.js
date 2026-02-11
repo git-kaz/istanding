@@ -1,5 +1,5 @@
 self.addEventListener('push', function (event) {
-    console.log('Push received!');
+    
     
     let data = {};
     if (event.data) {
@@ -30,6 +30,20 @@ self.addEventListener('push', function (event) {
 //通知をクリックしたら発火
 self.addEventListener('notificationclick', function (event) {
     event.notification.close()
+
     //指定されたurlを開く
-    event.waitUntil(clients.openWindow(event.notification.data.url))
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then(function (windowClients) {
+                for (let i = 0; i < windowClients.length; i++) {
+                    if (clients.url === urlToOpen && 'Focus' in clients) {
+                        return clients.focus()
+                    }
+                }
+
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen)
+                }
+        })
+    )
 })
