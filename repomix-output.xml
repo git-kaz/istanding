@@ -92,6 +92,7 @@ app/
       application.js
       hello_controller.js
       index.js
+      notification_controller.js
       timer_controller.js
     application.js
   jobs/
@@ -198,6 +199,8 @@ db/
     20260202123136_create_exercises.rb
     20260202123308_create_suggested_actions.rb
     20260205214818_add_duration_to_sitting_sessions.rb
+    20260209222639_add_webpush_columns_to_users.rb
+    20260209222652_remove_webpush_columns_from_sitting_sessions.rb
   cable_schema.rb
   cache_schema.rb
   queue_schema.rb
@@ -217,6 +220,7 @@ public/
   icon.png
   icon.svg
   robots.txt
+  service-worker.js
 script/
   .keep
 sitting-timer/
@@ -838,16 +842,6 @@ class Users::UnlocksController < Devise::UnlocksController
 end
 </file>
 
-<file path="app/controllers/exercises_controller.rb">
-class ExercisesController < ApplicationController
-  def index
-  end
-
-  def show
-  end
-end
-</file>
-
 <file path="app/controllers/static_pages_controller.rb">
 class StaticPagesController < ApplicationController
   def top
@@ -898,6 +892,74 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   connect() {
     this.element.textContent = "Hello World!"
+  }
+}
+</file>
+
+<file path="app/javascript/controllers/notification_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="notification"
+export default class extends Controller {
+  static values = { publicKey: String }
+
+  connect() {
+    //許可、拒否済みの場合は通知を確認しない
+    if (Notification.permission === 'default') {
+      //すこし遅らせてから通知
+      setTimeout(() => {
+        this.subscribe()
+      }, 1000)
+    }
+  }
+
+
+  async subscribe() {
+    try {
+      const registration = await navigator.serviceWorker.ready
+      const convertedVapidKey = this.#urlBase64ToUint8Array(this.publicKeyValue)
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+      })
+
+      await this.#sendSubscriptionToServer(subscription)
+      console.log("Push通知が有効になりました")
+    } catch (error) {
+      console.error("Push購読に失敗しました")
+      alert("通知許可ができませんした。ブラウザの設定を確認してください")
+    }
+  }
+  //サーバーへajaxで情報送信
+  async #sendSubscriptionToServer(subscription) {
+    const response = await fetch("/sitting_session/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        subscription: subscription.toJSON()
+      })
+    })
+    return response
+  }
+
+  // 鍵の変換関数
+  #urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
   }
 }
 </file>
@@ -1166,11 +1228,6 @@ end
 <file path="app/views/exercises/index.html.erb">
 <h1>Exercises#index</h1>
 <p>Find me in app/views/exercises/index.html.erb</p>
-</file>
-
-<file path="app/views/exercises/show.html.erb">
-<h1>Exercises#show</h1>
-<p>Find me in app/views/exercises/show.html.erb</p>
 </file>
 
 <file path="app/views/layouts/mailer.html.erb">
@@ -2242,6 +2299,26 @@ class AddDurationToSittingSessions < ActiveRecord::Migration[8.1]
 end
 </file>
 
+<file path="db/migrate/20260209222639_add_webpush_columns_to_users.rb">
+class AddWebpushColumnsToUsers < ActiveRecord::Migration[8.1]
+  def change
+    add_column :users, :endpoint, :string
+    add_column :users, :p256dh, :string
+    add_column :users, :auth, :string
+  end
+end
+</file>
+
+<file path="db/migrate/20260209222652_remove_webpush_columns_from_sitting_sessions.rb">
+class RemoveWebpushColumnsFromSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    remove_column :sitting_sessions, :endpoint, :string
+    remove_column :sitting_sessions, :p256dh, :string
+    remove_column :sitting_sessions, :auth, :string
+  end
+end
+</file>
+
 <file path="db/cable_schema.rb">
 ActiveRecord::Schema[7.1].define(version: 1) do
   create_table "solid_cable_messages", force: :cascade do |t|
@@ -2977,6 +3054,34 @@ end
 
 <file path="public/robots.txt">
 # See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+</file>
+
+<file path="public/service-worker.js">
+self.addEventListener('push', function (event) {
+    //サーバーからのJSONを取得
+    const data = event.data ? event.data.json() : {}
+    
+    const title = data.title || '休憩時間になりました！'
+
+    //通知の詳細オプション
+    const options = {
+        body: data.body || '身体を動かしましょう！',
+        icon: 'icon.png',
+        data: { url: data.url || '/' }//通知をクリックした遷移先url
+    }
+
+    //通知を表示するまでservice workerを終了させない
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    )
+})
+
+//通知をクリックしたら発火
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close()
+    //指定されたurlを開く
+    event.waitUntil(clients.openWindow(event.notification.data.url))
+})
 </file>
 
 <file path="script/.keep">
@@ -3761,108 +3866,15 @@ YMYL, E-E-A-T への留意が必要になる
 }
 </file>
 
-<file path="app/javascript/controllers/index.js">
-// This file is auto-generated by ./bin/rails stimulus:manifest:update
-// Run that command whenever you add a new controller or create them with
-// ./bin/rails generate stimulus controllerName
+<file path="app/controllers/exercises_controller.rb">
+class ExercisesController < ApplicationController
+  def index
+  end
 
-import { application } from "./application"
-
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
-
-import TimerController from "./timer_controller"
-application.register("timer", TimerController)
-</file>
-
-<file path="app/javascript/controllers/timer_controller.js">
-import { Controller } from "@hotwired/stimulus"
-import { Turbo } from "@hotwired/turbo-rails"
-
-// Connects to data-controller="timer"
-export default class extends Controller {
-    static targets = ["display"]
-    connect() {
-        this.remainingTime = 0
-        this.timer = null
-    }
-
-    start(event) {
-        //既存のタイマーを止める
-        this.stop()
-
-        const minutes = event.params.minutes
-        //秒数に変換
-        //テスト用に5秒後でminutes * 60置き換え
-        this.selectedSeconds = 5
-        this.remainingTime = this.selectedSeconds
-        this.startTime = new Date()
-
-        this.updateDisplay()
-
-        //1秒ごとにカウントダウン
-        this.timer = setInterval(() => {
-            this.remainingTime -= 1
-            this.updateDisplay()
-
-            if (this.remainingTime <= 0) {
-                //fetch,モーダル表示
-                this.finish()
-
-                this.remainingTime = this.selectedSeconds
-            } 
-
-        }, 1000)
-    }
-
-    stop() {
-        if (this.timer) {
-            clearInterval(this.timer)
-            this.timer = null
-        }
-    }
-    
-    updateDisplay() {
-        const m = Math.floor(this.remainingTime / 60)
-        const s = this.remainingTime % 60
-        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    }
-    
-    //運動の選択orスキップ後の処理
-    async finish() {
-        const endTime = new Date()
-        const duration = Math.floor((endTime - this.startTime) / 1000)
-
-        const recordedStartTime = this.startTime
-        this.startTime = new Date()
-
-        //RailsのAPIにデータを飛ばす
-        const response = await fetch("/sitting_sessions", {
-            method: "POST",
-            headers: {
-                "Accept": "text/vnd.turbo-stream.html",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                sitting_session: {
-                    duration: duration,
-                    start_at: recordedStartTime
-                }
-            })
-        })
-
-        if (response.ok) {
-            const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
-        }
-    }
-
-    //詳細画面に遷移した時にタイマーを止める
-    stopAndNavigate() {
-        this.stop()
-    }
-}
+  def show
+    @exercise = Exercise.find(params[:id])
+  end
+end
 </file>
 
 <file path="app/models/exercise.rb">
@@ -3874,19 +3886,6 @@ class Exercise < ApplicationRecord
 
   validates :name, presence: true
   validates :category, presence: true
-end
-</file>
-
-<file path="app/models/sitting_session.rb">
-class SittingSession < ApplicationRecord
-  belongs_to :user
-
-  has_many :suggested_actions, dependent: :destroy
-  # 中間テーブルを介してexerciseへ
-  has_many :exercises, through: :suggested_actions
-
-  #タイマーの選択可能時間
-  SETTING_DURATIONS = [30, 60, 90].freeze
 end
 </file>
 
@@ -4076,55 +4075,6 @@ end
       </div>
     </div>
   </div>
-</div>
-</file>
-
-<file path="app/views/shared/_modal.html.erb">
-<%# app/views/shared/_modal.html.erb %>
-<div class="fixed inset-0 bg-background-dark/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-input-bg-light border border-border-light shadow-xl rounded-3xl max-w-md w-full p-6 animate-[fadeIn_.2s_ease-out]">
-        <div class="text-center mb-6">
-            <h3 class="text-xl font-bold text-text-main">お疲れ様でした！</h3>
-            <p class="text-sm text-text-secondary mt-1">次のセッションが始まる前に、少し体を動かしましょう</p>
-        </div>
-
-        <div class="space-y-4">
-            <% @exercises.each do |exercise| %>
-                <%# Stimulusのアクションを紐付け、タイマーを止めてから遷移させる %>
-                <%= link_to exercise_path(exercise), 
-                    class: "group flex items-center gap-4 p-4 rounded-2xl border border-border-light hover:border-primary hover:bg-orange-50 transition active:scale-[0.98]",
-                    data: { action: "click->timer#stopAndNavigate" } do %>
-                    
-                    <div class="flex-shrink-0 w-16 h-16">
-                        <% if exercise.cloudinary_public_id.present? %>
-                            <%= cl_image_tag(exercise.cloudinary_public_id, 
-                                class: "w-full h-full object-cover rounded-xl shadow-sm") %>
-                        <% else %>
-                            <div class="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">No Image</div>
-                        <% end %>
-                    </div>
-
-                    <div class="flex-grow text-left">
-                        <div class="font-bold text-text-main group-hover:text-primary transition"><%= exercise.name %></div>
-                        <p class="text-xs text-text-secondary line-clamp-1"><%= exercise.description %></p>
-                    </div>
-
-                    <div class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                <% end %>
-            <% end %>
-        </div>
-
-        <%# 何もしないでタイマーを続けたい場合の閉じるボタン %>
-        <button
-            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium"
-            onClick="this.closest('#modal_container').innerHTML=''">
-            今は何もしない（計測を続ける）
-        </button>
-    </div>
 </div>
 </file>
 
@@ -4520,6 +4470,87 @@ class ApplicationController < ActionController::Base
 end
 </file>
 
+<file path="app/javascript/controllers/index.js">
+// This file is auto-generated by ./bin/rails stimulus:manifest:update
+// Run that command whenever you add a new controller or create them with
+// ./bin/rails generate stimulus controllerName
+
+import { application } from "./application"
+
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
+
+import NotificationController from "./notification_controller"
+application.register("notification", NotificationController)
+
+import TimerController from "./timer_controller"
+application.register("timer", TimerController)
+</file>
+
+<file path="app/views/exercises/show.html.erb">
+<div class="max-w-2xl mx-auto p-6 space-y-6 text-text-main">
+
+  <h1 class="text-2xl font-bold">
+    <%= @exercise.name %>
+  </h1>
+
+  <!-- image -->
+  <div class="aspect-video bg-background-light border border-border-light rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5">
+    <% if @exercise.cloudinary_public_id.present? %>
+      <%= cl_image_tag(
+            @exercise.cloudinary_public_id,
+            class: "w-full h-full object-cover"
+          ) %>
+    <% end %>
+  </div>
+  <!-- description -->
+   <div class="p-8 rounded-3xl space-y-8
+                bg-input-bg-light/70 backdrop-blur-xl
+                border border-border-light
+                shadow-xl ring-1 ring-black/5">
+     <h2 class="font-bold text-2xl">やり方</h2>
+  <p class="text-text-main leading-loose">
+    <%= simple_format(@exercise.description) %>
+  </p>
+   <!-- 注意 -->
+      <div class="p-5 rounded-2xl
+                  bg-primary/30
+                  border border-primary/20">
+
+        <h3 class="font-semibold text-text-main mb-2">
+          ⚠ 注意点
+        </h3>
+
+        <p class="text-sm text-text-secondary leading-relaxed">
+            痛みのない範囲でやりましょう。
+        </p>
+      </div>
+</div>
+  <!-- buttons -->
+  <div class="flex pt-6 gap-4">
+
+    <%= link_to "他の運動にする",
+        new_sitting_session_path(reopen_modal: true),
+        class: "flex-1 w-full py-4 text-center
+                bg-background-light text-text-main
+                border border-border-light
+                rounded-2xl
+                hover:bg-primary/15
+                transition" %>
+
+    <%= link_to "終了してタイマーに戻る",
+        new_sitting_session_path,
+        class: "flex-1 w-full py-4 text-center
+                bg-primary text-white
+                rounded-2xl
+                hover:bg-primary-hover
+                transition" %>
+
+  </div>
+
+</div>
+</file>
+
 <file path="app/views/static_pages/top.html.erb">
 <div class="min-h-screen bg-background-light text-text-main">
 
@@ -4589,8 +4620,201 @@ end
 </div>
 </file>
 
+<file path="app/javascript/controllers/timer_controller.js">
+import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
+
+// Connects to data-controller="timer"
+export default class extends Controller {
+    static targets = ["display"]
+    connect() {
+        this.remainingTime = 0
+        this.timer = null
+        this.isModalOpen = false
+
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('reopen_modal')) {
+            this.finish()
+            this.isModalOpen = true
+
+            //タイマーに戻った時にURLからreopen_modal=trueを消す
+            const newUrl = window.location.pathname
+            window.history.replaceState({}, document.title, newUrl)
+        }
+    }
+
+    start(event) {
+        //既存のタイマーを止める
+        this.stop()
+        this.resetModalFlag()
+
+        const minutes = event.params.minutes
+        //秒数に変換
+        //テスト用に5秒後でminutes * 60置き換え
+        this.selectedSeconds = 5
+        this.remainingTime = this.selectedSeconds
+        this.startTime = new Date()
+
+        this.updateDisplay()
+
+        //1秒ごとにカウントダウン
+        this.timer = setInterval(() => {
+            this.remainingTime -= 1
+            this.updateDisplay()
+
+            if (this.remainingTime <= 0) {
+                //fetch,モーダル表示
+                if (!this.isModalOpen) {
+                    this.finish()
+                    this.isModalOpen = true
+                }
+            
+                this.remainingTime = this.selectedSeconds
+            } 
+
+        }, 1000)
+    }
+
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer)
+            this.timer = null
+        }
+    }
+    
+    updateDisplay() {
+        const m = Math.floor(this.remainingTime / 60)
+        const s = this.remainingTime % 60
+        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    }
+    
+    //運動の選択orスキップ後の処理
+    async finish() {
+        const endTime = new Date()
+        const duration = Math.floor((endTime - this.startTime) / 1000)
+
+        const recordedStartTime = this.startTime
+        this.startTime = new Date()
+
+        //RailsのAPIにデータを飛ばす
+        const response = await fetch("/sitting_sessions", {
+            method: "POST",
+            headers: {
+                "Accept": "text/vnd.turbo-stream.html",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                sitting_session: {
+                    duration: duration,
+                    start_at: recordedStartTime
+                }
+            })
+        })
+
+        if (response.ok) {
+            const streamMessage = await response.text()
+            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
+        }
+    }
+
+    resetModalFlag() {
+        this.isModalOpen = false
+    }
+
+    //詳細画面に遷移した時にタイマーを止める
+    stopAndNavigate() {
+        this.stop()
+        this.isModalOpen = false
+    }
+
+}
+</file>
+
+<file path="app/models/sitting_session.rb">
+class SittingSession < ApplicationRecord
+  belongs_to :user
+
+  has_many :suggested_actions, dependent: :destroy
+  # 中間テーブルを介してexerciseへ
+  has_many :exercises, through: :suggested_actions
+
+  # タイマーの選択可能時間
+  SETTING_DURATIONS = [ 30, 60, 90 ].freeze
+end
+</file>
+
+<file path="app/models/user.rb">
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  has_many :sitting_sessions, dependent: :destroy
+
+  # ゲストログインの実装
+  def self.guest
+    find_or_create_by!(email: "guest@example.com") do |user|
+      user.password = SecureRandom.urlsafe_base64
+      user.username = "ゲストユーザー"
+    end
+  end
+end
+</file>
+
+<file path="app/views/shared/_modal.html.erb">
+<%# app/views/shared/_modal.html.erb %>
+<div class="fixed inset-0 bg-background-dark/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-input-bg-light border border-border-light shadow-xl rounded-3xl max-w-md w-full p-6 animate-[fadeIn_.2s_ease-out]">
+        <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-text-main">お疲れ様でした！</h3>
+            <p class="text-sm text-text-secondary mt-1">次のセッションが始まる前に、少し体を動かしましょう</p>
+        </div>
+
+        <div class="space-y-4">
+            <% @exercises.each do |exercise| %>
+                <%# Stimulusのアクションを紐付け、タイマーを止めてから遷移させる %>
+                <%= link_to exercise_path(exercise, reopen_modal: true), 
+                    class: "group flex items-center gap-4 p-4 rounded-2xl border border-border-light hover:border-primary hover:bg-orange-50 transition active:scale-[0.98]",
+                    data: { action: "click->timer#stopAndNavigate" } do %>
+                    
+                    <div class="flex-shrink-0 w-16 h-16">
+                        <% if exercise.cloudinary_public_id.present? %>
+                            <%= cl_image_tag(exercise.cloudinary_public_id, 
+                                class: "w-full h-full object-cover rounded-xl shadow-sm") %>
+                        <% else %>
+                            <div class="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">No Image</div>
+                        <% end %>
+                    </div>
+
+                    <div class="flex-grow text-left">
+                        <div class="font-bold text-text-main group-hover:text-primary transition"><%= exercise.name %></div>
+                        <p class="text-xs text-text-secondary line-clamp-1"><%= exercise.description %></p>
+                    </div>
+
+                    <div class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                <% end %>
+            <% end %>
+        </div>
+
+        <%# 何もしないでタイマーを続けたい場合の閉じるボタン %>
+        <button
+            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium"
+            data-action="click->timer#resetModalFlag"
+            onClick="this.closest('#modal_container').innerHTML=''">
+            今は何もしない（計測を続ける）
+        </button>
+    </div>
+</div>
+</file>
+
 <file path="config/credentials.yml.enc">
-R0c+xloDF++oeI0jQGMDsQ6I20EYDLfu4GqOYADRBz24hPJxLH2FR8JSpC4+CzzNcnej+VotcJAGC4nPaz0+b03DQ1HTyScWJR7fJAlYy72Unxp/N1nMVdzR8KN+LD3G3VZE3Iyh8eZgvvEEIR+uPFfaYhKmoWsLC9K2yF6DJoMRUX379mfSihDBgiCHktWopsyuGWRCf7x6mNECTULMrcgyr56E+zLsKw3IKR3GUjj9dsIrkk8jFgt6D4HPRioBTLStnIdVcoJ6RB47lf+BpPBRMtF3NMzUynSe5kwsATrz/dThTVQBrFN355XeGjMfT8/0nh146bSpQF4FZlOdPgCSgZJR/ayzraBeBFZ8hcAB+I0GXWANeeL9IncXN/ZJkbc4mdaJD5MFI5qoLMGHA2a8YCgZ2BgN1ksmuqz7apkWEN5Vwiq6uQ+UE1KBM6vWH1PCO/FX9rKFA0TJMzf3/22uXW1nABFB7mbOkkSmxvcVoC9F6DDQtugU/VeNMOs0IQbkg7l0vFxeJIYkPvmNME32I5XtMvmm5d1aAxSJSPVcbIfWV57PMe1DZQIh4GLEwgYDOCRNBI3QH5tJ4MREySHd76754QzEwmujyWaC1jIiTSvqJd/BFvKmD8+BBhRZDH/09J8zsycSUmI=--YjBboch2dh0DVKLY--9pExmTvRG3nE3veOMI84Lg==
+f4S18dfTWp7a6mtH+xGACjkoZ4DKjKnpbMu7PNdC8aFHScuHCo9u30BE9/uozU1TTdf+DnNqaMcSUTnm8dmuTVp2eT9cwCgUlP4swbYCo5mqXUwIJJVf3KWuynlR0+22qBZUunvYjOvt6iMkW/gHZSRfDpbQGrtw4gNxVwuJ4Czgadh27kteYZqzAaMEJ2lXcXQa2vBKBlef9ank2likhS4VsHDHmEPgRhmB0FjgR9+08A+dRVFQUVC+Bm6IFrg4DvUP8PaOrm6verHJH24Ara5cJSWgf6D0n/yDZgN9yMCTxTh5Z+D5TlQ9iNsDaUFbqrVQWQL1JOqUpqAw+lwTvFrKUIByWwjN2uw+bSP6elQt3dCn9yz5xbRi6LSAUTi7FJEdd4jihZpaUsDY5SwG9DqfwESLA5Oux6gG+zDEbq12vy56zYNNBPxc/dI3Dbgmnm8jvTAeLGOMtTIO3FDi8WDu0I7Qr3k3cJvtFI/V6Cw+gTq74eWl7iavDDWE8lq6QLZJLl/XwwIiYVJH7pIVb+iAKd61jzgk3HqE/4tGzqQ/0oJuzAxgElS5T1AxhdHjTF7d1CL6filrGGBbln4qHLwJOmljQj0ZjhkygBkJAKpP2DsUhb5hkf1uKXLje2MdYR7olwUTKDWtIzTMRd8IB0ek79qkcLPih0ueWi7xpXNZCPtQmKFZP09wBs5Z/Ao8vHce/Rdx0gRj4dZnPlQP9QWl6aLe+t8ahEidRvJ+aMSE4B8ZvAuwEbrMut1Uj/c8e+e6syqsj+CuHTS/CAYuOCezh8ejO0epZBtvVs3HG8LZ8Ghw79HIIEA/sFtZXYAdMpxq2GNTzqcHVDrbx6ji1wWtLfDVKRRF78mg8nxCERyOg+uzMw2S+GqUwIVgWcnjl0g=--2uhRJWZLgp1aeyCZ--dRD1EbiGIiSuHTVaUTi+pg==
 </file>
 
 <file path="db/queue_schema.rb">
@@ -4606,7 +4830,7 @@ R0c+xloDF++oeI0jQGMDsQ6I20EYDLfu4GqOYADRBz24hPJxLH2FR8JSpC4+CzzNcnej+VotcJAGC4nP
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -4620,13 +4844,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
   end
 
   create_table "sitting_sessions", force: :cascade do |t|
-    t.string "auth"
     t.datetime "created_at", null: false
     t.integer "duration"
-    t.string "endpoint"
     t.boolean "notified"
     t.datetime "notify_at"
-    t.string "p256dh"
     t.datetime "start_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -4764,9 +4985,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "auth"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.string "p256dh"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
@@ -4785,61 +5009,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "suggested_actions", "exercises"
   add_foreign_key "suggested_actions", "sitting_sessions"
-end
-</file>
-
-<file path="app/controllers/sitting_sessions_controller.rb">
-class SittingSessionsController < ApplicationController
-
-  before_action :authenticate_user!
-
-  def new
-  end
-
-  def create
-
-    @sitting_session = current_user.sitting_sessions.build(session_params)
-
-    if @sitting_session.save
-      #座位時間が保存されたら運動をランダムに提案
-      @recommended_exercise = Exercise.order("RANDOM()").limit(3)
-
-      respond_to do |format|
-        #create.turbo_stream.erbを呼び出す
-        format.turbo_stream
-        #モーダル表示されない場合はshowへ
-        format.html { redirect_to sitting_session_path(@sitting_session) }
-      end
-    end
-  end
-
-  def show
-  end
-
-  private
-
-  def session_params
-    params.require(:sitting_session).permit(:duration, :start_at)
-  end
-end
-</file>
-
-<file path="app/models/user.rb">
-class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
-
-  has_many :sitting_sessions, dependent: :destroy
-
-  # ゲストログインの実装
-  def self.guest
-    find_or_create_by!(email: "guest@example.com") do |user|
-      user.password = SecureRandom.urlsafe_base64
-      user.username = "ゲストユーザー"
-    end
-  end
 end
 </file>
 
@@ -4870,7 +5039,7 @@ exercises_data = [
       1. 足を肩幅に開き、ゆっくり腰を下ろします。
       2. 膝が爪先より前に出すぎないように意識してください。
       3. 膝が90°まで曲がるとより効果的ですが、浅くても大丈夫です！
-      
+
       下半身の血流を良くして、脳をリフレッシュさせましょう。
     TEXT
   },
@@ -4933,7 +5102,7 @@ exercises_data = [
     category: :stretch,
     cloudinary_public_id: "gluteus",
     description: <<~TEXT
-      1. 
+      1.#{' '}
       2. そのまま体を開いていきます
       3. 胸を開いて前側が伸びるように
       4. 腕の高さによって伸びる場所が変わるので、調整してみましょう
@@ -5025,7 +5194,7 @@ exercises_data = [
       首は痛めやすいので強くやりすぎないように
       首が硬くなると頭痛や眼精疲労の原因にも
     TEXT
-  },
+  }
 ]
 
 exercises_data.each do |data|
@@ -5040,217 +5209,51 @@ end
 puts "完了！"
 </file>
 
-<file path="app/views/sitting_sessions/new.html.erb">
-<div class="flex flex-col items-center justify-center min-h-screen bg-background-dark p-8">
+<file path="app/controllers/sitting_sessions_controller.rb">
+class SittingSessionsController < ApplicationController
+  before_action :authenticate_user!
 
-  <div data-controller="timer"
-       class="flex flex-col items-center p-12 rounded-[3.5rem]
-              bg-input-bg-light/70 backdrop-blur-xl
-              border border-border-light
-              shadow-xl ring-1 ring-black/5">
-
-    <!-- timer circle -->
-    <div class="relative flex items-center justify-center w-72 h-72">
-      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-90">
-
-        <!-- base circle -->
-        <circle cx="150" cy="150" r="120"
-                stroke="currentColor" stroke-width="4" fill="transparent"
-                class="text-primary opacity-20" />
-
-        <!-- progress circle -->
-        <circle cx="150" cy="150" r="120"
-                stroke="currentColor" stroke-width="10" fill="transparent"
-                data-timer-target="circle"
-                class="text-primary transition-all duration-1000 ease-linear"
-                style="stroke-linecap: round;
-                       filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 60%, transparent));" />
-      </svg>
-
-      <!-- time display -->
-      <div class="absolute text-6xl font-sans font-light tracking-tight text-text-main"
-           data-timer-target="display">
-        00:00
-      </div>
-    </div>
-
-    <!-- controls -->
-    <div class="mt-12 w-full space-y-4">
-      <div class="flex gap-4 justify-center">
-        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
-          <button type="button"
-                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition"
-                  data-action="click->timer#start"
-                  data-timer-minutes-param="<%= minutes %>">
-            <%= minutes %>分
-          </button>
-        <% end %>
-      </div>
-
-      <button type="button" class="text-sm text-gray-400 underline" data-action="click->timer#finish">
-        いますぐ終了
-      </button>
-
-      <button data-action="click->timer#stop"
-              class="w-full py-4 rounded-2xl font-medium
-                     bg-background-light text-text-secondary
-                     border border-border-light
-                     hover:bg-primary/20 hover:text-text-main
-                     transition active:scale-95">
-        リセット
-      </button>
-    </div>
-   
-  </div>
-  <div id="modal_container"></div>
-  <!-- footer accent -->
-  <div class="mt-8 w-32 h-1.5 bg-border-light rounded-full"></div>
-</div>
-</file>
-
-<file path="db/schema.rb">
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
-#
-# This file is the source Rails uses to define your schema when running `bin/rails
-# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
-# be faster and is potentially less error prone than running all of your
-# migrations from scratch. Old migrations may fail to apply correctly if those
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
-  create_table "exercises", force: :cascade do |t|
-    t.integer "category"
-    t.string "cloudinary_public_id"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
+  def new
   end
 
-  create_table "sitting_sessions", force: :cascade do |t|
-    t.string "auth"
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.string "endpoint"
-    t.boolean "notified"
-    t.datetime "notify_at"
-    t.string "p256dh"
-    t.datetime "start_at"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  def create
+    @sitting_session = current_user.sitting_sessions.build(session_params)
+
+    if @sitting_session.save
+      # 座位時間が保存されたら運動をランダムに提案
+      @exercises = Exercise.order("RANDOM()").limit(3)
+
+      respond_to do |format|
+        # create.turbo_stream.erbを呼び出す
+        format.turbo_stream
+        # モーダル表示されない場合はshowへ
+        format.html { redirect_to sitting_session_path(@sitting_session) }
+      end
+    end
   end
 
-  create_table "suggested_actions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  def show
   end
 
-  create_table "users", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
-    t.datetime "updated_at", null: false
-    t.string "username", default: "", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  def subscribe
+    auth_key = params[:subscription][:keys]
+
+    if current_user.update(
+      endpoint: params[:subscription][:endpoint],
+      p256dh: auth_key[:p256dh],
+      auth: auth_key[:auth]
+    )
+      head :ok
+    else
+      head :unprocessable_entity
+    end
   end
 
-  add_foreign_key "sitting_sessions", "users"
-  add_foreign_key "suggested_actions", "exercises"
-  add_foreign_key "suggested_actions", "sitting_sessions"
-end
-</file>
+  private
 
-<file path="Gemfile">
-source "https://rubygems.org"
-
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.2"
-# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem "propshaft"
-# Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
-# Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
-# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
-gem "jsbundling-rails"
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
-# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
-gem "cssbundling-rails"
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
-
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem "solid_cache"
-gem "solid_queue"
-gem "solid_cable"
-
-# Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
-
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
-
-# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
-gem "thruster", require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
-
-# ユーザー認証
-gem "devise"
-
-# 画像CDN
-gem "cloudinary"
-
-
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
-end
-
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
+  def session_params
+    params.require(:sitting_session).permit(:duration, :start_at)
+  end
 end
 </file>
 
@@ -5320,7 +5323,12 @@ Rails.application.routes.draw do
   # topページ
   root "static_pages#top"
 
-  resources :sitting_sessions, only: [ :new, :create, :show ]
+  resources :sitting_sessions, only: [ :new, :create, :show ] do
+    collection do
+      post :subscribe
+    end
+  end
+  
   resources :exercises, only: [ :index, :show ]
 
   devise_for :users
@@ -5338,6 +5346,74 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+end
+</file>
+
+<file path="db/schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "exercises", force: :cascade do |t|
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.datetime "start_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "suggested_actions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.string "p256dh"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "sitting_sessions", "users"
+  add_foreign_key "suggested_actions", "exercises"
+  add_foreign_key "suggested_actions", "sitting_sessions"
 end
 </file>
 
@@ -5563,6 +5639,157 @@ YMYL, E-E-A-T への留意が必要になる
 ## **ER 図**
 
 [![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
+</file>
+
+<file path="Gemfile">
+source "https://rubygems.org"
+
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 8.1.2"
+# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
+gem "propshaft"
+# Use postgresql as the database for Active Record
+gem "pg", "~> 1.1"
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", ">= 5.0"
+# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
+gem "jsbundling-rails"
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem "stimulus-rails"
+# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
+gem "cssbundling-rails"
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem "jbuilder"
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem "solid_cache"
+gem "solid_queue"
+gem "solid_cable"
+
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
+
+# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
+gem "kamal", require: false
+
+# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+gem "thruster", require: false
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "image_processing", "~> 1.2"
+
+# ユーザー認証
+gem "devise"
+
+# 画像CDN
+gem "cloudinary"
+
+gem "web-push"
+
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
+  gem "bundler-audit", require: false
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+end
+
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+</file>
+
+<file path="app/views/sitting_sessions/new.html.erb">
+<div class="flex flex-col items-center justify-center min-h-screen bg-background-dark p-8"
+    data-controller="notification"
+    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
+
+  <div data-controller="timer"
+       class="flex flex-col items-center p-12 rounded-[3.5rem]
+              bg-input-bg-light/70 backdrop-blur-xl
+              border border-border-light
+              shadow-xl ring-1 ring-black/5">
+
+    <!-- timer circle -->
+    <div class="relative flex items-center justify-center w-72 h-72">
+      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-90">
+
+        <!-- base circle -->
+        <circle cx="150" cy="150" r="120"
+                stroke="currentColor" stroke-width="4" fill="transparent"
+                class="text-primary opacity-20" />
+
+        <!-- progress circle -->
+        <circle cx="150" cy="150" r="120"
+                stroke="currentColor" stroke-width="10" fill="transparent"
+                data-timer-target="circle"
+                class="text-primary transition-all duration-1000 ease-linear"
+                style="stroke-linecap: round;
+                       filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 60%, transparent));" />
+      </svg>
+
+      <!-- time display -->
+      <div class="absolute text-6xl font- sans font-light tracking-tight text-text-main"
+           data-timer-target="display">
+        00:00
+      </div>
+    </div>
+
+    <!-- controls -->
+    <div class="mt-12 w-full space-y-4">
+      <div class="flex gap-4 justify-center">
+        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+          <button type="button"
+                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition"
+                  data-action="click->timer#start"
+                  data-timer-minutes-param="<%= minutes %>">
+            <%= minutes %>分
+          </button>
+        <% end %>
+      </div>
+      <div class="flex justify-center">
+        <button type="button" class="text-sm text-gray-400 underline" data-action="click->timer#finish">
+          いますぐ終了
+        </button>
+      </div>
+
+      <button data-action="click->timer#stop"
+              class="w-full py-4 rounded-2xl font-medium
+                     bg-background-light text-text-secondary
+                     border border-border-light
+                     hover:bg-primary/20 hover:text-text-main
+                     transition active:scale-95">
+        リセット
+      </button>
+    </div>
+   
+  </div>
+  <div id="modal_container"></div>
+  <!-- footer accent -->
+  <div class="mt-8 w-32 h-1.5 bg-border-light rounded-full"></div>
+</div>
 </file>
 
 </files>

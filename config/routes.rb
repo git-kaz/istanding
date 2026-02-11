@@ -2,7 +2,12 @@ Rails.application.routes.draw do
   # topページ
   root "static_pages#top"
 
-  resources :sitting_sessions, only: [ :new, :create, :show ]
+  resources :sitting_sessions, only: [ :new, :create, :show ] do
+    collection do
+      post :subscribe
+    end
+  end
+
   resources :exercises, only: [ :index, :show ]
 
   devise_for :users

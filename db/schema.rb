@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,13 +24,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
   end
 
   create_table "sitting_sessions", force: :cascade do |t|
-    t.string "auth"
     t.datetime "created_at", null: false
     t.integer "duration"
-    t.string "endpoint"
     t.boolean "notified"
     t.datetime "notify_at"
-    t.string "p256dh"
     t.datetime "start_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -47,9 +44,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_214818) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "auth"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.string "p256dh"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"

@@ -23,6 +23,20 @@ class SittingSessionsController < ApplicationController
   def show
   end
 
+  def subscribe
+    auth_key = params[:subscription][:keys]
+
+    if current_user.update(
+      endpoint: params[:subscription][:endpoint],
+      p256dh: auth_key[:p256dh],
+      auth: auth_key[:auth]
+    )
+      head :ok
+    else
+      head :unprocessable_entity
+    end
+  end
+
   private
 
   def session_params
