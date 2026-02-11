@@ -16,10 +16,9 @@ class SittingSession < ApplicationRecord
     # created_at + duration.minutes
   end
 
-  #現在時刻が終了時刻より前ではないか？
+  # 現在時刻が終了時刻より前ではないか？
   def in_progress?
     # デバッグ後にTime.current < end_time && 追加
     !notified?
   end
-
 end

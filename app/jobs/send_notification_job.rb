@@ -1,11 +1,11 @@
-require 'web-push'
+require "web-push"
 
 class SendNotificationJob < ApplicationJob
   queue_as :default
 
   def perform(sitting_session_id)
     session = SittingSession.find_by(id: sitting_session_id)
-    
+
     return if session.nil?
 
     return unless session.in_progress?
@@ -27,12 +27,12 @@ class SendNotificationJob < ApplicationJob
       )
       session.update!(notified: true)
     rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
-      
+
       user.update(endpoint: nil, p256dh: nil, auth: nil)
-    
+
     rescue => e
       Rails.logger.error "通信エラー: #{e.message}"
-      
+
     end
   end
 end
