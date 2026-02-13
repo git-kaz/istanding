@@ -1,11 +1,15 @@
 class SittingSessionsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_sitting_session, only: [:cancel]
+  
 
   def new
   end
 
   def create
     @sitting_session = current_user.sitting_sessions.build(session_params)
+
+    @sitting_session.status = :completed
 
     if @sitting_session.save
       # 座位時間が保存されたら運動をランダムに提案
@@ -23,6 +27,16 @@ class SittingSessionsController < ApplicationController
         # モーダル表示されない場合はshowへ
         format.html { redirect_to sitting_session_path(@sitting_session) }
       end
+    end
+  end
+
+  def cancel
+    if @sitting_session.active?
+      @sitting_session.cancelled!
+      # 204を返してデータ通信をしない
+      head :no_content
+    else
+      render json: { error: "すでに終了しています" }, status: :unprocessable_entity
     end
   end
 
@@ -44,6 +58,10 @@ class SittingSessionsController < ApplicationController
   end
 
   private
+
+  def set_sitting_session
+    @sitting_session = current_user.sitting_sessions.find(params[:id])
+  end
 
   def session_params
     params.require(:sitting_session).permit(:duration, :start_at)
