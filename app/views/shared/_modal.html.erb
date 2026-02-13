@@ -11,7 +11,7 @@
                 <%# Stimulusのアクションを紐付け、タイマーを止めてから遷移させる %>
                 <%= link_to exercise_path(exercise, reopen_modal: true), 
                     class: "group flex items-center gap-4 p-4 rounded-2xl border border-border-light hover:border-primary hover:bg-orange-50 transition active:scale-[0.98]",
-                    data: { action: "click->timer#stopAndNavigate" } do %>
+                    data: { action: "click->timer#resetModalFlag" } do %>
                     
                     <div class="flex-shrink-0 w-16 h-16">
                         <% if exercise.cloudinary_public_id.present? %>
@@ -27,20 +27,15 @@
                         <p class="text-xs text-text-secondary line-clamp-1"><%= exercise.description %></p>
                     </div>
 
-                    <div class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
                 <% end %>
             <% end %>
         </div>
 
         <%# 何もしないでタイマーを続けたい場合の閉じるボタン %>
         <button
-            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium"
-            data-action="click->timer#resetModalFlag"
-            onClick="this.closest('#modal_container').innerHTML=''">
+            type="button"
+            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium cursor-pointer"
+            data-action="click->timer#closeModal">
             今は何もしない（計測を続ける）
         </button>
     </div>

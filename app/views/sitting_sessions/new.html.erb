@@ -35,18 +35,25 @@
 
     <!-- controls -->
     <div class="mt-12 w-full space-y-4">
+      <button data-action="click->timer#start" 
+              class="bg-primary text-white p-4 w-full rounded-2xl font-medium
+                     border border-border-light hover:bg-primary/80 hover:text-white/70
+                     transition active:scale-95 cursor-pointer">
+    タイマー開始
+  </button>
       <div class="flex gap-4 justify-center">
+        
         <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
           <button type="button"
-                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition"
-                  data-action="click->timer#start"
+                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition cursor-pointer"
+                  data-action="click->timer#setTime"
                   data-timer-minutes-param="<%= minutes %>">
             <%= minutes %>分
           </button>
         <% end %>
       </div>
       <div class="flex justify-center">
-        <button type="button" class="text-sm text-gray-400 underline" data-action="click->timer#finish">
+        <button type="button" class="text-sm text-gray-400 underline cursor-pointer" data-action="click->timer#finish">
           いますぐ終了
         </button>
       </div>
@@ -56,13 +63,14 @@
                      bg-background-light text-text-secondary
                      border border-border-light
                      hover:bg-primary/20 hover:text-text-main
-                     transition active:scale-95">
+                     transition active:scale-95 cursor-pointer">
         リセット
       </button>
     </div>
-   
-  </div>
+
   <div id="modal_container"></div>
+  </div>
+ 
   <!-- footer accent -->
   <div class="mt-8 w-32 h-1.5 bg-border-light rounded-full"></div>
 </div>
