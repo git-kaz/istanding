@@ -39,9 +39,11 @@ self.addEventListener('notificationclick', function (event) {
             .then(function (windowClients) {
                 //アプリのタブを探す
                 for (let i = 0; i < windowClients.length; i++) {
-                    if (clients.url === urlToOpen && 'Focus' in clients) {
+                    const client = windowClients[i]
+
+                    if (client.url === urlToOpen && 'focus' in client) {
                         //あればフォーカス
-                        return clients.focus()
+                        return client.focus()
                     }
                 }
                 //なければ新しいタブを開く

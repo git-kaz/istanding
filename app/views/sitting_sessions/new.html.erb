@@ -1,68 +1,80 @@
-<div class="flex flex-col items-center justify-center min-h-screen bg-background-dark p-8"
+<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
     data-controller="notification"
     data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
 
   <div data-controller="timer"
-       class="flex flex-col items-center p-12 rounded-[3.5rem]
-              bg-input-bg-light/70 backdrop-blur-xl
-              border border-border-light
-              shadow-xl ring-1 ring-black/5">
+       class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
+              bg-input-bg-light/60 backdrop-blur-3xl
+              border border-white/40
+              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
+              w-full max-w-md transition-all duration-500">
 
-    <!-- timer circle -->
-    <div class="relative flex items-center justify-center w-72 h-72">
+    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
       <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-90">
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="2" fill="transparent"
+                class="text-border-light opacity-50" />
 
-        <!-- base circle -->
-        <circle cx="150" cy="150" r="120"
-                stroke="currentColor" stroke-width="4" fill="transparent"
-                class="text-primary opacity-20" />
-
-        <!-- progress circle -->
-        <circle cx="150" cy="150" r="120"
-                stroke="currentColor" stroke-width="10" fill="transparent"
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="6" fill="transparent"
                 data-timer-target="circle"
                 class="text-primary transition-all duration-1000 ease-linear"
-                style="stroke-linecap: round;
-                       filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 60%, transparent));" />
+                style="stroke-linecap: round; 
+                       filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-primary) 40%, transparent));" />
       </svg>
 
-      <!-- time display -->
-      <div class="absolute text-6xl font- sans font-light tracking-tight text-text-main"
-           data-timer-target="display">
-        00:00
+      <div class="absolute flex flex-col items-center justify-center">
+        <div class="text-7xl font-extralight tracking-tighter text-text-main"
+             data-timer-target="display">
+          00:00
+        </div>
       </div>
     </div>
 
-    <!-- controls -->
-    <div class="mt-12 w-full space-y-4">
-      <div class="flex gap-4 justify-center">
+    <div class="mt-12 w-full space-y-8">
+      
+      <div class="flex flex-wrap gap-2 justify-center">
         <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
           <button type="button"
-                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition"
-                  data-action="click->timer#start"
+                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
+                         hover:border-primary hover:bg-white rounded-2xl
+                         text-text-secondary font-semibold transition-all
+                         active:scale-90 cursor-pointer"
+                  data-action="click->timer#setTime"
                   data-timer-minutes-param="<%= minutes %>">
-            <%= minutes %>分
+            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
           </button>
         <% end %>
       </div>
-      <div class="flex justify-center">
-        <button type="button" class="text-sm text-gray-400 underline" data-action="click->timer#finish">
-          いますぐ終了
-        </button>
-      </div>
 
-      <button data-action="click->timer#stop"
-              class="w-full py-4 rounded-2xl font-medium
-                     bg-background-light text-text-secondary
-                     border border-border-light
-                     hover:bg-primary/20 hover:text-text-main
-                     transition active:scale-95">
-        リセット
-      </button>
+      <div class="space-y-4">
+        <button data-action="click->timer#start" 
+              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
+                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
+                     transition-all active:scale-[0.96] cursor-pointer">
+          START
+        </button>
+
+        <div class="flex gap-3">
+          <button data-action="click->timer#reset"
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-background-light text-text-secondary
+                         border border-border-light hover:bg-white hover:text-text-main
+                         transition-all active:scale-95 cursor-pointer">
+            RESET
+          </button>
+          
+          <button type="button" 
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-transparent text-text-secondary/40
+                         hover:text-text-main transition-all cursor-pointer" 
+                  data-action="click->timer#finish">
+            SKIP
+          </button>
+        </div>
+      </div>
     </div>
-   
+
+    <div id="modal_container"></div>
   </div>
-  <div id="modal_container"></div>
-  <!-- footer accent -->
-  <div class="mt-8 w-32 h-1.5 bg-border-light rounded-full"></div>
 </div>

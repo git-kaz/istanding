@@ -19,27 +19,33 @@ export default class extends Controller {
             window.history.replaceState({}, document.title, newUrl)
         }
     }
-
-    start(event) {
-        //既存のタイマーを止める
-        this.stop()
-        this.resetModalFlag()
-
+    //時間セット
+    setTime(event) {
         const minutes = event.params.minutes
         //秒数に変換
         //デバッグ用
         this.selectedSeconds = 5
         // this.selectedSeconds = minutes * 60
         this.remainingTime = this.selectedSeconds
-        this.startTime = new Date()
+        this.updateDisplay()
+    }
 
+    start() {
+        if (!this.selectedSeconds || this.selectedSeconds <= 0) return
+        //既存のタイマーを止める
+        this.resetModalFlag()
+        this.remainingTime = this.selectedSeconds
+        this.startTime = new Date()
         this.updateDisplay()
 
         //1秒ごとにカウントダウン
         this.timer = setInterval(() => {
+            //timerがnilの場合は早期リターン
+            if (!this.timer) return
+            
             this.remainingTime -= 1
-            this.updateDisplay()
-
+            this.updateDisplay()       
+            
             if (this.remainingTime <= 0) {
                 //fetch,モーダル表示
                 if (!this.isModalOpen) {
@@ -48,6 +54,7 @@ export default class extends Controller {
                 }
             
                 this.remainingTime = this.selectedSeconds
+                this.updateDisplay()
             } 
 
         }, 1000)
@@ -58,6 +65,13 @@ export default class extends Controller {
             clearInterval(this.timer)
             this.timer = null
         }
+    }
+
+    reset() {
+        this.stop()              // タイマーを止める
+        this.remainingTime = 0   // 残り時間を0にする
+        this.updateDisplay()     // 表示を 00:00 に更新する
+        this.isModalOpen = false // モーダルフラグも寝かせておく
     }
     
     updateDisplay() {
@@ -97,13 +111,12 @@ export default class extends Controller {
     }
 
     resetModalFlag() {
-        this.isModalOpen = false
-    }
-
-    //詳細画面に遷移した時にタイマーを止める
-    stopAndNavigate() {
         this.stop()
         this.isModalOpen = false
     }
 
+    closeModal() {
+        this.resetModalFlag()
+        document.getElementById('modal_container').innerHTML = ''
+    }
 }
