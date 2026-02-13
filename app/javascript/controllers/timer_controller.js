@@ -31,6 +31,7 @@ export default class extends Controller {
     }
 
     start() {
+        if (!this.selectedSeconds || this.selectedSeconds <= 0) return
         //既存のタイマーを止める
         this.resetModalFlag()
         this.remainingTime = this.selectedSeconds
@@ -63,8 +64,14 @@ export default class extends Controller {
         if (this.timer) {
             clearInterval(this.timer)
             this.timer = null
-            this.updateDisplay()
         }
+    }
+
+    reset() {
+        this.stop()              // タイマーを止める
+        this.remainingTime = 0   // 残り時間を0にする
+        this.updateDisplay()     // 表示を 00:00 に更新する
+        this.isModalOpen = false // モーダルフラグも寝かせておく
     }
     
     updateDisplay() {
