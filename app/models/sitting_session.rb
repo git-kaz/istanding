@@ -12,12 +12,10 @@ class SittingSession < ApplicationRecord
 
   # 4. Callbacks (コールバック)
   before_create :cancel_active_sessions
-
-  # 5. Instance Methods (インスタンスメソッド)
   
   # 終了時刻の計算
   def end_time
-    # durationの単位（秒か分か）が確定したら、ここを一元管理できるようにすると安全です
+    # durationを一元管理
     created_at + duration.seconds
   end
 

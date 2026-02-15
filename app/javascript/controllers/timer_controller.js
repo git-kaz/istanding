@@ -1,65 +1,62 @@
 import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
 
-// Connects to data-controller="timer"
+const DEBUG_MODE = true; // デバッグ時に秒数を短縮するかどうか
+const AUTO_CLOSE_MS = 600000; // 10分
+
 export default class extends Controller {
     static targets = ["display"]
+
     connect() {
         this.remainingTime = 0
         this.timer = null
         this.isModalOpen = false
+        this.autoCloseTimer = null // 自動閉鎖用タイマー
 
         const params = new URLSearchParams(window.location.search)
         if (params.get('reopen_modal')) {
-            this.finish()
-            this.isModalOpen = true
-
-            //タイマーに戻った時にURLからreopen_modal=trueを消す
+            this.showSessionModal()
+            // URLからパラメータを削除
             const newUrl = window.location.pathname
             window.history.replaceState({}, document.title, newUrl)
         }
     }
-    //時間セット
+
+    // 1. 設定：時間セット
     setTime(event) {
         const minutes = event.params.minutes
-        //秒数に変換
-        //デバッグ用
-        this.selectedSeconds = 5
-        // this.selectedSeconds = minutes * 60
+        this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
         this.remainingTime = this.selectedSeconds
         this.updateDisplay()
     }
 
+    // 2. 実行：タイマー開始
     start() {
         if (!this.selectedSeconds || this.selectedSeconds <= 0) return
-        //既存のタイマーを止める
-        this.resetModalFlag()
+
+        this.resetState() // 全てをクリアしてから開始
         this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
         this.updateDisplay()
 
-        //1秒ごとにカウントダウン
+        this.runTimer()
+    }
+
+    runTimer() {
         this.timer = setInterval(() => {
-            //timerがnilの場合は早期リターン
             if (!this.timer) return
             
             this.remainingTime -= 1
             this.updateDisplay()       
             
             if (this.remainingTime <= 0) {
-                //fetch,モーダル表示
-                if (!this.isModalOpen) {
-                    this.finish()
-                    this.isModalOpen = true
-                }
-            
-                this.remainingTime = this.selectedSeconds
-                this.updateDisplay()
+                this.stop()
+                this.showSessionModal()
             } 
-
         }, 1000)
     }
 
+    // 3. 制御：停止・リセット
     stop() {
         if (this.timer) {
             clearInterval(this.timer)
@@ -67,28 +64,44 @@ export default class extends Controller {
         }
     }
 
+    // 全てをクリアする（リセットボタン等で使用）
     reset() {
-        this.stop()              // タイマーを止める
-        this.remainingTime = 0   // 残り時間を0にする
-        this.updateDisplay()     // 表示を 00:00 に更新する
-        this.isModalOpen = false // モーダルフラグも寝かせておく
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.remainingTime = 0
+        this.isModalOpen = false
+        this.updateDisplay()
+        this.clearModalUI()
     }
-    
-    updateDisplay() {
-        const m = Math.floor(this.remainingTime / 60)
-        const s = this.remainingTime % 60
-        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    }
-    
-    //運動の選択orスキップ後の処理
-    async finish() {
-        const endTime = new Date()
-        const duration = Math.floor((endTime - this.startTime) / 1000)
 
-        const recordedStartTime = this.startTime
+    // 内部的な状態リセット（start時などに使用）
+    resetState() {
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.isModalOpen = false
+        this.clearModalUI()
+    }
+
+    // 4. 通信：セッション終了と保存
+    async showSessionModal() {
+        if (this.isModalOpen) return
+        this.isModalOpen = true
+
+        await this.finish() // サーバーに保存
+
+        // 放置対策：一定時間後に自動で閉じる
+        this.autoCloseTimer = setTimeout(() => {
+            if (this.isModalOpen) this.closeModal()
+        }, AUTO_CLOSE_MS)
+    }
+
+    async finish() {
+        const recordedStartTime = this.startTime || new Date()
+        const duration = Math.floor((new Date() - recordedStartTime) / 1000)
+
+        // 次の計測に備えて開始時刻をリセット
         this.startTime = new Date()
 
-        //RailsのAPIにデータを飛ばす
         const response = await fetch("/sitting_sessions", {
             method: "POST",
             headers: {
@@ -106,17 +119,31 @@ export default class extends Controller {
 
         if (response.ok) {
             const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
+            Turbo.renderStreamMessage(streamMessage)
         }
     }
 
-    resetModalFlag() {
-        this.stop()
-        this.isModalOpen = false
+    // 5. UI操作
+    closeModal() {
+        this.resetState()
+        this.clearModalUI()
     }
 
-    closeModal() {
-        this.resetModalFlag()
-        document.getElementById('modal_container').innerHTML = ''
+    clearModalUI() {
+        const container = document.getElementById('modal_container')
+        if (container) container.innerHTML = ''
+    }
+
+    clearAutoCloseTimer() {
+        if (this.autoCloseTimer) {
+            clearTimeout(this.autoCloseTimer)
+            this.autoCloseTimer = null
+        }
+    }
+
+    updateDisplay() {
+        const m = Math.floor(this.remainingTime / 60)
+        const s = this.remainingTime % 60
+        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
     }
 }

@@ -31,6 +31,7 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
     event.notification.close()
     //通知のurl
+    const rootUrl = new URL('/', self.location.origin).href
     const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
     //指定されたurlを開く
     event.waitUntil(
@@ -41,7 +42,7 @@ self.addEventListener('notificationclick', function (event) {
                 for (let i = 0; i < windowClients.length; i++) {
                     const client = windowClients[i]
 
-                    if (client.url === urlToOpen && 'focus' in client) {
+                    if (client.url.startsWith(rootUrl) && 'focus' in client) {
                         //あればフォーカス
                         return client.focus()
                     }
