@@ -1,10 +1,8 @@
 class SittingSession < ApplicationRecord
-  # 1. Constants (定数)
-  SETTING_DURATIONS = [30, 60, 90].freeze
-
-  # 2. Associations (関連付け)
   belongs_to :user
+
   has_many :suggested_actions, dependent: :destroy
+  # 中間テーブルを介してexerciseへ
   has_many :exercises, through: :suggested_actions
 
   # 3. Enums (列挙型)
@@ -17,18 +15,13 @@ class SittingSession < ApplicationRecord
   def end_time
     # durationを一元管理
     created_at + duration.seconds
+    # secondsはminutesに戻す予定
+    # created_at + duration.minutes
   end
 
   # 現在時刻が終了時刻より前ではないか？
   def in_progress?
-    # TODO: デバッグ後に Time.current < end_time && を追加予定
+    # デバッグ後にTime.current < end_time && 追加
     !notified?
-  end
-
-  private
-
-  # 6. Private Methods
-  def cancel_active_sessions
-    user.sitting_sessions.active.where.not(id: id).update_all(status: :cancelled)
   end
 end
