@@ -5,13 +5,21 @@ const DEBUG_MODE = true; // デバッグ時に秒数を短縮するかどうか
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display"]
+    static targets = ["display", "circle"]
 
     connect() {
         this.remainingTime = 0
+        this.selectedSeconds = 0
         this.timer = null
         this.isModalOpen = false
         this.autoCloseTimer = null // 自動閉鎖用タイマー
+
+        if (this.hasCircleTarget) {
+            const radius = this.circleTarget.r.baseVal.value
+            this.circumference = 2 * Math.PI * radius
+            this.circleTarget.style.strokeDasharray = `${this.circumference} ${this.circumference}`
+            this.circleTarget.style.strokeDashoffset = 0
+        }
 
         const params = new URLSearchParams(window.location.search)
         if (params.get('reopen_modal')) {
@@ -28,6 +36,7 @@ export default class extends Controller {
         this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
         this.remainingTime = this.selectedSeconds
         this.updateDisplay()
+        this.updateCircle()
     }
 
     // 2. 実行：タイマー開始
@@ -38,6 +47,7 @@ export default class extends Controller {
         this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
         this.updateDisplay()
+        this.updateCircle()
 
         this.runTimer()
     }
@@ -48,12 +58,25 @@ export default class extends Controller {
             
             this.remainingTime -= 1
             this.updateDisplay()       
+            this.updateCircle()
             
             if (this.remainingTime <= 0) {
                 this.stop()
                 this.showSessionModal()
             } 
         }, 1000)
+    }
+
+    updateCircle() {
+        if (!this.hasCircleTarget) return
+
+        // 1分間(60秒)で1週する
+        const currentSecondInMinutes = this.remainingTime % 60
+        const displaySeconds = (currentSecondInMinutes === 0 && this.remainingTime > 0) ? 60 : currentSecondInMinutes
+
+        const offset = this.circumference * (1 - displaySeconds / 60)
+
+        this.circleTarget.style.strokeDashoffset = offset
     }
 
     // 3. 制御：停止・リセット
