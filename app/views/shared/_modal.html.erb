@@ -1,42 +1,50 @@
 <%# app/views/shared/_modal.html.erb %>
-<div class="fixed inset-0 bg-background-dark/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-input-bg-light border border-border-light shadow-xl rounded-3xl max-w-md w-full p-6 animate-[fadeIn_.2s_ease-out]">
-        <div class="text-center mb-6">
-            <h3 class="text-xl font-bold text-text-main">お疲れ様でした！</h3>
-            <p class="text-sm text-text-secondary mt-1">次のセッションが始まる前に、少し体を動かしましょう</p>
-        </div>
-
-        <div class="space-y-4">
-            <% @exercises.each do |exercise| %>
-                <%# Stimulusのアクションを紐付け、タイマーを止めてから遷移させる %>
-                <%= link_to exercise_path(exercise, reopen_modal: true), 
-                    class: "group flex items-center gap-4 p-4 rounded-2xl border border-border-light hover:border-primary hover:bg-orange-50 transition active:scale-[0.98]",
-                    data: { action: "click->timer#resetModalFlag" } do %>
-                    
-                    <div class="flex-shrink-0 w-16 h-16">
-                        <% if exercise.cloudinary_public_id.present? %>
-                            <%= cl_image_tag(exercise.cloudinary_public_id, 
-                                class: "w-full h-full object-cover rounded-xl shadow-sm") %>
-                        <% else %>
-                            <div class="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">No Image</div>
-                        <% end %>
-                    </div>
-
-                    <div class="flex-grow text-left">
-                        <div class="font-bold text-text-main group-hover:text-primary transition"><%= exercise.name %></div>
-                        <p class="text-xs text-text-secondary line-clamp-1"><%= exercise.description %></p>
-                    </div>
-
-                <% end %>
-            <% end %>
-        </div>
-
-        <%# 何もしないでタイマーを続けたい場合の閉じるボタン %>
-        <button
-            type="button"
-            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium cursor-pointer"
-            data-action="click->timer#closeModal">
-            今は何もしない（計測を続ける）
-        </button>
+<div class="fixed inset-0 bg-background-dark/80 backdrop-blur-xs flex items-center justify-center z-50 p-6 animate-in fade-in duration-300">
+  <div class="bg-white/90 border border-white/20 shadow-2xl rounded-[3rem] max-w-4xl w-full p-8 md:p-12 transform animate-in zoom-in-95 duration-300">
+    
+    <div class="text-center mb-10">
+      <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold tracking-widest rounded-full mb-4">COMPLETE</span>
+      <h3 class="text-3xl md:text-4xl font-black text-text-main tracking-tight">お疲れさまです！</h3>
+      <p class="text-text-secondary mt-3 text-lg font-medium">少し体を動かして、リフレッシュしましょう</p>
     </div>
+
+    <%# 3つ横並びのグリッド %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% @exercises.each do |exercise| %>
+        <%= link_to exercise_path(exercise, reopen_modal: true), 
+            class: "group relative block overflow-hidden rounded-[2rem] border-2 border-transparent hover:border-primary hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 active:scale-95",
+            data: { action: "click->timer#resetModalFlag" } do %>
+          
+          <%# 画像エリア %>
+          <div class="aspect-[4/5] relative">
+            <% if exercise.cloudinary_public_id.present? %>
+              <%= cl_image_tag(exercise.cloudinary_public_id, 
+                  class: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110") %>
+            <% else %>
+              <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">No Image</div>
+            <% end %>
+            
+            <%# オーバーレイ：画像の上に名前を表示 %>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+              <div class="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <div class="text-white font-black text-lg leading-tight"><%= exercise.name %></div>
+                <div class="mt-2 flex items-center text-primary-light text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  START NOW 
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="text-center mt-10">
+      <button
+          type="button"
+          class="px-8 py-3 text-sm font-bold text-text-secondary/60 hover:text-primary transition-colors cursor-pointer tracking-widest"
+          data-action="click->timer#closeModal">
+        今はスキップして続ける →
+      </button>
+    </div>
+  </div>
 </div>

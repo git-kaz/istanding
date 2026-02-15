@@ -1,5 +1,4 @@
 class SittingSession < ApplicationRecord
-
   SETTING_DURATIONS = [ 30, 60, 90 ].freeze
 
   belongs_to :user
@@ -13,7 +12,7 @@ class SittingSession < ApplicationRecord
 
   # 4. Callbacks (コールバック)
   before_create :cancel_active_sessions
-  
+
   # 終了時刻の計算
   def end_time
     # durationを一元管理
