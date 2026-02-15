@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_13_212116) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,7 +29,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_212116) do
     t.boolean "notified"
     t.datetime "notify_at"
     t.datetime "start_at"
-    t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
