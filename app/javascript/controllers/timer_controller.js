@@ -83,11 +83,11 @@ export default class extends Controller {
     }
 
     // 4. 通信：セッション終了と保存
-    async showSessionModal() {
+    showSessionModal() {
         if (this.isModalOpen) return
         this.isModalOpen = true
 
-        await this.finish() // サーバーに保存
+        this.finish() // サーバーに保存
 
         // 放置対策：一定時間後に自動で閉じる
         this.autoCloseTimer = setTimeout(() => {

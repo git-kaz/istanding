@@ -4447,44 +4447,6 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.1]
 end
 </file>
 
-<file path="public/service-worker.js">
-self.addEventListener('push', function (event) {
-    console.log('Push received!');
-    
-    let data = {};
-    if (event.data) {
-        try {
-            // まずはJSONとして解析を試みる
-            data = event.data.json();
-        } catch (e) {
-            // JSONでなければ、そのままテキストとしてbodyに格納
-            data = { body: event.data.text() };
-        }
-    }
-    
-    const title = data.title || '休憩時間になりました！';
-
-    const options = {
-        body: data.body || '身体を動かしましょう！',
-        icon: new URL('/icon.png', self.location.origin).href,
-        // RailsからURLが指定されていなければ、トップページを表示
-        data: { url: data.url || '/' }
-    };
-
-    //通知を表示するまでservice workerを終了させない
-    event.waitUntil(
-        self.registration.showNotification(title, options)
-    )
-})
-
-//通知をクリックしたら発火
-self.addEventListener('notificationclick', function (event) {
-    event.notification.close()
-    //指定されたurlを開く
-    event.waitUntil(clients.openWindow(event.notification.data.url))
-})
-</file>
-
 <file path="app/controllers/application_controller.rb">
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
@@ -4708,6 +4670,10 @@ class User < ApplicationRecord
 end
 </file>
 
+<file path="config/credentials.yml.enc">
+f4S18dfTWp7a6mtH+xGACjkoZ4DKjKnpbMu7PNdC8aFHScuHCo9u30BE9/uozU1TTdf+DnNqaMcSUTnm8dmuTVp2eT9cwCgUlP4swbYCo5mqXUwIJJVf3KWuynlR0+22qBZUunvYjOvt6iMkW/gHZSRfDpbQGrtw4gNxVwuJ4Czgadh27kteYZqzAaMEJ2lXcXQa2vBKBlef9ank2likhS4VsHDHmEPgRhmB0FjgR9+08A+dRVFQUVC+Bm6IFrg4DvUP8PaOrm6verHJH24Ara5cJSWgf6D0n/yDZgN9yMCTxTh5Z+D5TlQ9iNsDaUFbqrVQWQL1JOqUpqAw+lwTvFrKUIByWwjN2uw+bSP6elQt3dCn9yz5xbRi6LSAUTi7FJEdd4jihZpaUsDY5SwG9DqfwESLA5Oux6gG+zDEbq12vy56zYNNBPxc/dI3Dbgmnm8jvTAeLGOMtTIO3FDi8WDu0I7Qr3k3cJvtFI/V6Cw+gTq74eWl7iavDDWE8lq6QLZJLl/XwwIiYVJH7pIVb+iAKd61jzgk3HqE/4tGzqQ/0oJuzAxgElS5T1AxhdHjTF7d1CL6filrGGBbln4qHLwJOmljQj0ZjhkygBkJAKpP2DsUhb5hkf1uKXLje2MdYR7olwUTKDWtIzTMRd8IB0ek79qkcLPih0ueWi7xpXNZCPtQmKFZP09wBs5Z/Ao8vHce/Rdx0gRj4dZnPlQP9QWl6aLe+t8ahEidRvJ+aMSE4B8ZvAuwEbrMut1Uj/c8e+e6syqsj+CuHTS/CAYuOCezh8ejO0epZBtvVs3HG8LZ8Ghw79HIIEA/sFtZXYAdMpxq2GNTzqcHVDrbx6ji1wWtLfDVKRRF78mg8nxCERyOg+uzMw2S+GqUwIVgWcnjl0g=--2uhRJWZLgp1aeyCZ--dRD1EbiGIiSuHTVaUTi+pg==
+</file>
+
 <file path="app/views/shared/_modal.html.erb">
 <%# app/views/shared/_modal.html.erb %>
 <div class="fixed inset-0 bg-background-dark/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -4722,7 +4688,7 @@ end
                 <%# Stimulusのアクションを紐付け、タイマーを止めてから遷移させる %>
                 <%= link_to exercise_path(exercise, reopen_modal: true), 
                     class: "group flex items-center gap-4 p-4 rounded-2xl border border-border-light hover:border-primary hover:bg-orange-50 transition active:scale-[0.98]",
-                    data: { action: "click->timer#stopAndNavigate" } do %>
+                    data: { action: "click->timer#resetModalFlag" } do %>
                     
                     <div class="flex-shrink-0 w-16 h-16">
                         <% if exercise.cloudinary_public_id.present? %>
@@ -4738,335 +4704,19 @@ end
                         <p class="text-xs text-text-secondary line-clamp-1"><%= exercise.description %></p>
                     </div>
 
-                    <div class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
                 <% end %>
             <% end %>
         </div>
 
         <%# 何もしないでタイマーを続けたい場合の閉じるボタン %>
         <button
-            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium"
-            data-action="click->timer#resetModalFlag"
-            onClick="this.closest('#modal_container').innerHTML=''">
+            type="button"
+            class="mt-6 w-full py-3 text-sm text-text-secondary hover:text-text-main transition font-medium cursor-pointer"
+            data-action="click->timer#closeModal">
             今は何もしない（計測を続ける）
         </button>
     </div>
 </div>
-</file>
-
-<file path="config/credentials.yml.enc">
-f4S18dfTWp7a6mtH+xGACjkoZ4DKjKnpbMu7PNdC8aFHScuHCo9u30BE9/uozU1TTdf+DnNqaMcSUTnm8dmuTVp2eT9cwCgUlP4swbYCo5mqXUwIJJVf3KWuynlR0+22qBZUunvYjOvt6iMkW/gHZSRfDpbQGrtw4gNxVwuJ4Czgadh27kteYZqzAaMEJ2lXcXQa2vBKBlef9ank2likhS4VsHDHmEPgRhmB0FjgR9+08A+dRVFQUVC+Bm6IFrg4DvUP8PaOrm6verHJH24Ara5cJSWgf6D0n/yDZgN9yMCTxTh5Z+D5TlQ9iNsDaUFbqrVQWQL1JOqUpqAw+lwTvFrKUIByWwjN2uw+bSP6elQt3dCn9yz5xbRi6LSAUTi7FJEdd4jihZpaUsDY5SwG9DqfwESLA5Oux6gG+zDEbq12vy56zYNNBPxc/dI3Dbgmnm8jvTAeLGOMtTIO3FDi8WDu0I7Qr3k3cJvtFI/V6Cw+gTq74eWl7iavDDWE8lq6QLZJLl/XwwIiYVJH7pIVb+iAKd61jzgk3HqE/4tGzqQ/0oJuzAxgElS5T1AxhdHjTF7d1CL6filrGGBbln4qHLwJOmljQj0ZjhkygBkJAKpP2DsUhb5hkf1uKXLje2MdYR7olwUTKDWtIzTMRd8IB0ek79qkcLPih0ueWi7xpXNZCPtQmKFZP09wBs5Z/Ao8vHce/Rdx0gRj4dZnPlQP9QWl6aLe+t8ahEidRvJ+aMSE4B8ZvAuwEbrMut1Uj/c8e+e6syqsj+CuHTS/CAYuOCezh8ejO0epZBtvVs3HG8LZ8Ghw79HIIEA/sFtZXYAdMpxq2GNTzqcHVDrbx6ji1wWtLfDVKRRF78mg8nxCERyOg+uzMw2S+GqUwIVgWcnjl0g=--2uhRJWZLgp1aeyCZ--dRD1EbiGIiSuHTVaUTi+pg==
-</file>
-
-<file path="db/queue_schema.rb">
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
-#
-# This file is the source Rails uses to define your schema when running `bin/rails
-# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
-# be faster and is potentially less error prone than running all of your
-# migrations from scratch. Old migrations may fail to apply correctly if those
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
-  create_table "exercises", force: :cascade do |t|
-    t.integer "category"
-    t.string "cloudinary_public_id"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "sitting_sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.boolean "notified"
-    t.datetime "notify_at"
-    t.datetime "start_at"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
-  end
-
-  create_table "solid_queue_blocked_executions", force: :cascade do |t|
-    t.string "concurrency_key", null: false
-    t.datetime "created_at", null: false
-    t.datetime "expires_at", null: false
-    t.bigint "job_id", null: false
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
-    t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
-    t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
-  end
-
-  create_table "solid_queue_claimed_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.bigint "process_id"
-    t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
-    t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
-  end
-
-  create_table "solid_queue_failed_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "error"
-    t.bigint "job_id", null: false
-    t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
-  end
-
-  create_table "solid_queue_jobs", force: :cascade do |t|
-    t.string "active_job_id"
-    t.text "arguments"
-    t.string "class_name", null: false
-    t.string "concurrency_key"
-    t.datetime "created_at", null: false
-    t.datetime "finished_at"
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.datetime "scheduled_at"
-    t.datetime "updated_at", null: false
-    t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
-    t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
-    t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
-    t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
-    t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
-  end
-
-  create_table "solid_queue_pauses", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "queue_name", null: false
-    t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
-  end
-
-  create_table "solid_queue_processes", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "hostname"
-    t.string "kind", null: false
-    t.datetime "last_heartbeat_at", null: false
-    t.text "metadata"
-    t.string "name", null: false
-    t.integer "pid", null: false
-    t.bigint "supervisor_id"
-    t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
-    t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
-    t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
-  end
-
-  create_table "solid_queue_ready_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
-    t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
-    t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
-  end
-
-  create_table "solid_queue_recurring_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.datetime "run_at", null: false
-    t.string "task_key", null: false
-    t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
-    t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
-  end
-
-  create_table "solid_queue_recurring_tasks", force: :cascade do |t|
-    t.text "arguments"
-    t.string "class_name"
-    t.string "command", limit: 2048
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "key", null: false
-    t.integer "priority", default: 0
-    t.string "queue_name"
-    t.string "schedule", null: false
-    t.boolean "static", default: true, null: false
-    t.datetime "updated_at", null: false
-    t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
-    t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
-  end
-
-  create_table "solid_queue_scheduled_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.datetime "scheduled_at", null: false
-    t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
-    t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
-  end
-
-  create_table "solid_queue_semaphores", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "expires_at", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.integer "value", default: 1, null: false
-    t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
-    t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
-    t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
-  end
-
-  create_table "suggested_actions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "auth"
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "endpoint"
-    t.string "p256dh"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
-    t.datetime "updated_at", null: false
-    t.string "username", default: "", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  end
-
-  add_foreign_key "sitting_sessions", "users"
-  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "suggested_actions", "exercises"
-  add_foreign_key "suggested_actions", "sitting_sessions"
-end
-</file>
-
-<file path="app/javascript/controllers/timer_controller.js">
-import { Controller } from "@hotwired/stimulus"
-import { Turbo } from "@hotwired/turbo-rails"
-
-// Connects to data-controller="timer"
-export default class extends Controller {
-    static targets = ["display"]
-    connect() {
-        this.remainingTime = 0
-        this.timer = null
-        this.isModalOpen = false
-
-        const params = new URLSearchParams(window.location.search)
-        if (params.get('reopen_modal')) {
-            this.finish()
-            this.isModalOpen = true
-
-            //タイマーに戻った時にURLからreopen_modal=trueを消す
-            const newUrl = window.location.pathname
-            window.history.replaceState({}, document.title, newUrl)
-        }
-    }
-
-    start(event) {
-        //既存のタイマーを止める
-        this.stop()
-        this.resetModalFlag()
-
-        const minutes = event.params.minutes
-        //秒数に変換
-        //デバッグ用
-        this.selectedSeconds = 5
-        // this.selectedSeconds = minutes * 60
-        this.remainingTime = this.selectedSeconds
-        this.startTime = new Date()
-
-        this.updateDisplay()
-
-        //1秒ごとにカウントダウン
-        this.timer = setInterval(() => {
-            this.remainingTime -= 1
-            this.updateDisplay()
-
-            if (this.remainingTime <= 0) {
-                //fetch,モーダル表示
-                if (!this.isModalOpen) {
-                    this.finish()
-                    this.isModalOpen = true
-                }
-            
-                this.remainingTime = this.selectedSeconds
-            } 
-
-        }, 1000)
-    }
-
-    stop() {
-        if (this.timer) {
-            clearInterval(this.timer)
-            this.timer = null
-        }
-    }
-    
-    updateDisplay() {
-        const m = Math.floor(this.remainingTime / 60)
-        const s = this.remainingTime % 60
-        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    }
-    
-    //運動の選択orスキップ後の処理
-    async finish() {
-        const endTime = new Date()
-        const duration = Math.floor((endTime - this.startTime) / 1000)
-
-        const recordedStartTime = this.startTime
-        this.startTime = new Date()
-
-        //RailsのAPIにデータを飛ばす
-        const response = await fetch("/sitting_sessions", {
-            method: "POST",
-            headers: {
-                "Accept": "text/vnd.turbo-stream.html",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                sitting_session: {
-                    duration: duration,
-                    start_at: recordedStartTime
-                }
-            })
-        })
-
-        if (response.ok) {
-            const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage) // 4. これが重要！届いたTurbo Streamを実行する
-        }
-    }
-
-    resetModalFlag() {
-        this.isModalOpen = false
-    }
-
-    //詳細画面に遷移した時にタイマーを止める
-    stopAndNavigate() {
-        this.stop()
-        this.isModalOpen = false
-    }
-
-}
 </file>
 
 <file path="db/seeds.rb">
@@ -5266,33 +4916,6 @@ end
 puts "完了！"
 </file>
 
-<file path="app/models/sitting_session.rb">
-class SittingSession < ApplicationRecord
-  belongs_to :user
-
-  has_many :suggested_actions, dependent: :destroy
-  # 中間テーブルを介してexerciseへ
-  has_many :exercises, through: :suggested_actions
-
-  # タイマーの選択可能時間
-  SETTING_DURATIONS = [ 30, 60, 90 ].freeze
-
-  # 終了時刻の計算
-  def end_time
-    # デバッグ用
-    created_at + duration.seconds
-    # secondsはminutesに戻す予定
-    # created_at + duration.minutes
-  end
-
-  # 現在時刻が終了時刻より前ではないか？
-  def in_progress?
-    # デバッグ後にTime.current < end_time && 追加
-    !notified?
-  end
-end
-</file>
-
 <file path="app/views/layouts/application.html.erb">
 <!DOCTYPE html>
 <html>
@@ -5352,6 +4975,260 @@ end
     <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
   </body>
 </html>
+</file>
+
+<file path="db/queue_schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "exercises", force: :cascade do |t|
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.datetime "start_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "solid_queue_blocked_executions", force: :cascade do |t|
+    t.string "concurrency_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
+    t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
+    t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_claimed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.bigint "process_id"
+    t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
+    t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
+  end
+
+  create_table "solid_queue_failed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.bigint "job_id", null: false
+    t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_jobs", force: :cascade do |t|
+    t.string "active_job_id"
+    t.text "arguments"
+    t.string "class_name", null: false
+    t.string "concurrency_key"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at"
+    t.datetime "updated_at", null: false
+    t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
+    t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
+    t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
+    t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
+    t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
+  end
+
+  create_table "solid_queue_pauses", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "queue_name", null: false
+    t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
+  end
+
+  create_table "solid_queue_processes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "hostname"
+    t.string "kind", null: false
+    t.datetime "last_heartbeat_at", null: false
+    t.text "metadata"
+    t.string "name", null: false
+    t.integer "pid", null: false
+    t.bigint "supervisor_id"
+    t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
+    t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
+    t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
+  end
+
+  create_table "solid_queue_ready_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
+    t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
+    t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
+  end
+
+  create_table "solid_queue_recurring_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.datetime "run_at", null: false
+    t.string "task_key", null: false
+    t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
+    t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
+  end
+
+  create_table "solid_queue_recurring_tasks", force: :cascade do |t|
+    t.text "arguments"
+    t.string "class_name"
+    t.string "command", limit: 2048
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key", null: false
+    t.integer "priority", default: 0
+    t.string "queue_name"
+    t.string "schedule", null: false
+    t.boolean "static", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
+    t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
+  end
+
+  create_table "solid_queue_scheduled_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
+    t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
+  end
+
+  create_table "solid_queue_semaphores", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.integer "value", default: 1, null: false
+    t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
+    t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
+    t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+  end
+
+  create_table "suggested_actions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.string "p256dh"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "sitting_sessions", "users"
+  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "suggested_actions", "exercises"
+  add_foreign_key "suggested_actions", "sitting_sessions"
+end
+</file>
+
+<file path="public/service-worker.js">
+self.addEventListener('push', function (event) {
+    
+    
+    let data = {};
+    if (event.data) {
+        try {
+            // まずはJSONとして解析を試みる
+            data = event.data.json();
+        } catch (e) {
+            // JSONでなければ、そのままテキストとしてbodyに格納
+            data = { body: event.data.text() };
+        }
+    }
+    
+    const title = data.title || '休憩時間になりました！';
+
+    const options = {
+        body: data.body || '身体を動かしましょう！',
+        icon: new URL('/icon.png', self.location.origin).href,
+        // RailsからURLが指定されていなければ、トップページを表示
+        data: { url: data.url || '/' }
+    };
+
+    //通知を表示するまでservice workerを終了させない
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    )
+})
+
+//通知をクリックしたら発火
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close()
+    //通知のurl
+    const rootUrl = new URL('/', self.location.origin).href
+    const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
+    //指定されたurlを開く
+    event.waitUntil(
+        //開いているブラウザのタブを確認
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then(function (windowClients) {
+                //アプリのタブを探す
+                for (let i = 0; i < windowClients.length; i++) {
+                    const client = windowClients[i]
+
+                    if (client.url.startsWith(rootUrl) && 'focus' in client) {
+                        //あればフォーカス
+                        return client.focus()
+                    }
+                }
+                //なければ新しいタブを開く
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen)
+                }
+        })
+    )
+})
 </file>
 
 <file path="sitting-timer/README.md">
@@ -5658,6 +5535,191 @@ group :test do
 end
 </file>
 
+<file path="app/javascript/controllers/timer_controller.js">
+import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
+
+const DEBUG_MODE = true; // デバッグ時に秒数を短縮するかどうか
+const AUTO_CLOSE_MS = 600000; // 10分
+
+export default class extends Controller {
+    static targets = ["display"]
+
+    connect() {
+        this.remainingTime = 0
+        this.timer = null
+        this.isModalOpen = false
+        this.autoCloseTimer = null // 自動閉鎖用タイマー
+
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('reopen_modal')) {
+            this.showSessionModal()
+            // URLからパラメータを削除
+            const newUrl = window.location.pathname
+            window.history.replaceState({}, document.title, newUrl)
+        }
+    }
+
+    // 1. 設定：時間セット
+    setTime(event) {
+        const minutes = event.params.minutes
+        this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
+        this.remainingTime = this.selectedSeconds
+        this.updateDisplay()
+    }
+
+    // 2. 実行：タイマー開始
+    start() {
+        if (!this.selectedSeconds || this.selectedSeconds <= 0) return
+
+        this.resetState() // 全てをクリアしてから開始
+        this.remainingTime = this.selectedSeconds
+        this.startTime = new Date()
+        this.updateDisplay()
+
+        this.runTimer()
+    }
+
+    runTimer() {
+        this.timer = setInterval(() => {
+            if (!this.timer) return
+            
+            this.remainingTime -= 1
+            this.updateDisplay()       
+            
+            if (this.remainingTime <= 0) {
+                this.stop()
+                this.showSessionModal()
+            } 
+        }, 1000)
+    }
+
+    // 3. 制御：停止・リセット
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer)
+            this.timer = null
+        }
+    }
+
+    // 全てをクリアする（リセットボタン等で使用）
+    reset() {
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.remainingTime = 0
+        this.isModalOpen = false
+        this.updateDisplay()
+        this.clearModalUI()
+    }
+
+    // 内部的な状態リセット（start時などに使用）
+    resetState() {
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.isModalOpen = false
+        this.clearModalUI()
+    }
+
+    // 4. 通信：セッション終了と保存
+    async showSessionModal() {
+        if (this.isModalOpen) return
+        this.isModalOpen = true
+
+        await this.finish() // サーバーに保存
+
+        // 放置対策：一定時間後に自動で閉じる
+        this.autoCloseTimer = setTimeout(() => {
+            if (this.isModalOpen) this.closeModal()
+        }, AUTO_CLOSE_MS)
+    }
+
+    async finish() {
+        const recordedStartTime = this.startTime || new Date()
+        const duration = Math.floor((new Date() - recordedStartTime) / 1000)
+
+        // 次の計測に備えて開始時刻をリセット
+        this.startTime = new Date()
+
+        const response = await fetch("/sitting_sessions", {
+            method: "POST",
+            headers: {
+                "Accept": "text/vnd.turbo-stream.html",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                sitting_session: {
+                    duration: duration,
+                    start_at: recordedStartTime
+                }
+            })
+        })
+
+        if (response.ok) {
+            const streamMessage = await response.text()
+            Turbo.renderStreamMessage(streamMessage)
+        }
+    }
+
+    // 5. UI操作
+    closeModal() {
+        this.resetState()
+        this.clearModalUI()
+    }
+
+    clearModalUI() {
+        const container = document.getElementById('modal_container')
+        if (container) container.innerHTML = ''
+    }
+
+    clearAutoCloseTimer() {
+        if (this.autoCloseTimer) {
+            clearTimeout(this.autoCloseTimer)
+            this.autoCloseTimer = null
+        }
+    }
+
+    updateDisplay() {
+        const m = Math.floor(this.remainingTime / 60)
+        const s = this.remainingTime % 60
+        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    }
+}
+</file>
+
+<file path="app/models/sitting_session.rb">
+class SittingSession < ApplicationRecord
+
+  SETTING_DURATIONS = [ 30, 60, 90 ].freeze
+
+  belongs_to :user
+
+  has_many :suggested_actions, dependent: :destroy
+  # 中間テーブルを介してexerciseへ
+  has_many :exercises, through: :suggested_actions
+
+  # 3. Enums (列挙型)
+  enum :status, { active: 0, completed: 1, cancelled: 2 }
+
+  # 4. Callbacks (コールバック)
+  before_create :cancel_active_sessions
+  
+  # 終了時刻の計算
+  def end_time
+    # durationを一元管理
+    created_at + duration.seconds
+    # secondsはminutesに戻す予定
+    # created_at + duration.minutes
+  end
+
+  # 現在時刻が終了時刻より前ではないか？
+  def in_progress?
+    # デバッグ後にTime.current < end_time && 追加
+    !notified?
+  end
+end
+</file>
+
 <file path="config/routes.rb">
 Rails.application.routes.draw do
   # topページ
@@ -5812,73 +5874,85 @@ end
 </file>
 
 <file path="app/views/sitting_sessions/new.html.erb">
-<div class="flex flex-col items-center justify-center min-h-screen bg-background-dark p-8"
+<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
     data-controller="notification"
     data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
 
   <div data-controller="timer"
-       class="flex flex-col items-center p-12 rounded-[3.5rem]
-              bg-input-bg-light/70 backdrop-blur-xl
-              border border-border-light
-              shadow-xl ring-1 ring-black/5">
+       class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
+              bg-input-bg-light/60 backdrop-blur-3xl
+              border border-white/40
+              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
+              w-full max-w-md transition-all duration-500">
 
-    <!-- timer circle -->
-    <div class="relative flex items-center justify-center w-72 h-72">
+    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
       <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-90">
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="2" fill="transparent"
+                class="text-border-light opacity-50" />
 
-        <!-- base circle -->
-        <circle cx="150" cy="150" r="120"
-                stroke="currentColor" stroke-width="4" fill="transparent"
-                class="text-primary opacity-20" />
-
-        <!-- progress circle -->
-        <circle cx="150" cy="150" r="120"
-                stroke="currentColor" stroke-width="10" fill="transparent"
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="6" fill="transparent"
                 data-timer-target="circle"
                 class="text-primary transition-all duration-1000 ease-linear"
-                style="stroke-linecap: round;
-                       filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 60%, transparent));" />
+                style="stroke-linecap: round; 
+                       filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-primary) 40%, transparent));" />
       </svg>
 
-      <!-- time display -->
-      <div class="absolute text-6xl font- sans font-light tracking-tight text-text-main"
-           data-timer-target="display">
-        00:00
+      <div class="absolute flex flex-col items-center justify-center">
+        <div class="text-7xl font-extralight tracking-tighter text-text-main"
+             data-timer-target="display">
+          00:00
+        </div>
       </div>
     </div>
 
-    <!-- controls -->
-    <div class="mt-12 w-full space-y-4">
-      <div class="flex gap-4 justify-center">
+    <div class="mt-12 w-full space-y-8">
+      
+      <div class="flex flex-wrap gap-2 justify-center">
         <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
           <button type="button"
-                  class="px-4 py-2 bg-background-light border border-border-light hover:bg-primary/20 rounded-lg font-bold transition"
-                  data-action="click->timer#start"
+                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
+                         hover:border-primary hover:bg-white rounded-2xl
+                         text-text-secondary font-semibold transition-all
+                         active:scale-90 cursor-pointer"
+                  data-action="click->timer#setTime"
                   data-timer-minutes-param="<%= minutes %>">
-            <%= minutes %>分
+            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
           </button>
         <% end %>
       </div>
-      <div class="flex justify-center">
-        <button type="button" class="text-sm text-gray-400 underline" data-action="click->timer#finish">
-          いますぐ終了
-        </button>
-      </div>
 
-      <button data-action="click->timer#stop"
-              class="w-full py-4 rounded-2xl font-medium
-                     bg-background-light text-text-secondary
-                     border border-border-light
-                     hover:bg-primary/20 hover:text-text-main
-                     transition active:scale-95">
-        リセット
-      </button>
+      <div class="space-y-4">
+        <button data-action="click->timer#start" 
+              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
+                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
+                     transition-all active:scale-[0.96] cursor-pointer">
+          スタート
+        </button>
+
+        <div class="flex gap-3">
+          <button data-action="click->timer#reset"
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-background-light text-text-secondary
+                         border border-border-light hover:bg-white hover:text-text-main
+                         transition-all active:scale-95 cursor-pointer">
+            リセット
+          </button>
+          
+          <button type="button" 
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-transparent text-text-secondary/40
+                         hover:text-text-main transition-all cursor-pointer" 
+                  data-action="click->timer#finish">
+            休憩する
+          </button>
+        </div>
+      </div>
     </div>
-   
+
+    <div id="modal_container"></div>
   </div>
-  <div id="modal_container"></div>
-  <!-- footer accent -->
-  <div class="mt-8 w-32 h-1.5 bg-border-light rounded-full"></div>
 </div>
 </file>
 

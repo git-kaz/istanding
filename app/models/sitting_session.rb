@@ -1,4 +1,7 @@
 class SittingSession < ApplicationRecord
+
+  SETTING_DURATIONS = [ 30, 60, 90 ].freeze
+
   belongs_to :user
 
   has_many :suggested_actions, dependent: :destroy
@@ -23,5 +26,11 @@ class SittingSession < ApplicationRecord
   def in_progress?
     # デバッグ後にTime.current < end_time && 追加
     !notified?
+  end
+
+  private
+
+  def cancel_active_sessions
+    user.sitting_sessions.active.where.not(id: id).update_all(status: :cancelled)
   end
 end
