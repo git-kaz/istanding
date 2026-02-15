@@ -27,28 +27,127 @@
   </head>
 
   <body>
-     <!-- header -->
- <header class="flex items-center justify-between px-8 py-4">
+  <% unless devise_controller? %>
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
+    <nav class="container mx-auto px-6 py-4" data-controller="mobile-menu" data-action="click@window->mobile-menu#hide">
+      <div class="flex items-center justify-between">
+        
+        <div class="flex items-center">
+          <%= link_to root_path, class: "flex items-center group" do %>
+            <%= image_tag "header_logo.png",
+                class: "max-h-10 md:max-h-12 w-auto transition-transform group-hover:scale-105" %>
+          <% end %>
+        </div>
 
-  <!-- left : logo -->
-  <%= link_to root_path, class: "flex items-center" do %>
-    <%= image_tag "header_logo.png",
-      alt: "ロゴ",
-      class: "max-h-12 w-auto" %>
-  <% end %>
+        <button
+          data-action="click->mobile-menu#toggle"
+          class="lg:hidden p-2 rounded-xl hover:bg-primary/10 transition-colors text-primary"
+          type="button"
+          aria-label="メニューを開く"
+        >
+          <span class="material-symbols-outlined text-3xl">menu</span>
+        </button>
 
-  <!-- right : auth -->
-  <div class="flex items-center">
-    <%= link_to "新規登録",
-      new_user_registration_path,
-      class: "mr-4 text-sm text-text-secondary" %>
+        <div class="hidden lg:flex items-center gap-6">
+          <% if user_signed_in? %>
+            <%# ログイン後：ユーザーメニュー %>
+            <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
+              <button
+                data-action="click->dropdown#toggle"
+                type="button"
+                class="flex items-center gap-3 px-4 py-2 rounded-full hover:bg-primary/5 transition-all font-bold text-text-main cursor-pointer group"
+              >
+                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <span class="material-symbols-outlined text-xl">person</span>
+                </div>
+                <span class="text-sm"><%= current_user.username %></span>
+                <span class="material-symbols-outlined text-primary text-xl">expand_more</span>
+              </button>
+              
+              <div
+                data-dropdown-target="menu"
+                class="hidden absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl py-4 z-50 animate-in fade-in zoom-in-95 duration-200"
+              >
+                <div class="px-6 py-2 mb-2 border-b border-gray-100 pb-3">
+                  <p class="text-[10px] font-black text-primary uppercase tracking-widest">Signed in as</p>
+                  <p class="text-sm font-bold text-text-main truncate"><%= current_user.email %></p>
+                </div>
 
-    <%= link_to "ログイン",
-      new_user_session_path,
-      class: "px-4 py-2 rounded-full bg-primary text-white text-sm hover:bg-primary-hover transition" %>
-  </div>
+                <%= link_to edit_user_registration_path, 
+                  class: "flex items-center gap-3 px-6 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm" do %>
+                  <span class="material-symbols-outlined text-xl">settings</span>
+                  マイページ設定
+                <% end %>
 
-</header>
+                <%= button_to destroy_user_session_path, 
+                  method: :delete, 
+                  class: "w-full flex items-center gap-3 px-6 py-3 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-sm text-left cursor-pointer" do %>
+                  <span class="material-symbols-outlined text-xl">logout</span>
+                  ログアウト
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <%# 未ログイン：ログイン・新規登録ボタン %>
+            <%= link_to "新規登録", new_user_registration_path, 
+              class: "text-sm font-bold text-text-secondary hover:text-primary transition-colors" 
+            %>
+            <%= link_to "ログイン", new_user_session_path, 
+              class: "px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95" 
+            %>
+          <% end %>
+        </div>
+      </div>
+
+      <div
+        data-mobile-menu-target="menu"
+        class="hidden lg:hidden mt-4 p-4 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl animate-in slide-in-from-top duration-300"
+      >
+        <ul class="flex flex-col gap-2">
+          <% if user_signed_in? %>
+            <li class="flex items-center gap-3 px-4 py-4 bg-primary/10 rounded-2xl mb-2">
+              <span class="material-symbols-outlined text-primary">account_circle</span>
+              <span class="font-bold text-text-main"><%= current_user.username %></span>
+            </li>
+            
+            <li>
+              <%= link_to edit_user_registration_path, 
+                class: "flex items-center gap-3 px-4 py-4 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
+                <span class="material-symbols-outlined text-primary">person</span>
+                マイページ
+              <% end %>
+            </li>
+            
+            <li>
+              <%= button_to destroy_user_session_path, 
+                method: :delete, 
+                class: "w-full flex items-center gap-3 px-4 py-4 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold rounded-2xl text-left" do %>
+                <span class="material-symbols-outlined text-primary">logout</span>
+                ログアウト
+              <% end %>
+            </li>
+          <% else %>
+            <li>
+              <%= link_to new_user_registration_path, 
+                class: "flex items-center justify-center gap-2 px-4 py-4 text-text-main font-bold rounded-2xl border border-gray-100" do %>
+                新規登録
+              <% end %>
+            </li>
+            <li>
+              <%= link_to new_user_session_path, 
+                class: "flex items-center justify-center gap-2 px-4 py-4 text-white bg-primary font-bold rounded-2xl shadow-lg shadow-primary/20" do %>
+                ログイン
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  
+  <%# ヘッダーが固定(fixed)なので、コンテンツが隠れないように余白を確保 %>
+  <div class="h-20 md:h-24"></div>
+<% end %>
     <%= yield %>
     <%# どのページにいてもモーダルを表示するため %>
     <div id="modal_container"></div>
