@@ -33,7 +33,7 @@ export default class extends Controller {
     // 1. 設定：時間セット
     setTime(event) {
         const minutes = event.params.minutes
-        this.selectedSeconds = DEBUG_MODE ? 120 : minutes * 60
+        this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
         this.remainingTime = this.selectedSeconds
         this.updateDisplay()
         this.updateCircle()

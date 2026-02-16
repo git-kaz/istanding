@@ -4,7 +4,7 @@ class ActivityLogsController < ApplicationController
     @activity_log = current_user.activity_logs.build(activity_log_params)
 
     if @activity_log.save
-      redirect_to top_path, notice: "運動が記録されました！"
+      redirect_to root_path, notice: "運動が記録されました！"
     else
       head :unprocessable_entity
     end

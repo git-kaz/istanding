@@ -17,6 +17,8 @@ Rails.application.routes.draw do
 
   resources :exercises, only: [ :index, :show ]
 
+  resources :activity_logs, only: [ :create ]
+
   devise_for :users
 
   post "guest_login", to: "users/guest_sessions#create"
