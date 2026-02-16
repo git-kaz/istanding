@@ -4,12 +4,7 @@ class ActivityLogsController < ApplicationController
     @activity_log = current_user.activity_logs.build(activity_log_params)
 
     if @activity_log.save
-      #保存後に運動回数を更新(turbo)
-      render turbo_stream: turbo_stream.replace(
-        "exercise_count",
-        partial: "top/exercise_count",
-        locals: { exercise_count: current_user.today_exercise_count }
-      )
+      redirect_to top_path, notice: "運動が記録されました！"
     else
       head :unprocessable_entity
     end

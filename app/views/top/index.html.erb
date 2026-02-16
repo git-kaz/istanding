@@ -1,0 +1,137 @@
+<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
+    data-controller="notification timer"
+    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
+
+  <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
+              bg-input-bg-light/80 backdrop-blur-3xl 
+              border border-white/40
+              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
+              w-full max-w-md transition-all duration-500">
+
+    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
+      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="2" fill="transparent"
+                class="text-border-light opacity-50" />
+
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="6" fill="transparent"
+                data-timer-target="circle"
+                class="text-primary transition-all duration-1000 ease-linear drop-shadow-[0_0_8px_rgba(107,144,128,0.5)]"
+                style="stroke-linecap: round;" />
+      </svg>
+
+      <div class="absolute flex flex-col items-center justify-center">
+        <div class="text-7xl font-extralight tracking-tighter text-text-main"
+             data-timer-target="display">
+          00:00
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 w-full space-y-8">
+      
+      <div class="flex flex-wrap gap-2 justify-center">
+        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+          <button type="button"
+                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
+                         hover:border-primary hover:bg-white rounded-2xl
+                         text-text-secondary font-semibold transition-all
+                         active:scale-90 cursor-pointer"
+                  data-action="click->timer#setTime"
+                  data-timer-minutes-param="<%= minutes %>">
+            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
+          </button>
+        <% end %>
+      </div>
+
+      <div class="space-y-4">
+        <button data-action="click->timer#start" 
+              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
+                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
+                     transition-all active:scale-[0.96] cursor-pointer">
+          スタート
+        </button>
+
+        <div class="flex gap-3">
+          <button data-action="click->timer#reset"
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-background-light text-text-secondary
+                         border border-border-light hover:bg-white hover:text-text-main
+                         transition-all active:scale-95 cursor-pointer">
+            リセット
+          </button>
+          
+          <button type="button" 
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-transparent text-text-secondary/40
+                         hover:text-text-main transition-all cursor-pointer" 
+                  data-action="click->timer#finish">
+            休憩する
+          </button>
+        </div>
+      </div>
+    </div>
+    <%# ゲージビュー %>
+    <section id="daily_stats" class="w-full max-w-2xl mx-auto space-y-6">
+  
+  <div class="bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white shadow-sm">
+    <div class="flex justify-between items-end mb-4 px-1">
+      <div>
+        <h3 class="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] mb-1">Today's Sitting</h3>
+        <p class="text-3xl font-black text-text-main tracking-tight">
+          <%= (@total_seconds / 3600.0).round(1) %> <span class="text-sm font-bold text-text-secondary">/ 8.0 hrs</span>
+        </p>
+      </div>
+      <div class="text-right">
+        <span class="text-2xl font-black text-primary"><%= @percentage %>%</span>
+      </div>
+    </div>
+    
+    <div class="h-5 w-full bg-border-light/40 rounded-full overflow-hidden p-1 border border-white/50">
+      <div class="h-full bg-primary rounded-full transition-all duration-[1500ms] ease-out shadow-[0_0_12px_rgba(175,195,177,0.5)]"
+           style="width: <%= @percentage %>%">
+      </div>
+    </div>
+    
+    <p class="mt-4 text-[11px] text-text-secondary font-medium flex items-center gap-2">
+      <span class="material-symbols-outlined text-[14px]">info</span>
+      8時間を超えると健康リスクが高まります。
+    </p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    
+    <div class="bg-white/60 backdrop-blur-xl p-6 rounded-[2.2rem] border border-white shadow-sm flex flex-col items-center text-center group">
+      <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-3 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined font-bold">fitness_center</span>
+      </div>
+      <span class="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">Exercise</span>
+      <p class="text-2xl font-black text-text-main">
+        <%= @exercise_count %> <span class="text-xs font-bold">回</span>
+      </p>
+    </div>
+
+    <div class="bg-white/60 backdrop-blur-xl p-6 rounded-[2.2rem] border border-white shadow-sm flex flex-col items-center text-center group">
+      <div class="w-12 h-12 bg-background-dark rounded-2xl flex items-center justify-center text-text-secondary mb-3 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined font-bold">coffee</span>
+      </div>
+      <span class="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">Breaks</span>
+      <p class="text-2xl font-black text-text-main">
+        <%= current_user.sitting_sessions.today.count %> <span class="text-xs font-bold">回</span>
+      </p>
+    </div>
+    
+  </div>
+</section>
+
+<section class="mt-12 flex flex-col items-center">
+  <%= form_with model: @sitting_session do |f| %>
+    <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
+    
+    <%= f.submit "セッションを終了", class: "btn-primary" %>
+  <% end %>
+</section>
+  </div>
+  <div id="modal_container"></div>
+</div>
