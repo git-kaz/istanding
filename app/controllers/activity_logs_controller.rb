@@ -1,5 +1,4 @@
 class ActivityLogsController < ApplicationController
-
   def create
     @activity_log = current_user.activity_logs.build(activity_log_params)
 

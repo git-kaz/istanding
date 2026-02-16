@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :activity_logs, dependent: :destroy
   has_many :exercises, through: :activity_logs
 
-  #　一日の座位時間合計
+  # 　一日の座位時間合計
   def today_total_sitting_seconds
     sitting_sessions.today.sum(:duration)
   end
@@ -16,7 +16,7 @@ class User < ApplicationRecord
   # 座位時間の上限を超えているか？
   def sitting_progress_percentage
     limit = SittingSession::SITTING_TIME_LIMIT
-    [((today_total_sitting_seconds.to_f / limit) * 100).round, 100].min
+    [ ((today_total_sitting_seconds.to_f / limit) * 100).round, 100 ].min
   end
 
   # 今日の運動回数

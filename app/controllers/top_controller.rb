@@ -7,5 +7,5 @@ class TopController < ApplicationController
     @exercise_count = current_user.today_exercise_count
 
     @sitting_session = current_user.sitting_sessions.new
-  end 
+  end
 end

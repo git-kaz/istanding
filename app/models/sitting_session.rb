@@ -19,7 +19,7 @@ class SittingSession < ApplicationRecord
   before_create :cancel_active_sessions
 
   # 今日のセッションを取得
-  scope :today, -> { where(created_at: Time.zone.now.all_day)}
+  scope :today, -> { where(created_at: Time.zone.now.all_day) }
 
   # 終了時刻の計算
   def end_time

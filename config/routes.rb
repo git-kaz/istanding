@@ -1,10 +1,9 @@
 Rails.application.routes.draw do
-
-  #ログイン時のroot
+  # ログイン時のroot
   authenticated :user do
     root "top#index", as: :authenticated_root
   end
-  #未ログイン時のroot
+  # 未ログイン時のroot
   unauthenticated do
     root "static_pages#top"
   end
@@ -24,5 +23,4 @@ Rails.application.routes.draw do
   post "guest_login", to: "users/guest_sessions#create"
 
   get "up" => "rails/health#show", as: :rails_health_check
-
 end
