@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "activity_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
+    t.index ["user_id"], name: "index_activity_logs_on_user_id"
+  end
 
   create_table "exercises", force: :cascade do |t|
     t.integer "category"
@@ -29,6 +40,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
     t.boolean "notified"
     t.datetime "notify_at"
     t.datetime "start_at"
+    t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
@@ -180,6 +192,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_222652) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "activity_logs", "exercises"
+  add_foreign_key "activity_logs", "sitting_sessions"
+  add_foreign_key "activity_logs", "users"
   add_foreign_key "sitting_sessions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

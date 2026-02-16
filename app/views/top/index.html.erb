@@ -72,7 +72,66 @@
         </div>
       </div>
     </div>
+    <%# ゲージビュー %>
+    <section id="daily_stats" class="w-full max-w-2xl mx-auto space-y-6">
+  
+  <div class="bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white shadow-sm">
+    <div class="flex justify-between items-end mb-4 px-1">
+      <div>
+        <h3 class="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] mb-1">Today's Sitting</h3>
+        <p class="text-3xl font-black text-text-main tracking-tight">
+          <%= (@total_seconds / 3600.0).round(1) %> <span class="text-sm font-bold text-text-secondary">/ 8.0 hrs</span>
+        </p>
+      </div>
+      <div class="text-right">
+        <span class="text-2xl font-black text-primary"><%= @percentage %>%</span>
+      </div>
+    </div>
     
+    <div class="h-5 w-full bg-border-light/40 rounded-full overflow-hidden p-1 border border-white/50">
+      <div class="h-full bg-primary rounded-full transition-all duration-[1500ms] ease-out shadow-[0_0_12px_rgba(175,195,177,0.5)]"
+           style="width: <%= @percentage %>%">
+      </div>
+    </div>
+    
+    <p class="mt-4 text-[11px] text-text-secondary font-medium flex items-center gap-2">
+      <span class="material-symbols-outlined text-[14px]">info</span>
+      8時間を超えると健康リスクが高まります。
+    </p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    
+    <div class="bg-white/60 backdrop-blur-xl p-6 rounded-[2.2rem] border border-white shadow-sm flex flex-col items-center text-center group">
+      <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-3 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined font-bold">fitness_center</span>
+      </div>
+      <span class="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">Exercise</span>
+      <p class="text-2xl font-black text-text-main">
+        <%= @exercise_count %> <span class="text-xs font-bold">回</span>
+      </p>
+    </div>
+
+    <div class="bg-white/60 backdrop-blur-xl p-6 rounded-[2.2rem] border border-white shadow-sm flex flex-col items-center text-center group">
+      <div class="w-12 h-12 bg-background-dark rounded-2xl flex items-center justify-center text-text-secondary mb-3 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined font-bold">coffee</span>
+      </div>
+      <span class="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">Breaks</span>
+      <p class="text-2xl font-black text-text-main">
+        <%= current_user.sitting_sessions.today.count %> <span class="text-xs font-bold">回</span>
+      </p>
+    </div>
+    
+  </div>
+</section>
+
+<section class="mt-12 flex flex-col items-center">
+  <%= form_with model: @sitting_session do |f| %>
+    <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
+    
+    <%= f.submit "セッションを終了", class: "btn-primary" %>
+  <% end %>
+</section>
   </div>
   <div id="modal_container"></div>
 </div>
