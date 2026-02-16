@@ -3,13 +3,13 @@
     data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
 
   <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
-              bg-input-bg-light/60 backdrop-blur-3xl
+              bg-input-bg-light/80 backdrop-blur-3xl 
               border border-white/40
               shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
               w-full max-w-md transition-all duration-500">
 
     <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
-      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-90">
+      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
         <circle cx="150" cy="150" r="135"
                 stroke="currentColor" stroke-width="2" fill="transparent"
                 class="text-border-light opacity-50" />
@@ -17,9 +17,8 @@
         <circle cx="150" cy="150" r="135"
                 stroke="currentColor" stroke-width="6" fill="transparent"
                 data-timer-target="circle"
-                class="text-primary transition-all duration-1000 ease-linear"
-                style="stroke-linecap: round; 
-                       filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-primary) 40%, transparent));" />
+                class="text-primary transition-all duration-1000 ease-linear drop-shadow-[0_0_8px_rgba(107,144,128,0.5)]"
+                style="stroke-linecap: round;" />
       </svg>
 
       <div class="absolute flex flex-col items-center justify-center">

@@ -1,5 +1,8 @@
 class SittingSession < ApplicationRecord
+  # タイマーの時間選択肢
   SETTING_DURATIONS = [ 30, 60, 90 ].freeze
+  # 一日の座位時間上限(8時間を秒に換算)
+  SITTING_TIME_LIMIT = 8 * 60 * 60
 
   belongs_to :user
 
@@ -7,11 +10,16 @@ class SittingSession < ApplicationRecord
   # 中間テーブルを介してexerciseへ
   has_many :exercises, through: :suggested_actions
 
-  # 3. Enums (列挙型)
+  has_many :activity_logs, dependent: :nullify
+
+  # Enums (列挙型)
   enum :status, { active: 0, completed: 1, cancelled: 2 }
 
-  # 4. Callbacks (コールバック)
+  # Callbacks (コールバック)
   before_create :cancel_active_sessions
+
+  # 今日のセッションを取得
+  scope :today, -> { where(created_at: Timer.zone.now.all_day)}
 
   # 終了時刻の計算
   def end_time
