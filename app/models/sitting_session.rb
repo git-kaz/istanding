@@ -1,8 +1,8 @@
 class SittingSession < ApplicationRecord
   # タイマーの時間選択肢
   SETTING_DURATIONS = [ 30, 60, 90 ].freeze
-  # 一日の座位時間上限(8時間を秒に換算)
-  SITTING_TIME_LIMIT = 8 * 60 * 60
+  # 一日の座位時間上限(11時間を秒に換算)
+  SITTING_TIME_LIMIT = 11 * 60 * 60
 
   belongs_to :user
 
