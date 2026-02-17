@@ -16,4 +16,11 @@
   /* UI補助 */
   --color-border-light: #D6DED8;
   --color-input-bg-light: #FFFFFF;
+
+  /*導入ページの動き用*/
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(-15%); }
+    50% { transform: translateY(0); }
+  }
+  --animate-bounce-slow: bounce-slow 2s infinite;
 }
