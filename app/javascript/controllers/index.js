@@ -7,6 +7,9 @@ import { application } from "./application"
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 
+import ExerciseTimerController from "./exercise_timer_controller"
+application.register("exercise-timer", ExerciseTimerController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
