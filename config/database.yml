@@ -67,14 +67,13 @@ production:
   primary: &primary_production
     <<: *default
     url: <%= ENV['DATABASE_URL'] %>
-    database: myapp_production
   cache:
     <<: *primary_production
     database: myapp_production_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: myapp_production
+    database: myapp_production_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
