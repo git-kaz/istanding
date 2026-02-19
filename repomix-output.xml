@@ -619,8 +619,251 @@ RAILS_MASTER_KEY=$(cat config/master.key)
 
 </file>
 
+<file path="app/controllers/users/confirmations_controller.rb">
+# frozen_string_literal: true
+
+class Users::ConfirmationsController < Devise::ConfirmationsController
+  # GET /resource/confirmation/new
+  # def new
+  #   super
+  # end
+
+  # POST /resource/confirmation
+  # def create
+  #   super
+  # end
+
+  # GET /resource/confirmation?confirmation_token=abcdef
+  # def show
+  #   super
+  # end
+
+  # protected
+
+  # The path used after resending confirmation instructions.
+  # def after_resending_confirmation_instructions_path_for(resource_name)
+  #   super(resource_name)
+  # end
+
+  # The path used after confirmation.
+  # def after_confirmation_path_for(resource_name, resource)
+  #   super(resource_name, resource)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/omniauth_callbacks_controller.rb">
+# frozen_string_literal: true
+
+class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  # You should configure your model like this:
+  # devise :omniauthable, omniauth_providers: [:twitter]
+
+  # You should also create an action method in this controller like this:
+  # def twitter
+  # end
+
+  # More info at:
+  # https://github.com/heartcombo/devise#omniauth
+
+  # GET|POST /resource/auth/twitter
+  # def passthru
+  #   super
+  # end
+
+  # GET|POST /users/auth/twitter/callback
+  # def failure
+  #   super
+  # end
+
+  # protected
+
+  # The path used when OmniAuth fails
+  # def after_omniauth_failure_path_for(scope)
+  #   super(scope)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/passwords_controller.rb">
+# frozen_string_literal: true
+
+class Users::PasswordsController < Devise::PasswordsController
+  # GET /resource/password/new
+  # def new
+  #   super
+  # end
+
+  # POST /resource/password
+  # def create
+  #   super
+  # end
+
+  # GET /resource/password/edit?reset_password_token=abcdef
+  # def edit
+  #   super
+  # end
+
+  # PUT /resource/password
+  # def update
+  #   super
+  # end
+
+  # protected
+
+  # def after_resetting_password_path_for(resource)
+  #   super(resource)
+  # end
+
+  # The path used after sending reset password instructions
+  # def after_sending_reset_password_instructions_path_for(resource_name)
+  #   super(resource_name)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/registrations_controller.rb">
+# frozen_string_literal: true
+
+class Users::RegistrationsController < Devise::RegistrationsController
+  # before_action :configure_sign_up_params, only: [:create]
+  # before_action :configure_account_update_params, only: [:update]
+
+  # GET /resource/sign_up
+  # def new
+  #   super
+  # end
+
+  # POST /resource
+  # def create
+  #   super
+  # end
+
+  # GET /resource/edit
+  # def edit
+  #   super
+  # end
+
+  # PUT /resource
+  # def update
+  #   super
+  # end
+
+  # DELETE /resource
+  # def destroy
+  #   super
+  # end
+
+  # GET /resource/cancel
+  # Forces the session data which is usually expired after sign
+  # in to be expired now. This is useful if the user wants to
+  # cancel oauth signing in/up in the middle of the process,
+  # removing all OAuth session data.
+  # def cancel
+  #   super
+  # end
+
+  # protected
+
+  # If you have extra params to permit, append them to the sanitizer.
+  # def configure_sign_up_params
+  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
+  # end
+
+  # If you have extra params to permit, append them to the sanitizer.
+  # def configure_account_update_params
+  #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
+  # end
+
+  # The path used after sign up.
+  # def after_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+
+  # The path used after sign up for inactive accounts.
+  # def after_inactive_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+end
+</file>
+
+<file path="app/controllers/users/sessions_controller.rb">
+# frozen_string_literal: true
+
+class Users::SessionsController < Devise::SessionsController
+  # before_action :configure_sign_in_params, only: [:create]
+
+  # GET /resource/sign_in
+  # def new
+  #   super
+  # end
+
+  # POST /resource/sign_in
+  # def create
+  #   super
+  # end
+
+  # DELETE /resource/sign_out
+  # def destroy
+  #   super
+  # end
+
+  # protected
+
+  # If you have extra params to permit, append them to the sanitizer.
+  # def configure_sign_in_params
+  #   devise_parameter_sanitizer.permit(:sign_in, keys: [:attribute])
+  # end
+end
+</file>
+
+<file path="app/controllers/users/unlocks_controller.rb">
+# frozen_string_literal: true
+
+class Users::UnlocksController < Devise::UnlocksController
+  # GET /resource/unlock/new
+  # def new
+  #   super
+  # end
+
+  # POST /resource/unlock
+  # def create
+  #   super
+  # end
+
+  # GET /resource/unlock?unlock_token=abcdef
+  # def show
+  #   super
+  # end
+
+  # protected
+
+  # The path used after sending unlock password instructions
+  # def after_sending_unlock_instructions_path_for(resource)
+  #   super(resource)
+  # end
+
+  # The path used after unlocking the resource
+  # def after_unlock_path_for(resource)
+  #   super(resource)
+  # end
+end
+</file>
+
+<file path="app/controllers/static_pages_controller.rb">
+class StaticPagesController < ApplicationController
+  def top
+  end
+end
+</file>
+
 <file path="app/helpers/application_helper.rb">
 module ApplicationHelper
+end
+</file>
+
+<file path="app/helpers/static_pages_helper.rb">
+module StaticPagesHelper
 end
 </file>
 
@@ -677,6 +920,343 @@ end
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 end
+</file>
+
+<file path="app/views/devise/confirmations/new.html.erb">
+<h2>Resend confirmation instructions</h2>
+
+<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="field">
+    <p><%= f.label :email %></p>
+    <p><%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Resend confirmation instructions" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/devise/mailer/confirmation_instructions.html.erb">
+<p>Welcome <%= @email %>!</p>
+
+<p>You can confirm your account email through the link below:</p>
+
+<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+</file>
+
+<file path="app/views/devise/mailer/email_changed.html.erb">
+<p>Hello <%= @email %>!</p>
+
+<% if @resource.try(:unconfirmed_email?) %>
+  <p>We're contacting you to notify you that your email is being changed to <%= @resource.unconfirmed_email %>.</p>
+<% else %>
+  <p>We're contacting you to notify you that your email has been changed to <%= @resource.email %>.</p>
+<% end %>
+</file>
+
+<file path="app/views/devise/mailer/password_change.html.erb">
+<p>Hello <%= @resource.email %>!</p>
+
+<p>We're contacting you to notify you that your password has been changed.</p>
+</file>
+
+<file path="app/views/devise/mailer/reset_password_instructions.html.erb">
+<p>Hello <%= @resource.email %>!</p>
+
+<p>Someone has requested a link to change your password. You can do this through the link below.</p>
+
+<p><%= link_to 'Change my password', edit_password_url(@resource, reset_password_token: @token) %></p>
+
+<p>If you didn't request this, please ignore this email.</p>
+<p>Your password won't change until you access the link above and create a new one.</p>
+</file>
+
+<file path="app/views/devise/mailer/unlock_instructions.html.erb">
+<p>Hello <%= @resource.email %>!</p>
+
+<p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
+
+<p>Click the link below to unlock your account:</p>
+
+<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
+</file>
+
+<file path="app/views/devise/passwords/edit.html.erb">
+<h2>Change your password</h2>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+  <%= f.hidden_field :reset_password_token %>
+
+  <div class="field">
+    <p><%= f.label :password, "New password" %></p>
+    <% if @minimum_password_length %>
+      <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
+    <% end %>
+    <p><%= f.password_field :password, autofocus: true, autocomplete: "new-password" %></p>
+  </div>
+
+  <div class="field">
+    <p><%= f.label :password_confirmation, "Confirm new password" %></p>
+    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Change my password" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/devise/passwords/new.html.erb">
+<h2>Forgot your password?</h2>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="field">
+    <p><%= f.label :email %></p>
+    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Send me password reset instructions" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/devise/registrations/new.html.erb">
+<div class="flex min-h-screen items-center justify-center bg-background-light px-4 py-10">
+  <div class="w-full max-w-[480px] bg-white rounded-2xl shadow-xl border border-border-light overflow-hidden z-10">
+
+    <!-- Header -->
+    <div class="px-8 pt-10 pb-4 text-center">
+      <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
+        <span class="material-symbols-outlined md-20">person_add</span>
+      </div>
+
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">
+        アカウント作成
+      </h1>
+
+    </div>
+     <% if notice %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= notice %>
+      </div>
+    <% end %>
+    
+    <% if alert %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= alert %>
+      </div>
+    <% end %>
+   
+    <%# <%= render 'shared/error_messages', object: resource %>
+     
+    <div class="p-8 pt-4">
+
+      <% input_class = "form-input w-full rounded-lg border border-border-light
+                        bg-input-bg-light h-12 px-4 text-base
+                        focus:border-primary focus:ring-primary" %>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+                   html: { class: "flex flex-col gap-5" }) do |f| %>
+
+       
+        <!-- username -->
+        <div>
+          <label class="text-sm font-bold">ユーザー名</label>
+          <%= f.text_field :username,
+                autofocus: true,
+                autocomplete: "username",
+                placeholder: "例：立ち上がり太郎",
+                class: input_class %>
+        </div>
+
+        <!-- email -->
+        <div>
+          <label class="text-sm font-bold">メールアドレス</label>
+          <%= f.email_field :email,
+                autocomplete: "email",
+                placeholder: "your@email.com",
+                class: input_class %>
+        </div>
+
+        <!-- password -->
+        <div>
+          <label class="text-sm font-bold">
+            パスワード
+            <% if @minimum_password_length %>
+              <span class="text-xs text-text-secondary">
+                （<%= @minimum_password_length %>文字以上）
+              </span>
+            <% end %>
+          </label>
+
+          <%= f.password_field :password,
+                autocomplete: "new-password",
+                placeholder: "6文字以上で入力してください",
+                class: input_class %>
+        </div>
+
+        <!-- password confirmation -->
+        <div>
+          <label class="text-sm font-bold">パスワード（確認）</label>
+          <%= f.password_field :password_confirmation,
+                autocomplete: "new-password",
+                placeholder: "もう一度入力してください",
+                class: input_class %>
+        </div>
+        
+
+        <!-- submit -->
+        <%= f.submit "アカウントを作成",
+              class: "mt-4 w-full h-12 rounded-lg bg-primary
+                      hover:bg-primary-hover text-white font-bold
+                      transition shadow-md" %>
+
+        <!-- links -->
+        <div class="text-center text-sm mt-2">
+          <%= render "devise/shared/links" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="app/views/devise/sessions/new.html.erb">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-orange-50 to-amber-50">
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+    <!-- Header -->
+    <div class="px-8 pt-8 pb-4">
+      <h2 class="text-3xl font-bold text-[#1b140d] text-center">ログイン</h2>
+      <p class="mt-2 text-center text-sm text-[#9a734c]">
+        アカウントにログインしてください
+      </p>
+    </div>
+  <% if notice %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= notice %>
+      </div>
+      <% end %>
+    
+      <% if alert %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+        <%= alert %>
+      </div>
+      <% end %>
+      <%# <%= render 'shared/error_messages', object: resource %> 
+    <!-- Form Content -->
+    <div class="px-8 pb-8 pt-2">
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "flex flex-col gap-5" }) do |f| %>
+      
+        
+        <!-- Email Field -->
+        <label class="flex flex-col gap-1.5 w-full">
+          <span class="text-[#1b140d] text-base font-medium leading-normal">
+            <%= f.label :email, "メールアドレス" %>
+          </span>
+          <div class="relative">
+            <%= f.email_field :email, 
+              autofocus: true, 
+              autocomplete: "email",
+              placeholder: "user@example.com",
+              class: "form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1b140d] focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e7dbcf] bg-[#fcfaf8] focus:border-primary h-12 placeholder:text-[#9a734c] px-4 text-base font-normal leading-normal transition-all" 
+            %>
+          </div>
+        </label>
+
+        <!-- Password Field -->
+        <label class="flex flex-col gap-1.5 w-full">
+          <div class="flex justify-between items-center">
+            <span class="text-[#1b140d] text-base font-medium leading-normal">
+              <%= f.label :password, "パスワード" %>
+            </span>
+            <% if devise_mapping.recoverable? %>
+              <%= link_to "パスワードをお忘れですか？", 
+                new_password_path(resource_name), 
+                class: "text-sm font-medium text-primary hover:text-[#d67b20] transition-colors" 
+              %>
+            <% end %>
+          </div>
+          <div class="relative">
+            <%= f.password_field :password, 
+              autocomplete: "current-password",
+              placeholder: "••••••••",
+              class: "form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1b140d] focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e7dbcf] bg-[#fcfaf8] focus:border-primary h-12 placeholder:text-[#9a734c] px-4 text-base font-normal leading-normal transition-all" 
+            %>
+          </div>
+        </label>
+
+        <!-- Remember Me -->
+        <% if devise_mapping.rememberable? %>
+          <label class="flex items-center gap-2">
+            <%= f.check_box :remember_me, class: "rounded border-[#e7dbcf] text-primary focus:ring-primary" %>
+            <span class="text-[#1b140d] text-sm">ログイン状態を保持する</span>
+          </label>
+        <% end %>
+
+        <!-- Submit Button -->
+        <%= f.submit "ログインする", 
+          class: "flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary hover:bg-[#d67b20] transition-colors text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm" 
+        %>
+      <% end %>
+
+      <!-- Links -->
+      <div class="mt-6 text-center space-y-2">
+        <%= render "devise/shared/links" %>
+      </div>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="app/views/devise/shared/_error_messages.html.erb">
+<% if resource.errors.any? %>
+  <div id="error_explanation" data-turbo-temporary>
+    <h2>
+      <%= I18n.t("errors.messages.not_saved",
+                 count: resource.errors.count,
+                 resource: resource.class.model_name.human.downcase)
+       %>
+    </h2>
+    <ul>
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+</file>
+
+<file path="app/views/devise/unlocks/new.html.erb">
+<h2>Resend unlock instructions</h2>
+
+<%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="field">
+    <p><%= f.label :email %></p>
+    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Resend unlock instructions" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
 </file>
 
 <file path="app/views/layouts/mailer.html.erb">
@@ -989,99 +1569,6 @@ Rails.application.configure do
 end
 </file>
 
-<file path="config/environments/production.rb">
-require "active_support/core_ext/integer/time"
-
-Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
-  # Code is not reloaded between requests.
-  config.enable_reloading = false
-
-  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
-  config.eager_load = true
-
-  # Full error reports are disabled.
-  config.consider_all_requests_local = false
-
-  # Turn on fragment caching in view templates.
-  config.action_controller.perform_caching = true
-
-  # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
-
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
-
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
-
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-
-  # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
-
-  # Change to "debug" to log everything (including potentially personally-identifiable information!).
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
-
-  # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
-
-  # Don't log any deprecations.
-  config.active_support.report_deprecations = false
-
-  # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :solid_cache_store
-
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
-
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
-
-  # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
-
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
-  config.i18n.fallbacks = true
-
-  # Do not dump schema after migrations.
-  config.active_record.dump_schema_after_migration = false
-
-  # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
-
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-end
-</file>
-
 <file path="config/environments/test.rb">
 # The test environment is used exclusively to run your application's
 # test suite. You never need to work with it otherwise. Remember that
@@ -1208,6 +1695,74 @@ Rails.application.config.filter_parameters += [
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+</file>
+
+<file path="config/locales/devise.en.yml">
+# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
+
+en:
+  devise:
+    confirmations:
+      confirmed: "Your email address has been successfully confirmed."
+      send_instructions: "You will receive an email with instructions for how to confirm your email address in a few minutes."
+      send_paranoid_instructions: "If your email address exists in our database, you will receive an email with instructions for how to confirm your email address in a few minutes."
+    failure:
+      already_authenticated: "You are already signed in."
+      inactive: "Your account is not activated yet."
+      invalid: "Invalid %{authentication_keys} or password."
+      locked: "Your account is locked."
+      last_attempt: "You have one more attempt before your account is locked."
+      not_found_in_database: "Invalid %{authentication_keys} or password."
+      timeout: "Your session expired. Please sign in again to continue."
+      unauthenticated: "You need to sign in or sign up before continuing."
+      unconfirmed: "You have to confirm your email address before continuing."
+    mailer:
+      confirmation_instructions:
+        subject: "Confirmation instructions"
+      reset_password_instructions:
+        subject: "Reset password instructions"
+      unlock_instructions:
+        subject: "Unlock instructions"
+      email_changed:
+        subject: "Email Changed"
+      password_change:
+        subject: "Password Changed"
+    omniauth_callbacks:
+      failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
+      success: "Successfully authenticated from %{kind} account."
+    passwords:
+      no_token: "You can't access this page without coming from a password reset email. If you do come from a password reset email, please make sure you used the full URL provided."
+      send_instructions: "You will receive an email with instructions on how to reset your password in a few minutes."
+      send_paranoid_instructions: "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes."
+      updated: "Your password has been changed successfully. You are now signed in."
+      updated_not_active: "Your password has been changed successfully."
+    registrations:
+      destroyed: "Bye! Your account has been successfully cancelled. We hope to see you again soon."
+      signed_up: "Welcome! You have signed up successfully."
+      signed_up_but_inactive: "You have signed up successfully. However, we could not sign you in because your account is not yet activated."
+      signed_up_but_locked: "You have signed up successfully. However, we could not sign you in because your account is locked."
+      signed_up_but_unconfirmed: "A message with a confirmation link has been sent to your email address. Please follow the link to activate your account."
+      update_needs_confirmation: "You updated your account successfully, but we need to verify your new email address. Please check your email and follow the confirmation link to confirm your new email address."
+      updated: "Your account has been updated successfully."
+      updated_but_not_signed_in: "Your account has been updated successfully, but since your password was changed, you need to sign in again."
+    sessions:
+      signed_in: "Signed in successfully."
+      signed_out: "Signed out successfully."
+      already_signed_out: "Signed out successfully."
+    unlocks:
+      send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
+      send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."
+      unlocked: "Your account has been unlocked successfully. Please sign in to continue."
+  errors:
+    messages:
+      already_confirmed: "was already confirmed, please try signing in"
+      confirmation_period_expired: "needs to be confirmed within %{period}, please request a new one"
+      expired: "has expired, please request a new one"
+      not_found: "not found"
+      not_locked: "was not locked"
+      not_saved:
+        one: "1 error prohibited this %{resource} from being saved:"
+        other: "%{count} errors prohibited this %{resource} from being saved:"
 </file>
 
 <file path="config/locales/en.yml">
@@ -2572,8 +3127,33 @@ YMYL, E-E-A-T への留意が必要になる
 
 </file>
 
+<file path="test/controllers/static_pages_controller_test.rb">
+require "test_helper"
+
+class StaticPagesControllerTest < ActionDispatch::IntegrationTest
+  test "should get top" do
+    get static_pages_top_url
+    assert_response :success
+  end
+end
+</file>
+
 <file path="test/fixtures/files/.keep">
 
+</file>
+
+<file path="test/fixtures/users.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the "{}" from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value
 </file>
 
 <file path="test/helpers/.keep">
@@ -2590,6 +3170,16 @@ YMYL, E-E-A-T への留意が必要になる
 
 <file path="test/models/.keep">
 
+</file>
+
+<file path="test/models/user_test.rb">
+require "test_helper"
+
+class UserTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
 </file>
 
 <file path="test/test_helper.rb">
@@ -3182,245 +3772,14 @@ YMYL, E-E-A-T への留意が必要になる
   /* UI補助 */
   --color-border-light: #D6DED8;
   --color-input-bg-light: #FFFFFF;
+
+  /*導入ページの動き用*/
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(-15%); }
+    50% { transform: translateY(0); }
+  }
+  --animate-bounce-slow: bounce-slow 2s infinite;
 }
-</file>
-
-<file path="app/controllers/users/confirmations_controller.rb">
-# frozen_string_literal: true
-
-class Users::ConfirmationsController < Devise::ConfirmationsController
-  # GET /resource/confirmation/new
-  # def new
-  #   super
-  # end
-
-  # POST /resource/confirmation
-  # def create
-  #   super
-  # end
-
-  # GET /resource/confirmation?confirmation_token=abcdef
-  # def show
-  #   super
-  # end
-
-  # protected
-
-  # The path used after resending confirmation instructions.
-  # def after_resending_confirmation_instructions_path_for(resource_name)
-  #   super(resource_name)
-  # end
-
-  # The path used after confirmation.
-  # def after_confirmation_path_for(resource_name, resource)
-  #   super(resource_name, resource)
-  # end
-end
-</file>
-
-<file path="app/controllers/users/omniauth_callbacks_controller.rb">
-# frozen_string_literal: true
-
-class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  # You should configure your model like this:
-  # devise :omniauthable, omniauth_providers: [:twitter]
-
-  # You should also create an action method in this controller like this:
-  # def twitter
-  # end
-
-  # More info at:
-  # https://github.com/heartcombo/devise#omniauth
-
-  # GET|POST /resource/auth/twitter
-  # def passthru
-  #   super
-  # end
-
-  # GET|POST /users/auth/twitter/callback
-  # def failure
-  #   super
-  # end
-
-  # protected
-
-  # The path used when OmniAuth fails
-  # def after_omniauth_failure_path_for(scope)
-  #   super(scope)
-  # end
-end
-</file>
-
-<file path="app/controllers/users/passwords_controller.rb">
-# frozen_string_literal: true
-
-class Users::PasswordsController < Devise::PasswordsController
-  # GET /resource/password/new
-  # def new
-  #   super
-  # end
-
-  # POST /resource/password
-  # def create
-  #   super
-  # end
-
-  # GET /resource/password/edit?reset_password_token=abcdef
-  # def edit
-  #   super
-  # end
-
-  # PUT /resource/password
-  # def update
-  #   super
-  # end
-
-  # protected
-
-  # def after_resetting_password_path_for(resource)
-  #   super(resource)
-  # end
-
-  # The path used after sending reset password instructions
-  # def after_sending_reset_password_instructions_path_for(resource_name)
-  #   super(resource_name)
-  # end
-end
-</file>
-
-<file path="app/controllers/users/registrations_controller.rb">
-# frozen_string_literal: true
-
-class Users::RegistrationsController < Devise::RegistrationsController
-  # before_action :configure_sign_up_params, only: [:create]
-  # before_action :configure_account_update_params, only: [:update]
-
-  # GET /resource/sign_up
-  # def new
-  #   super
-  # end
-
-  # POST /resource
-  # def create
-  #   super
-  # end
-
-  # GET /resource/edit
-  # def edit
-  #   super
-  # end
-
-  # PUT /resource
-  # def update
-  #   super
-  # end
-
-  # DELETE /resource
-  # def destroy
-  #   super
-  # end
-
-  # GET /resource/cancel
-  # Forces the session data which is usually expired after sign
-  # in to be expired now. This is useful if the user wants to
-  # cancel oauth signing in/up in the middle of the process,
-  # removing all OAuth session data.
-  # def cancel
-  #   super
-  # end
-
-  # protected
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_up_params
-  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
-  # end
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_account_update_params
-  #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-  # end
-
-  # The path used after sign up.
-  # def after_sign_up_path_for(resource)
-  #   super(resource)
-  # end
-
-  # The path used after sign up for inactive accounts.
-  # def after_inactive_sign_up_path_for(resource)
-  #   super(resource)
-  # end
-end
-</file>
-
-<file path="app/controllers/users/sessions_controller.rb">
-# frozen_string_literal: true
-
-class Users::SessionsController < Devise::SessionsController
-  # before_action :configure_sign_in_params, only: [:create]
-
-  # GET /resource/sign_in
-  # def new
-  #   super
-  # end
-
-  # POST /resource/sign_in
-  # def create
-  #   super
-  # end
-
-  # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
-
-  # protected
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_in_params
-  #   devise_parameter_sanitizer.permit(:sign_in, keys: [:attribute])
-  # end
-end
-</file>
-
-<file path="app/controllers/users/unlocks_controller.rb">
-# frozen_string_literal: true
-
-class Users::UnlocksController < Devise::UnlocksController
-  # GET /resource/unlock/new
-  # def new
-  #   super
-  # end
-
-  # POST /resource/unlock
-  # def create
-  #   super
-  # end
-
-  # GET /resource/unlock?unlock_token=abcdef
-  # def show
-  #   super
-  # end
-
-  # protected
-
-  # The path used after sending unlock password instructions
-  # def after_sending_unlock_instructions_path_for(resource)
-  #   super(resource)
-  # end
-
-  # The path used after unlocking the resource
-  # def after_unlock_path_for(resource)
-  #   super(resource)
-  # end
-end
-</file>
-
-<file path="app/controllers/static_pages_controller.rb">
-class StaticPagesController < ApplicationController
-  def top
-  end
-end
 </file>
 
 <file path="app/helpers/users/guest_sessions_helper.rb">
@@ -3440,11 +3799,6 @@ end
 
 <file path="app/helpers/sitting_sessions_helper.rb">
 module SittingSessionsHelper
-end
-</file>
-
-<file path="app/helpers/static_pages_helper.rb">
-module StaticPagesHelper
 end
 </file>
 
@@ -3534,665 +3888,6 @@ end
 class SuggestedAction < ApplicationRecord
   belongs_to :sitting_session
   belongs_to :exercise
-end
-</file>
-
-<file path="app/views/devise/confirmations/new.html.erb">
-<h2>Resend confirmation instructions</h2>
-
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %></p>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
-</file>
-
-<file path="app/views/devise/mailer/confirmation_instructions.html.erb">
-<p>Welcome <%= @email %>!</p>
-
-<p>You can confirm your account email through the link below:</p>
-
-<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
-</file>
-
-<file path="app/views/devise/mailer/email_changed.html.erb">
-<p>Hello <%= @email %>!</p>
-
-<% if @resource.try(:unconfirmed_email?) %>
-  <p>We're contacting you to notify you that your email is being changed to <%= @resource.unconfirmed_email %>.</p>
-<% else %>
-  <p>We're contacting you to notify you that your email has been changed to <%= @resource.email %>.</p>
-<% end %>
-</file>
-
-<file path="app/views/devise/mailer/password_change.html.erb">
-<p>Hello <%= @resource.email %>!</p>
-
-<p>We're contacting you to notify you that your password has been changed.</p>
-</file>
-
-<file path="app/views/devise/mailer/reset_password_instructions.html.erb">
-<p>Hello <%= @resource.email %>!</p>
-
-<p>Someone has requested a link to change your password. You can do this through the link below.</p>
-
-<p><%= link_to 'Change my password', edit_password_url(@resource, reset_password_token: @token) %></p>
-
-<p>If you didn't request this, please ignore this email.</p>
-<p>Your password won't change until you access the link above and create a new one.</p>
-</file>
-
-<file path="app/views/devise/mailer/unlock_instructions.html.erb">
-<p>Hello <%= @resource.email %>!</p>
-
-<p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
-
-<p>Click the link below to unlock your account:</p>
-
-<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
-</file>
-
-<file path="app/views/devise/passwords/edit.html.erb">
-<h2>Change your password</h2>
-
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
-
-  <div class="field">
-    <p><%= f.label :password, "New password" %></p>
-    <% if @minimum_password_length %>
-      <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
-    <% end %>
-    <p><%= f.password_field :password, autofocus: true, autocomplete: "new-password" %></p>
-  </div>
-
-  <div class="field">
-    <p><%= f.label :password_confirmation, "Confirm new password" %></p>
-    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
-</file>
-
-<file path="app/views/devise/passwords/new.html.erb">
-<h2>Forgot your password?</h2>
-
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Send me password reset instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
-</file>
-
-<file path="app/views/devise/shared/_error_messages.html.erb">
-<% if resource.errors.any? %>
-  <div id="error_explanation" data-turbo-temporary>
-    <h2>
-      <%= I18n.t("errors.messages.not_saved",
-                 count: resource.errors.count,
-                 resource: resource.class.model_name.human.downcase)
-       %>
-    </h2>
-    <ul>
-      <% resource.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
-</file>
-
-<file path="app/views/devise/unlocks/new.html.erb">
-<h2>Resend unlock instructions</h2>
-
-<%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Resend unlock instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
-</file>
-
-<file path="app/views/exercises/index.html.erb">
-<h1>Exercises#index</h1>
-<p>Find me in app/views/exercises/index.html.erb</p>
-</file>
-
-<file path="app/views/sitting_sessions/create.turbo_stream.erb">
-<%= turbo_stream.update "modal_container" do%>
-    <%= render partial: "shared/modal", locals: { exercise: @recommended_exercise} %>
-<% end %>
-</file>
-
-<file path="app/views/sitting_sessions/show.html.erb">
-<h1>SittingSessions#show</h1>
-<p>Find me in app/views/sitting_sessions/show.html.erb</p>
-</file>
-
-<file path="config/locales/devise.en.yml">
-# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
-
-en:
-  devise:
-    confirmations:
-      confirmed: "Your email address has been successfully confirmed."
-      send_instructions: "You will receive an email with instructions for how to confirm your email address in a few minutes."
-      send_paranoid_instructions: "If your email address exists in our database, you will receive an email with instructions for how to confirm your email address in a few minutes."
-    failure:
-      already_authenticated: "You are already signed in."
-      inactive: "Your account is not activated yet."
-      invalid: "Invalid %{authentication_keys} or password."
-      locked: "Your account is locked."
-      last_attempt: "You have one more attempt before your account is locked."
-      not_found_in_database: "Invalid %{authentication_keys} or password."
-      timeout: "Your session expired. Please sign in again to continue."
-      unauthenticated: "You need to sign in or sign up before continuing."
-      unconfirmed: "You have to confirm your email address before continuing."
-    mailer:
-      confirmation_instructions:
-        subject: "Confirmation instructions"
-      reset_password_instructions:
-        subject: "Reset password instructions"
-      unlock_instructions:
-        subject: "Unlock instructions"
-      email_changed:
-        subject: "Email Changed"
-      password_change:
-        subject: "Password Changed"
-    omniauth_callbacks:
-      failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
-      success: "Successfully authenticated from %{kind} account."
-    passwords:
-      no_token: "You can't access this page without coming from a password reset email. If you do come from a password reset email, please make sure you used the full URL provided."
-      send_instructions: "You will receive an email with instructions on how to reset your password in a few minutes."
-      send_paranoid_instructions: "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes."
-      updated: "Your password has been changed successfully. You are now signed in."
-      updated_not_active: "Your password has been changed successfully."
-    registrations:
-      destroyed: "Bye! Your account has been successfully cancelled. We hope to see you again soon."
-      signed_up: "Welcome! You have signed up successfully."
-      signed_up_but_inactive: "You have signed up successfully. However, we could not sign you in because your account is not yet activated."
-      signed_up_but_locked: "You have signed up successfully. However, we could not sign you in because your account is locked."
-      signed_up_but_unconfirmed: "A message with a confirmation link has been sent to your email address. Please follow the link to activate your account."
-      update_needs_confirmation: "You updated your account successfully, but we need to verify your new email address. Please check your email and follow the confirmation link to confirm your new email address."
-      updated: "Your account has been updated successfully."
-      updated_but_not_signed_in: "Your account has been updated successfully, but since your password was changed, you need to sign in again."
-    sessions:
-      signed_in: "Signed in successfully."
-      signed_out: "Signed out successfully."
-      already_signed_out: "Signed out successfully."
-    unlocks:
-      send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
-      send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."
-      unlocked: "Your account has been unlocked successfully. Please sign in to continue."
-  errors:
-    messages:
-      already_confirmed: "was already confirmed, please try signing in"
-      confirmation_period_expired: "needs to be confirmed within %{period}, please request a new one"
-      expired: "has expired, please request a new one"
-      not_found: "not found"
-      not_locked: "was not locked"
-      not_saved:
-        one: "1 error prohibited this %{resource} from being saved:"
-        other: "%{count} errors prohibited this %{resource} from being saved:"
-</file>
-
-<file path="config/cloudinary.yml">
-development:
-  cloud_name: <%= Rails.application.credentials.dig(:cloudinary, :cloud_name) %>
-  api_key: <%= Rails.application.credentials.dig(:cloudinary, :api_key) %>
-  api_secret: <%= Rails.application.credentials.dig(:cloudinary, :api_secret) %>
-  enhance_image_tag: true
-  static_file_support: false
-
-production:
-  cloud_name: Rails.application.credentials.cloudinary[:cloud_name]
-  api_key: Rails.application.credentials.cloudinary[:api_key]
-  api_secret: Rails.application.credentials.cloudinary[:api_secret]
-  enhance_image_tag: true
-  static_file_support: true
-</file>
-
-<file path="db/migrate/20260202122701_create_sitting_sessions.rb">
-class CreateSittingSessions < ActiveRecord::Migration[8.1]
-  def change
-    create_table :sitting_sessions do |t|
-      t.references :user, null: false, foreign_key: true
-      t.datetime :start_at
-      t.datetime :notify_at
-      t.boolean :notified
-      t.string :endpoint
-      t.string :p256dh
-      t.string :auth
-
-      t.timestamps
-    end
-  end
-end
-</file>
-
-<file path="db/migrate/20260202123136_create_exercises.rb">
-class CreateExercises < ActiveRecord::Migration[8.1]
-  def change
-    create_table :exercises do |t|
-      t.string :name
-      t.integer :category
-      t.text :description
-      t.string :cloudinary_public_id
-
-      t.timestamps
-    end
-  end
-end
-</file>
-
-<file path="db/migrate/20260202123308_create_suggested_actions.rb">
-class CreateSuggestedActions < ActiveRecord::Migration[8.1]
-  def change
-    create_table :suggested_actions do |t|
-      t.references :sitting_session, null: false, foreign_key: true
-      t.references :exercise, null: false, foreign_key: true
-
-      t.timestamps
-    end
-  end
-end
-</file>
-
-<file path="db/migrate/20260205214818_add_duration_to_sitting_sessions.rb">
-class AddDurationToSittingSessions < ActiveRecord::Migration[8.1]
-  def change
-    add_column :sitting_sessions, :duration, :integer
-  end
-end
-</file>
-
-<file path="db/migrate/20260209222639_add_webpush_columns_to_users.rb">
-class AddWebpushColumnsToUsers < ActiveRecord::Migration[8.1]
-  def change
-    add_column :users, :endpoint, :string
-    add_column :users, :p256dh, :string
-    add_column :users, :auth, :string
-  end
-end
-</file>
-
-<file path="db/migrate/20260209222652_remove_webpush_columns_from_sitting_sessions.rb">
-class RemoveWebpushColumnsFromSittingSessions < ActiveRecord::Migration[8.1]
-  def change
-    remove_column :sitting_sessions, :endpoint, :string
-    remove_column :sitting_sessions, :p256dh, :string
-    remove_column :sitting_sessions, :auth, :string
-  end
-end
-</file>
-
-<file path="test/controllers/users/guest_sessions_controller_test.rb">
-require "test_helper"
-
-class Users::GuestSessionsControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/controllers/activity_logs_controller_test.rb">
-require "test_helper"
-
-class ActivityLogsControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/controllers/exercises_controller_test.rb">
-require "test_helper"
-
-class ExercisesControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
-    get exercises_index_url
-    assert_response :success
-  end
-
-  test "should get show" do
-    get exercises_show_url
-    assert_response :success
-  end
-end
-</file>
-
-<file path="test/controllers/sitting_sessions_controller_test.rb">
-require "test_helper"
-
-class SittingSessionsControllerTest < ActionDispatch::IntegrationTest
-  test "should get new" do
-    get sitting_sessions_new_url
-    assert_response :success
-  end
-
-  test "should get show" do
-    get sitting_sessions_show_url
-    assert_response :success
-  end
-end
-</file>
-
-<file path="test/controllers/static_pages_controller_test.rb">
-require "test_helper"
-
-class StaticPagesControllerTest < ActionDispatch::IntegrationTest
-  test "should get top" do
-    get static_pages_top_url
-    assert_response :success
-  end
-end
-</file>
-
-<file path="test/controllers/top_controller_test.rb">
-require "test_helper"
-
-class TopControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/fixtures/activity_logs.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  user: one
-  exercise: one
-  sitting_session: one
-
-two:
-  user: two
-  exercise: two
-  sitting_session: two
-</file>
-
-<file path="test/fixtures/exercises.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  name: MyString
-  category: 1
-  description: MyText
-  cloudinary_public_id: MyString
-
-two:
-  name: MyString
-  category: 1
-  description: MyText
-  cloudinary_public_id: MyString
-</file>
-
-<file path="test/fixtures/sitting_sessions.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  user: one
-  start_at: 2026-02-02 21:27:01
-  notify_at: 2026-02-02 21:27:01
-  notified: false
-  endpoint: MyString
-  p256dh: MyString
-  auth: MyString
-
-two:
-  user: two
-  start_at: 2026-02-02 21:27:01
-  notify_at: 2026-02-02 21:27:01
-  notified: false
-  endpoint: MyString
-  p256dh: MyString
-  auth: MyString
-</file>
-
-<file path="test/fixtures/suggested_actions.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  sitting_settion: one
-  exercise: one
-
-two:
-  sitting_settion: two
-  exercise: two
-</file>
-
-<file path="test/fixtures/users.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
-</file>
-
-<file path="test/jobs/send_notification_job_test.rb">
-require "test_helper"
-
-class SendNotificationJobTest < ActiveJob::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/models/activity_log_test.rb">
-require "test_helper"
-
-class ActivityLogTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/models/exercise_test.rb">
-require "test_helper"
-
-class ExerciseTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/models/sitting_session_test.rb">
-require "test_helper"
-
-class SittingSessionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/models/suggested_action_test.rb">
-require "test_helper"
-
-class SuggestedActionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/models/user_test.rb">
-require "test_helper"
-
-class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="app/controllers/users/guest_sessions_controller.rb">
-class Users::GuestSessionsController < ApplicationController
-  def create
-    user = User.guest
-    sign_in user
-    redirect_to root_path, notice: "ゲストユーザーとしてログインしました。"
-  end
-end
-</file>
-
-<file path="app/controllers/exercises_controller.rb">
-class ExercisesController < ApplicationController
-  def index
-  end
-
-  def show
-    @exercise = Exercise.find(params[:id])
-  end
-end
-</file>
-
-<file path="app/javascript/controllers/mobile_menu_controller.js">
-import { Controller } from "@hotwired/stimulus"
-
-// Connects to data-controller="mobile-menu"
-export default class extends Controller {
-  static targets = ["menu"]
-
-  toggle(event) {
-    event.stopPropagation()
-    this.menuTarget.classList.toggle("hidden")
-  }
-
-  hide(event) {
-  if(!this.element.contains(event.target)) {
-    this.menuTarget.classList.add("hidden")
-    }
-  }
-}
-</file>
-
-<file path="app/javascript/controllers/notification_controller.js">
-import { Controller } from "@hotwired/stimulus"
-
-// Connects to data-controller="notification"
-export default class extends Controller {
-  static values = { publicKey: String }
-
-  connect() {
-    //許可、拒否済みの場合は通知を確認しない
-    if (Notification.permission === 'default') {
-      //すこし遅らせてから通知
-      setTimeout(() => {
-        this.subscribe()
-      }, 1000)
-    }
-  }
-
-
-  async subscribe() {
-    console.log("Starting subscribe...");
-    try {
-      
-      await navigator.serviceWorker.register('/service-worker.js');
-      
-      const registration = await navigator.serviceWorker.ready
-      
-      const convertedVapidKey = this.#urlBase64ToUint8Array(this.publicKeyValue)
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedVapidKey
-      })
-
-      await this.#sendSubscriptionToServer(subscription)
-      console.log("Push通知が有効になりました")
-    } catch (error) {
-      console.error("Push購読に失敗しました")
-      alert("通知許可ができませんした。ブラウザの設定を確認してください")
-    }
-  }
-  //サーバーへajaxで情報送信
-  async #sendSubscriptionToServer(subscription) {
-    const response = await fetch("/sitting_sessions/subscribe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({
-        subscription: subscription.toJSON()
-      })
-    })
-    return response
-  }
-
-  // 鍵の変換関数
-  #urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  }
-}
-</file>
-
-<file path="app/models/exercise.rb">
-class Exercise < ApplicationRecord
-  has_many :suggested_actions, dependent: :destroy
-  has_many :sitting_sessions, through: :suggested_actions
-
-  enum :category, { stretch: 0, training: 1, walk: 2 }
-
-  validates :name, presence: true
-  validates :category, presence: true
 end
 </file>
 
@@ -4300,195 +3995,6 @@ end
 </div>
 </file>
 
-<file path="app/views/devise/registrations/new.html.erb">
-<div class="flex min-h-screen items-center justify-center bg-background-light px-4 py-10">
-  <div class="w-full max-w-[480px] bg-white rounded-2xl shadow-xl border border-border-light overflow-hidden z-10">
-
-    <!-- Header -->
-    <div class="px-8 pt-10 pb-4 text-center">
-      <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
-        <span class="material-symbols-outlined md-20">person_add</span>
-      </div>
-
-      <h1 class="text-2xl md:text-3xl font-bold mb-2">
-        アカウント作成
-      </h1>
-
-    </div>
-     <% if notice %>
-      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
-        <%= notice %>
-      </div>
-    <% end %>
-    
-    <% if alert %>
-      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
-        <%= alert %>
-      </div>
-    <% end %>
-   
-    <%# <%= render 'shared/error_messages', object: resource %>
-     
-    <div class="p-8 pt-4">
-
-      <% input_class = "form-input w-full rounded-lg border border-border-light
-                        bg-input-bg-light h-12 px-4 text-base
-                        focus:border-primary focus:ring-primary" %>
-
-      <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
-                   html: { class: "flex flex-col gap-5" }) do |f| %>
-
-       
-        <!-- username -->
-        <div>
-          <label class="text-sm font-bold">ユーザー名</label>
-          <%= f.text_field :username,
-                autofocus: true,
-                autocomplete: "username",
-                placeholder: "例：立ち上がり太郎",
-                class: input_class %>
-        </div>
-
-        <!-- email -->
-        <div>
-          <label class="text-sm font-bold">メールアドレス</label>
-          <%= f.email_field :email,
-                autocomplete: "email",
-                placeholder: "your@email.com",
-                class: input_class %>
-        </div>
-
-        <!-- password -->
-        <div>
-          <label class="text-sm font-bold">
-            パスワード
-            <% if @minimum_password_length %>
-              <span class="text-xs text-text-secondary">
-                （<%= @minimum_password_length %>文字以上）
-              </span>
-            <% end %>
-          </label>
-
-          <%= f.password_field :password,
-                autocomplete: "new-password",
-                placeholder: "6文字以上で入力してください",
-                class: input_class %>
-        </div>
-
-        <!-- password confirmation -->
-        <div>
-          <label class="text-sm font-bold">パスワード（確認）</label>
-          <%= f.password_field :password_confirmation,
-                autocomplete: "new-password",
-                placeholder: "もう一度入力してください",
-                class: input_class %>
-        </div>
-        
-
-        <!-- submit -->
-        <%= f.submit "アカウントを作成",
-              class: "mt-4 w-full h-12 rounded-lg bg-primary
-                      hover:bg-primary-hover text-white font-bold
-                      transition shadow-md" %>
-
-        <!-- links -->
-        <div class="text-center text-sm mt-2">
-          <%= render "devise/shared/links" %>
-        </div>
-
-      <% end %>
-    </div>
-  </div>
-</div>
-</file>
-
-<file path="app/views/devise/sessions/new.html.erb">
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-orange-50 to-amber-50">
-  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-    <!-- Header -->
-    <div class="px-8 pt-8 pb-4">
-      <h2 class="text-3xl font-bold text-[#1b140d] text-center">ログイン</h2>
-      <p class="mt-2 text-center text-sm text-[#9a734c]">
-        アカウントにログインしてください
-      </p>
-    </div>
-  <% if notice %>
-      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
-        <%= notice %>
-      </div>
-      <% end %>
-    
-      <% if alert %>
-      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
-        <%= alert %>
-      </div>
-      <% end %>
-      <%# <%= render 'shared/error_messages', object: resource %> 
-    <!-- Form Content -->
-    <div class="px-8 pb-8 pt-2">
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "flex flex-col gap-5" }) do |f| %>
-      
-        
-        <!-- Email Field -->
-        <label class="flex flex-col gap-1.5 w-full">
-          <span class="text-[#1b140d] text-base font-medium leading-normal">
-            <%= f.label :email, "メールアドレス" %>
-          </span>
-          <div class="relative">
-            <%= f.email_field :email, 
-              autofocus: true, 
-              autocomplete: "email",
-              placeholder: "user@example.com",
-              class: "form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1b140d] focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e7dbcf] bg-[#fcfaf8] focus:border-primary h-12 placeholder:text-[#9a734c] px-4 text-base font-normal leading-normal transition-all" 
-            %>
-          </div>
-        </label>
-
-        <!-- Password Field -->
-        <label class="flex flex-col gap-1.5 w-full">
-          <div class="flex justify-between items-center">
-            <span class="text-[#1b140d] text-base font-medium leading-normal">
-              <%= f.label :password, "パスワード" %>
-            </span>
-            <% if devise_mapping.recoverable? %>
-              <%= link_to "パスワードをお忘れですか？", 
-                new_password_path(resource_name), 
-                class: "text-sm font-medium text-primary hover:text-[#d67b20] transition-colors" 
-              %>
-            <% end %>
-          </div>
-          <div class="relative">
-            <%= f.password_field :password, 
-              autocomplete: "current-password",
-              placeholder: "••••••••",
-              class: "form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1b140d] focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e7dbcf] bg-[#fcfaf8] focus:border-primary h-12 placeholder:text-[#9a734c] px-4 text-base font-normal leading-normal transition-all" 
-            %>
-          </div>
-        </label>
-
-        <!-- Remember Me -->
-        <% if devise_mapping.rememberable? %>
-          <label class="flex items-center gap-2">
-            <%= f.check_box :remember_me, class: "rounded border-[#e7dbcf] text-primary focus:ring-primary" %>
-            <span class="text-[#1b140d] text-sm">ログイン状態を保持する</span>
-          </label>
-        <% end %>
-
-        <!-- Submit Button -->
-        <%= f.submit "ログインする", 
-          class: "flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary hover:bg-[#d67b20] transition-colors text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm" 
-        %>
-      <% end %>
-
-      <!-- Links -->
-      <div class="mt-6 text-center space-y-2">
-        <%= render "devise/shared/links" %>
-      </div>
-    </div>
-  </div>
-</div>
-</file>
-
 <file path="app/views/devise/shared/_links.html.erb">
 <%- if controller_name != 'sessions' %>
   <p><%= link_to "ログイン", new_session_path(resource_name) %></p>
@@ -4517,13 +4023,20 @@ end
 <% end %>
 </file>
 
-<file path="config/initializers/cloudinay.rb">
-Cloudinary.config do |config|
-  config.cloud_name = Rails.application.credentials.dig(:cloudinary, :cloud_name)
-  config.api_key    = Rails.application.credentials.dig(:cloudinary, :api_key)
-  config.api_secret = Rails.application.credentials.dig(:cloudinary, :api_secret)
-  config.secure     = true
-end
+<file path="app/views/exercises/index.html.erb">
+<h1>Exercises#index</h1>
+<p>Find me in app/views/exercises/index.html.erb</p>
+</file>
+
+<file path="app/views/sitting_sessions/create.turbo_stream.erb">
+<%= turbo_stream.update "modal_container" do%>
+    <%= render partial: "shared/modal", locals: { exercise: @recommended_exercise} %>
+<% end %>
+</file>
+
+<file path="app/views/sitting_sessions/show.html.erb">
+<h1>SittingSessions#show</h1>
+<p>Find me in app/views/sitting_sessions/show.html.erb</p>
 </file>
 
 <file path="config/initializers/devise.rb">
@@ -4845,6 +4358,22 @@ Devise.setup do |config|
 end
 </file>
 
+<file path="config/cloudinary.yml">
+development:
+  cloud_name: <%= Rails.application.credentials.dig(:cloudinary, :cloud_name) %>
+  api_key: <%= Rails.application.credentials.dig(:cloudinary, :api_key) %>
+  api_secret: <%= Rails.application.credentials.dig(:cloudinary, :api_secret) %>
+  enhance_image_tag: true
+  static_file_support: false
+
+production:
+  cloud_name: Rails.application.credentials.cloudinary[:cloud_name]
+  api_key: Rails.application.credentials.cloudinary[:api_key]
+  api_secret: Rails.application.credentials.cloudinary[:api_secret]
+  enhance_image_tag: true
+  static_file_support: true
+</file>
+
 <file path="db/migrate/20260201010209_devise_create_users.rb">
 # frozen_string_literal: true
 
@@ -4893,6 +4422,484 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.1]
     # add_index :users, :confirmation_token,   unique: true
     # add_index :users, :unlock_token,         unique: true
   end
+end
+</file>
+
+<file path="db/migrate/20260202122701_create_sitting_sessions.rb">
+class CreateSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    create_table :sitting_sessions do |t|
+      t.references :user, null: false, foreign_key: true
+      t.datetime :start_at
+      t.datetime :notify_at
+      t.boolean :notified
+      t.string :endpoint
+      t.string :p256dh
+      t.string :auth
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260202123136_create_exercises.rb">
+class CreateExercises < ActiveRecord::Migration[8.1]
+  def change
+    create_table :exercises do |t|
+      t.string :name
+      t.integer :category
+      t.text :description
+      t.string :cloudinary_public_id
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260202123308_create_suggested_actions.rb">
+class CreateSuggestedActions < ActiveRecord::Migration[8.1]
+  def change
+    create_table :suggested_actions do |t|
+      t.references :sitting_session, null: false, foreign_key: true
+      t.references :exercise, null: false, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260205214818_add_duration_to_sitting_sessions.rb">
+class AddDurationToSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    add_column :sitting_sessions, :duration, :integer
+  end
+end
+</file>
+
+<file path="db/migrate/20260209222639_add_webpush_columns_to_users.rb">
+class AddWebpushColumnsToUsers < ActiveRecord::Migration[8.1]
+  def change
+    add_column :users, :endpoint, :string
+    add_column :users, :p256dh, :string
+    add_column :users, :auth, :string
+  end
+end
+</file>
+
+<file path="db/migrate/20260209222652_remove_webpush_columns_from_sitting_sessions.rb">
+class RemoveWebpushColumnsFromSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    remove_column :sitting_sessions, :endpoint, :string
+    remove_column :sitting_sessions, :p256dh, :string
+    remove_column :sitting_sessions, :auth, :string
+  end
+end
+</file>
+
+<file path="test/controllers/users/guest_sessions_controller_test.rb">
+require "test_helper"
+
+class Users::GuestSessionsControllerTest < ActionDispatch::IntegrationTest
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/controllers/activity_logs_controller_test.rb">
+require "test_helper"
+
+class ActivityLogsControllerTest < ActionDispatch::IntegrationTest
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/controllers/exercises_controller_test.rb">
+require "test_helper"
+
+class ExercisesControllerTest < ActionDispatch::IntegrationTest
+  test "should get index" do
+    get exercises_index_url
+    assert_response :success
+  end
+
+  test "should get show" do
+    get exercises_show_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/sitting_sessions_controller_test.rb">
+require "test_helper"
+
+class SittingSessionsControllerTest < ActionDispatch::IntegrationTest
+  test "should get new" do
+    get sitting_sessions_new_url
+    assert_response :success
+  end
+
+  test "should get show" do
+    get sitting_sessions_show_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/top_controller_test.rb">
+require "test_helper"
+
+class TopControllerTest < ActionDispatch::IntegrationTest
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/fixtures/activity_logs.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  exercise: one
+  sitting_session: one
+
+two:
+  user: two
+  exercise: two
+  sitting_session: two
+</file>
+
+<file path="test/fixtures/exercises.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  category: 1
+  description: MyText
+  cloudinary_public_id: MyString
+
+two:
+  name: MyString
+  category: 1
+  description: MyText
+  cloudinary_public_id: MyString
+</file>
+
+<file path="test/fixtures/sitting_sessions.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
+
+two:
+  user: two
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
+</file>
+
+<file path="test/fixtures/suggested_actions.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sitting_settion: one
+  exercise: one
+
+two:
+  sitting_settion: two
+  exercise: two
+</file>
+
+<file path="test/jobs/send_notification_job_test.rb">
+require "test_helper"
+
+class SendNotificationJobTest < ActiveJob::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/activity_log_test.rb">
+require "test_helper"
+
+class ActivityLogTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/exercise_test.rb">
+require "test_helper"
+
+class ExerciseTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/sitting_session_test.rb">
+require "test_helper"
+
+class SittingSessionTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/suggested_action_test.rb">
+require "test_helper"
+
+class SuggestedActionTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="app/controllers/users/guest_sessions_controller.rb">
+class Users::GuestSessionsController < ApplicationController
+  def create
+    user = User.guest
+    sign_in user
+    redirect_to root_path, notice: "ゲストユーザーとしてログインしました。"
+  end
+end
+</file>
+
+<file path="app/controllers/exercises_controller.rb">
+class ExercisesController < ApplicationController
+  def index
+  end
+
+  def show
+    @exercise = Exercise.find(params[:id])
+  end
+end
+</file>
+
+<file path="app/javascript/controllers/mobile_menu_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="mobile-menu"
+export default class extends Controller {
+  static targets = ["menu"]
+
+  toggle(event) {
+    event.stopPropagation()
+    this.menuTarget.classList.toggle("hidden")
+  }
+
+  hide(event) {
+  if(!this.element.contains(event.target)) {
+    this.menuTarget.classList.add("hidden")
+    }
+  }
+}
+</file>
+
+<file path="app/javascript/controllers/notification_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="notification"
+export default class extends Controller {
+  static values = { publicKey: String }
+
+  connect() {
+    //許可、拒否済みの場合は通知を確認しない
+    if (Notification.permission === 'default') {
+      //すこし遅らせてから通知
+      setTimeout(() => {
+        this.subscribe()
+      }, 1000)
+    }
+  }
+
+
+  async subscribe() {
+    console.log("Starting subscribe...");
+    try {
+      
+      await navigator.serviceWorker.register('/service-worker.js');
+      
+      const registration = await navigator.serviceWorker.ready
+      
+      const convertedVapidKey = this.#urlBase64ToUint8Array(this.publicKeyValue)
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+      })
+
+      await this.#sendSubscriptionToServer(subscription)
+      console.log("Push通知が有効になりました")
+    } catch (error) {
+      console.error("Push購読に失敗しました")
+      alert("通知許可ができませんした。ブラウザの設定を確認してください")
+    }
+  }
+  //サーバーへajaxで情報送信
+  async #sendSubscriptionToServer(subscription) {
+    const response = await fetch("/sitting_sessions/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        subscription: subscription.toJSON()
+      })
+    })
+    return response
+  }
+
+  // 鍵の変換関数
+  #urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+}
+</file>
+
+<file path="app/models/exercise.rb">
+class Exercise < ApplicationRecord
+  has_many :suggested_actions, dependent: :destroy
+  has_many :sitting_sessions, through: :suggested_actions
+
+  enum :category, { stretch: 0, training: 1, walk: 2 }
+
+  validates :name, presence: true
+  validates :category, presence: true
+end
+</file>
+
+<file path="config/environments/production.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
+
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
+
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
+  config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # config.assume_ssl = true
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+  # Replace the default in-process memory cache store with a durable alternative.
+  config.cache_store = :solid_cache_store
+
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Ignore bad email addresses and do not raise email delivery errors.
+  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # config.action_mailer.smtp_settings = {
+  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
+  #   password: Rails.application.credentials.dig(:smtp, :password),
+  #   address: "smtp.example.com",
+  #   port: 587,
+  #   authentication: :plain
+  # }
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  config.active_record.attributes_for_inspect = [ :id ]
+
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  # config.hosts = [
+  #   "example.com",     # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
+  #
+  # Skip DNS rebinding protection for the default health check endpoint.
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+end
+</file>
+
+<file path="config/initializers/cloudinay.rb">
+Cloudinary.config do |config|
+  config.cloud_name = Rails.application.credentials.dig(:cloudinary, :cloud_name)
+  config.api_key    = Rails.application.credentials.dig(:cloudinary, :api_key)
+  config.api_secret = Rails.application.credentials.dig(:cloudinary, :api_secret)
+  config.secure     = true
 end
 </file>
 
@@ -4963,6 +4970,115 @@ class SendNotificationJob < ApplicationJob
     end
   end
 end
+</file>
+
+<file path="app/views/static_pages/top.html.erb">
+<div class="min-h-screen bg-background-light text-text-main pb-20">
+
+  <main class="max-w-5xl mx-auto px-6 text-center">
+
+    <h1 class="text-xl md:text-2xl font-semibold leading-relaxed pt-10 mb-20">
+      座りすぎは喫煙と同等に身体に悪影響を及ぼすとされています<br>
+      定期的に立ちあがり健康的な生活を目指しましょう
+    </h1>
+    
+
+    <section class="mb-24">
+      <h2 class="text-md font-black text-primary uppercase tracking-[0.3em] mb-20">How to use</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+        <div class="relative">
+          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">01</div>
+          <div class="relative z-10">
+            <h3 class="font-bold mb-3">タイマーをセット</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">作業時間を設定してスタート。<br>あなたのデスクワークを見守ります。</p>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">02</div>
+          <div class="relative z-10">
+            <h3 class="font-bold mb-3">通知で休憩</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">時間になるとデスクトップ通知でお知らせ。<br>座りすぎを防止します。</p>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">03</div>
+          <div class="relative z-10">
+            <h3 class="font-bold mb-3">最適な運動を実践</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">理学療法士監修のメニューを提案。<br>数分の運動で身体をリセット。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-24 bg-white/50 border border-white rounded-[3rem] p-10 md:p-16 shadow-sm">
+      <div class="flex flex-col md:flex-row items-center gap-12 text-left">
+        <div class="flex-1 space-y-6">
+          <div class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase">Push Notification</div>
+          <h2 class="text-2xl font-black leading-tight">ブラウザ通知をONにして<br>健康習慣を確実に。</h2>
+          <p class="text-sm text-text-secondary leading-relaxed">
+            このアプリは、ブラウザのプッシュ通知機能を利用します。ログイン後、通知の許可を求めるダイアログが表示されますので、「許可」を選択してください。
+            <br><span class="text-[10px] opacity-60">※スマートフォン・PCの両方に対応しています。</span>
+          </p>
+        </div>
+        
+        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light animate-bounce-slow">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+              <span class="material-symbols-outlined text-sm">notifications</span>
+            </div>
+            <div class="flex-1">
+              <div class="h-2 w-20 bg-gray-200 rounded"></div>
+              <div class="h-1.5 w-12 bg-gray-100 rounded mt-1"></div>
+            </div>
+          </div>
+          <div class="font-bold text-xs mb-1">休憩の時間です！</div>
+          <div class="text-[10px] text-text-secondary italic">「立ち上がって肩甲骨を回しましょう」</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-24">
+      <h2 class="text-md font-black text-text-secondary uppercase tracking-[0.3em] mb-12">The Risks</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
+          <h3 class="font-bold mb-2 text-sm">健康リスクの増大</h3>
+          <p class="text-xs text-text-secondary leading-relaxed">
+            脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。
+          </p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
+          <h3 class="font-bold mb-2 text-sm">集中力の低下</h3>
+          <p class="text-xs text-text-secondary leading-relaxed">
+            血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。
+          </p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
+          <h3 class="font-bold mb-2 text-sm">専門家による監修</h3>
+          <p class="text-xs text-text-secondary leading-relaxed">
+            理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-16 pb-20">
+      <%= link_to "登録して始める",
+        new_user_registration_path,
+        class: "inline-block px-12 py-5 rounded-full bg-primary text-white font-black hover:bg-primary-hover transition shadow-xl shadow-primary/20 active:scale-95" %>
+
+      <div class="mt-6">
+        <%= button_to "ゲストユーザーとして始める",
+            guest_login_path,
+            method: :post,
+            class: "text-sm text-text-secondary underline hover:text-text-main transition cursor-pointer" %>
+      </div>
+    </div>
+
+  </main>
+</div>
 </file>
 
 <file path="app/views/top/index.html.erb">
@@ -5139,272 +5255,6 @@ import TimerController from "./timer_controller"
 application.register("timer", TimerController)
 </file>
 
-<file path="app/views/static_pages/top.html.erb">
-<div class="min-h-screen bg-background-light text-text-main">
-
-  <!-- main -->
-  <main class="max-w-5xl mx-auto px-6 text-center">
-
-    <!-- catch copy -->
-    <h1 class="text-xl md:text-2xl font-semibold leading-relaxed mt-12">
-      座りすぎは喫煙について身体に悪影響を及ぼすとされています<br>
-      定期的に立ちあがり健康的な生活を目指しましょう
-    </h1>
-
-    <!-- cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-14">
-
-      <!-- card -->
-      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
-        <div class="flex justify-center mb-4 text-primary">
-          <span class="material-symbols-outlined text-5xl">chair</span>
-        </div>
-        <p class="text-sm text-text-secondary leading-relaxed">
-          座りすぎは脳梗塞やヘルニアなどの<br>
-          リスクを高める
-        </p>
-        <p class="text-sm text-text-secondary mt-4">
-          1時間座ると22分寿命が縮むと言われている
-        </p>
-      </div>
-
-      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
-        <div class="flex justify-center mb-4 text-primary">
-          <span class="material-symbols-outlined text-5xl">timer</span>
-        </div>
-        <p class="text-sm text-text-secondary leading-relaxed">
-          タイマーを設定して定期的に立ち上がったり、
-          運動を行うようサポートするアプリです
-        </p>
-      </div>
-
-      <div class="bg-input-bg-light border border-border-light rounded-xl shadow-sm p-8">
-        <div class="flex justify-center mb-4 text-primary">
-          <span class="material-symbols-outlined text-5xl">notifications</span>
-        </div>
-        <p class="text-sm text-text-secondary leading-relaxed">
-          時間になると通知がきて、
-          今するべき行動を理学療法士監修の元に提案します
-        </p>
-      </div>
-
-    </div>
-
-    <!-- CTA -->
-    <div class="mt-16">
-      <%= link_to "登録して始める",
-        new_user_registration_path,
-        class: "inline-block px-10 py-4 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition" %>
-
-      <div class="mt-4">
-        <%= button_to "ゲストユーザーとして始める",
-            guest_login_path,
-            method: :post,
-            class: "text-sm text-text-secondary underline hover:text-text-main transition cursor-pointer" %>
-      </div>
-    </div>
-
-  </main>
-</div>
-</file>
-
-<file path="db/seeds.rb">
-puts "シードデータを投入中"
-
-exercises_data = [
-  {
-    name: "ウォーキング",
-    category: :walk,
-    cloudinary_public_id: "walk",
-    description: <<~TEXT
-      外に出て歩きましょう！
-      理想は20分以上とされていますが、まずは5分からでも大丈夫です。
-      - 効果的な方法
-      1. やや歩幅を広げる
-      2. ペースも少し早めに
-      3. 軽く息が上がるくらいが効果的
-
-      ちゃんと戻ってきてくださいね！
-    TEXT
-  },
-  {
-    name: "スクワット",
-    category: :training,
-    cloudinary_public_id: "squat",
-    description: <<~TEXT
-      1. 足を肩幅に開き、ゆっくり腰を下ろします。
-      2. 膝が爪先より前に出すぎないように意識してください。
-      3. 膝が90°まで曲がるとより効果的ですが、浅くても大丈夫です！
-
-      下半身の血流を良くして、脳をリフレッシュさせましょう。
-    TEXT
-  },
-   {
-    name: "踵上げ",
-    category: :training,
-    cloudinary_public_id: "heel_raise",
-    description: <<~TEXT
-      1. 立ち上がり椅子やテーブルに軽く捕まりましょう
-      2. 足の指に力を入れながら踵を上げていきます
-      3. 下ろす時をゆっくり行うとより効果的です
-      4. 踵をつかないように続けるとさらに負荷が上がりますよ！
-
-      ふくらはぎは『第2の心臓』なので、全身の血流が良くなります
-    TEXT
-  },
-   {
-    name: "ヒップエクステンション",
-    category: :training,
-    cloudinary_public_id: "hip_extension",
-    description: <<~TEXT
-      1. 壁や机に手をついて姿勢を安定させる。(余裕があれば手を離してもOK)
-      2. 膝を伸ばしたまま、片脚を後ろにゆっくり蹴り出す。
-      3. お尻の力で脚を上げ、ゆっくり元の位置に戻す
-      4. 体が前に倒れないように注意！
-
-      座り続けるとお尻の筋肉が固まってくるので、とても効果的です
-    TEXT
-  },
-   {
-    name: "肩甲骨の運動",
-    category: :training,
-    cloudinary_public_id: "scapula",
-    description: <<~TEXT
-      1. 肘を90°に曲げます
-      2. 手のひらを自分の方に向けながら、腕をくっつけます
-      3. 手のひらを外に向けながら胸を開きます（肩甲骨を寄せるように）
-      4. 2~3を繰り返しましょう
-
-      長く座っていると背中が丸くなっていませんか？
-      肩甲骨をどんどん動かそう！
-    TEXT
-  },
-   {
-    name: "胸の壁ストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "pectoralis",
-    description: <<~TEXT
-      1. 肘から手のひらを壁につけます
-      2. そのまま体を開いていきます
-      3. 胸を開いて前側が伸びるように
-      4. 腕の高さによって伸びる場所が変わるので、調整してみましょう
-
-      胸の硬さは『THE 猫背』の象徴です
-      顔のむくみがスッキリすることも
-    TEXT
-  },
-   {
-    name: "お尻のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "gluteus",
-    description: <<~TEXT
-      1.#{' '}
-      2. そのまま体を開いていきます
-      3. 胸を開いて前側が伸びるように
-      4. 腕の高さによって伸びる場所が変わるので、調整してみましょう
-
-      胸の硬さは『THE 猫背』の象徴です
-      顔のむくみがスッキリすることも
-    TEXT
-  },
-   {
-    name: "外側の全身ストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "lateral_line",
-    description: <<~TEXT
-      1. 片手をテーブルや背もたれにつきます
-      2. 反対の足を前からクロスします
-      3. もう一方の手をバンザイして横に倒れていきましょう
-      4. 脇腹からお尻までが伸びるのを感じながら深呼吸
-
-      反対側も同様に行いましょう！
-      全身につながる『筋膜』を伸ばしていきます
-    TEXT
-  },
-  {
-    name: "肩のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "shoulder",
-    description: <<~TEXT
-      1. 両手を後ろで組みます（立って行ってもOK）
-      2. お辞儀をしながら手を天井の方へ伸ばしていきます
-      3. 肩甲骨を寄せながら、肩周りを伸ばしていきましょう
-      4. 首も下をむくとより伸びが感じられます
-
-      肩を痛めないようにゆっくり無理せず
-      息が止まらないように注意して行いましょう
-    TEXT
-  },
-  {
-    name: "後面の全身ストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "back_line",
-    description: <<~TEXT
-      1. 両手をテーブルや背もたれにつきます
-      2. 背中はまっすぐのまま股関節から体を曲げていきましょう
-      3. 頭は両腕の間に入れるようにします
-      4. 背中から足までが伸びるのを感じます
-
-      辛い方は膝を少し曲げても大丈夫です
-      全身につながる『筋膜』を伸ばしていきます
-    TEXT
-  },
-  {
-    name: "背骨のひねりストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "thorax_rotation",
-    description: <<~TEXT
-      1. 座ったまま胸の前で腕を交叉します
-      2. 上半身を捻っていきましょう
-      3. 息を吐きながら捻っていきます
-      4. 背中が丸くならないように気をつけます
-
-      左右交互に行いましょう！
-      背骨を動かすことで自律神経にも働きかけます
-    TEXT
-  },
-  {
-    name: "背中のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "latissimus",
-    description: <<~TEXT
-      1. 床に膝立ちになり、両肘を椅子につきます
-      2. 顔を両腕の間に入れるように正座していきます
-      3. 背中が伸びるのを感じながらキープします
-      4. 肩を痛めないように無理せず行いましょう
-
-      デスクワークで丸まりがちな背中を伸ばしていきましょう
-      背骨が動くと自律神経にも良い影響があります
-    TEXT
-  },
-  {
-    name: "首のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "neck_side",
-    description: <<~TEXT
-      1. 片手で頭の反対側を抑えます
-      2. そのまま首を横に倒していきましょう
-      3. 首から肩にかけて伸びるのを感じます
-      4. 肩がすくまない様に注意
-
-      首は痛めやすいので強くやりすぎないように
-      首が硬くなると頭痛や眼精疲労の原因にも
-    TEXT
-  }
-]
-
-exercises_data.each do |data|
-  # find_or_create_byでseedの重複を避ける
-  Exercise.find_or_create_by!(name: data[:name]) do |e|
-    e.category = data[:category]
-    e.cloudinary_public_id = data[:cloudinary_public_id]
-    e.description = data[:description]
-  end
-end
-
-puts "完了！"
-</file>
-
 <file path="Gemfile">
 source "https://rubygems.org"
 
@@ -5520,129 +5370,6 @@ class User < ApplicationRecord
     end
   end
 end
-</file>
-
-<file path="app/views/exercises/show.html.erb">
-<%# 全体の背景設定と装飾用のBlob要素 %>
-<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
-  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
-</div>
-
-<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
-  
-  <%# ヘッダーラベルとタイトル %>
-  <div class="text-center mb-10 mt-8">
-    <div class="inline-flex items-center gap-2 mb-3 text-primary">
-      <span class="material-symbols-outlined text-xl">spa</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
-    </div>
-    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
-      <%= @exercise.name %>
-    </h1>
-  </div>
-
-  <%# メインビジュアル（画像部分） %>
-  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
-    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
-      <% if @exercise.cloudinary_public_id.present? %>
-        <%= cl_image_tag(@exercise.cloudinary_public_id, 
-            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
-      <% end %>
-      
-      <%# 再生ガイド用バッジ %>
-      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
-        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
-      </div>
-    </div>
-  </div>
-
-  <%# コンテンツエリア %>
-  <div class="w-full grid md:grid-cols-3 gap-10">
-    <%# やり方の解説（左側 2/3） %>
-    <div class="md:col-span-2 space-y-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-          <span class="material-symbols-outlined">description</span>
-        </div>
-        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
-      </div>
-
-      <div class="space-y-4">
-        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
-        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
-          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
-              <%= index + 1 %>
-            </div>
-            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
-              <%= step %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-
-    <%# 注意ポイント（右側 1/3） %>
-    <div class="space-y-6">
-      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
-        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-xl">info</span>
-          注意ポイント
-        </h3>
-        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</main>
-
-<%# 下部に固定されたアクションバー %>
-<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
-  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
-    <div class="flex flex-col md:flex-row items-center gap-6">
-      
-      <%# 進捗バー（演出用） %>
-      <div class="flex-1 w-full px-2"
-           data-controller="exercise-timer"
-           data-exercise-timer-duration-value="300">
-        <div class="flex justify-between items-end mb-2">
-          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
-          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
-        </div>
-        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
-        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
-             data-exercise-timer-target="bar"
-             style="width: 100%;">
-  
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
-        </div>
-        </div>
-        </div>
-
-      <%# アクションボタン %>
-      <div class="flex items-center gap-4 w-full md:w-auto">
-        <%= link_to new_sitting_session_path(reopen_modal: true),
-            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
-          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
-          <span>他の運動</span>
-        <% end %>
-
-        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
-            method: :post,
-            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
-          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
-          <span>完了して戻る</span>
-        <% end %>
-      </div>
-
-    </div>
-  </div>
-</div>
 </file>
 
 <file path="app/views/layouts/application.html.erb">
@@ -5794,7 +5521,7 @@ end
   </header>
   
   <%# ヘッダーが固定(fixed)なので、コンテンツが隠れないように余白を確保 %>
-  <div class="h-20 md:h-24"></div>
+  <div class="h-20 md:h-20"></div>
 <% end %>
     <%= yield %>
     <%# どのページにいてもモーダルを表示するため %>
@@ -5803,6 +5530,311 @@ end
     <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
   </body>
 </html>
+</file>
+
+<file path="db/seeds.rb">
+puts "シードデータを投入中"
+
+exercises_data = [
+  {
+    name: "ウォーキング",
+    category: :walk,
+    cloudinary_public_id: "walk",
+    description: <<~TEXT
+      外に出て歩きましょう！
+      理想は20分以上。まずは5分からでも大丈夫です。
+      やや歩幅を広げる
+      ペースも少し早めに
+      軽く息が上がるくらいが効果的
+      ちゃんと戻ってきてくださいね！
+    TEXT
+  },
+  {
+    name: "スクワット",
+    category: :training,
+    cloudinary_public_id: "squat",
+    description: <<~TEXT
+      足を肩幅に開き、ゆっくり腰を下ろします。
+      膝が爪先より前に出すぎないように意識してください。
+      膝が90°まで曲がるとより効果的。浅くても大丈夫です！
+      下半身の血流を良くして、脳をリフレッシュさせましょう。
+    TEXT
+  },
+   {
+    name: "踵上げ",
+    category: :training,
+    cloudinary_public_id: "heel_raise",
+    description: <<~TEXT
+      立ち上がり椅子やテーブルに軽く捕まりましょう
+      足の指に力を入れながら踵を上げていきます
+      下ろす時をゆっくり行うとより効果的です
+      踵をつかないように続けるとさらに負荷が上がりますよ！
+      ふくらはぎは『第2の心臓』！全身の血流が良くなります
+    TEXT
+  },
+   {
+    name: "ヒップエクステンション",
+    category: :training,
+    cloudinary_public_id: "hip_extension",
+    description: <<~TEXT
+      壁や机に手をついて姿勢を安定させる。
+      膝を伸ばしたまま、片脚を後ろにゆっくり蹴り出す。
+      お尻の力で脚を上げ、ゆっくり元の位置に戻す
+      体が前に倒れないように注意！
+      座り続けるとお尻の筋肉が固まってくるので、とても効果的です
+    TEXT
+  },
+   {
+    name: "肩甲骨の運動",
+    category: :training,
+    cloudinary_public_id: "scapula",
+    description: <<~TEXT
+      肘を90°に曲げます
+      手のひらを自分の方に向けながら、腕をくっつけます
+      手のひらを外に向けながら肩甲骨を寄せます
+      2~3を繰り返しましょう
+      長く座っていると背中が丸くなっていませんか？
+      肩甲骨をどんどん動かそう！
+    TEXT
+  },
+   {
+    name: "胸の壁ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "pectoralis",
+    description: <<~TEXT
+      肘から手のひらを壁につけます
+      そのまま体を開いていきます
+      胸を開いて前側が伸びるように
+      腕の高さによって伸び方が変わるので調整してみましょう
+      胸の硬さは『THE 猫背』の象徴です
+      顔のむくみがスッキリすることも
+    TEXT
+  },
+   {
+    name: "お尻のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "gluteus",
+    description: <<~TEXT
+      片方の足首を太ももの上に乗せます
+      膝を外に開きます
+      そのままお辞儀をしていきます
+      お尻の外側が伸びるの感じましょう
+      反対側も同様に行いましょう！
+    TEXT
+  },
+   {
+    name: "外側の全身ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "lateral_line",
+    description: <<~TEXT
+      片手をテーブルや背もたれにつきます
+      反対の足を前からクロスします
+      もう一方の手をバンザイして横に倒れていきましょう
+      脇腹からお尻までが伸びるのを感じながら深呼吸
+      反対側も同様に行いましょう！
+      全身につながる『筋膜』を伸ばしていきます
+    TEXT
+  },
+  {
+    name: "肩のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "shoulder",
+    description: <<~TEXT
+      両手を後ろで組みます（立って行ってもOK）
+      お辞儀をしながら手を天井の方へ伸ばしていきます
+      肩甲骨を寄せながら、肩周りを伸ばしていきましょう
+      首も下をむくとより伸びが感じられます
+      肩を痛めないようにゆっくり無理せず
+      息が止まらないように注意して行いましょう
+    TEXT
+  },
+  {
+    name: "後面の全身ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "back_line",
+    description: <<~TEXT
+      両手をテーブルや背もたれにつきます
+      背中はまっすぐのまま股関節から体を曲げていきましょう
+      頭は両腕の間に入れるようにします
+      背中から足までが伸びるのを感じます
+      辛い方は膝を少し曲げても大丈夫です
+      全身につながる『筋膜』を伸ばしていきます
+    TEXT
+  },
+  {
+    name: "背骨のひねりストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "thorax_rotation",
+    description: <<~TEXT
+      座ったまま胸の前で腕を交叉します
+      上半身を捻っていきましょう
+      息を吐きながら捻っていきます
+      背中が丸くならないように気をつけます
+      左右交互に行いましょう！
+      背骨を動かすことで自律神経にも働きかけます
+    TEXT
+  },
+  {
+    name: "背中のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "latissimus",
+    description: <<~TEXT
+      床に膝立ちになり、両肘を椅子につきます
+      顔を両腕の間に入れるように正座していきます
+      背中が伸びるのを感じながらキープします
+      肩を痛めないように無理せず行いましょう
+      デスクワークで丸まりがちな背中を伸ばしていきましょう
+      背骨が動くと自律神経にも良い影響があります
+    TEXT
+  },
+  {
+    name: "首のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "neck_side",
+    description: <<~TEXT
+      片手で頭の反対側を抑えます
+      そのまま首を横に倒していきましょう
+      首から肩にかけて伸びるのを感じます
+      肩がすくまない様に注意
+      首は痛めやすいので強くやりすぎないように
+      首が硬くなると頭痛や眼精疲労の原因にも
+    TEXT
+  }
+]
+
+exercises_data.each do |data|
+  # find_or_create_byでseedの重複を避ける
+  Exercise.find_or_create_by!(name: data[:name]) do |e|
+    e.category = data[:category]
+    e.cloudinary_public_id = data[:cloudinary_public_id]
+    e.description = data[:description]
+  end
+end
+
+puts "完了！"
+</file>
+
+<file path="app/views/exercises/show.html.erb">
+<%# 全体の背景設定と装飾用のBlob要素 %>
+<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
+  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
+</div>
+
+<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
+  
+  <%# ヘッダーラベルとタイトル %>
+  <div class="text-center mb-10 mt-8">
+    <div class="inline-flex items-center gap-2 mb-3 text-primary">
+      <span class="material-symbols-outlined text-xl">spa</span>
+      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
+      <%= @exercise.name %>
+    </h1>
+  </div>
+
+  <%# メインビジュアル（画像部分） %>
+  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
+    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
+      <% if @exercise.cloudinary_public_id.present? %>
+        <%= cl_image_tag(@exercise.cloudinary_public_id, 
+            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
+      <% end %>
+      
+      <%# 再生ガイド用バッジ %>
+      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
+        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
+      </div>
+    </div>
+  </div>
+
+  <%# コンテンツエリア %>
+  <div class="w-full grid md:grid-cols-3 gap-10">
+    <%# やり方の解説（左側 2/3） %>
+    <div class="md:col-span-2 space-y-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
+      </div>
+
+      <div class="space-y-4">
+        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
+        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
+          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
+              <%= index + 1 %>
+            </div>
+            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
+              <%= step %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 注意ポイント（右側 1/3） %>
+    <div class="space-y-6">
+      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
+        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-xl">info</span>
+          注意ポイント
+        </h3>
+        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%# 下部に固定されたアクションバー %>
+<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
+  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      
+      <%# 進捗バー（演出用） %>
+      <div class="flex-1 w-full px-2"
+           data-controller="exercise-timer"
+           data-exercise-timer-duration-value="300">
+        <div class="flex justify-between items-end mb-2">
+          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
+          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
+        </div>
+        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
+        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
+             data-exercise-timer-target="bar"
+             style="width: 100%;">
+  
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+        </div>
+        </div>
+        </div>
+
+      <%# アクションボタン %>
+      <div class="flex items-center gap-4 w-full md:w-auto">
+        <%= link_to new_sitting_session_path(reopen_modal: true),
+            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
+          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
+          <span>他の運動</span>
+        <% end %>
+
+        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
+            method: :post,
+            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
+          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
+          <span>完了して戻る</span>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
 </file>
 
 <file path="app/views/shared/_modal.html.erb">
@@ -6127,6 +6159,35 @@ self.addEventListener('notificationclick', function (event) {
 })
 </file>
 
+<file path="config/routes.rb">
+Rails.application.routes.draw do
+  # ログイン時のroot
+  authenticated :user do
+    root "top#index", as: :authenticated_root
+  end
+  # 未ログイン時のroot
+  unauthenticated do
+    root "static_pages#top"
+  end
+
+  resources :sitting_sessions, only: [ :new, :create, :show ] do
+    collection do
+      post :subscribe
+    end
+  end
+
+  resources :exercises, only: [ :index, :show ]
+
+  resources :activity_logs, only: [ :create ]
+
+  devise_for :users
+
+  post "guest_login", to: "users/guest_sessions#create"
+
+  get "up" => "rails/health#show", as: :rails_health_check
+end
+</file>
+
 <file path="app/controllers/sitting_sessions_controller.rb">
 class SittingSessionsController < ApplicationController
   before_action :authenticate_user!
@@ -6178,6 +6239,89 @@ class SittingSessionsController < ApplicationController
   def session_params
     params.require(:sitting_session).permit(:duration, :start_at)
   end
+end
+</file>
+
+<file path="db/schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "activity_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
+    t.index ["user_id"], name: "index_activity_logs_on_user_id"
+  end
+
+  create_table "exercises", force: :cascade do |t|
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.datetime "start_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "suggested_actions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.string "p256dh"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "activity_logs", "exercises"
+  add_foreign_key "activity_logs", "sitting_sessions"
+  add_foreign_key "activity_logs", "users"
+  add_foreign_key "sitting_sessions", "users"
+  add_foreign_key "suggested_actions", "exercises"
+  add_foreign_key "suggested_actions", "sitting_sessions"
 end
 </file>
 
@@ -6355,118 +6499,6 @@ export default class extends Controller {
         this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
     }
 }
-</file>
-
-<file path="config/routes.rb">
-Rails.application.routes.draw do
-  # ログイン時のroot
-  authenticated :user do
-    root "top#index", as: :authenticated_root
-  end
-  # 未ログイン時のroot
-  unauthenticated do
-    root "static_pages#top"
-  end
-
-  resources :sitting_sessions, only: [ :new, :create, :show ] do
-    collection do
-      post :subscribe
-    end
-  end
-
-  resources :exercises, only: [ :index, :show ]
-
-  resources :activity_logs, only: [ :create ]
-
-  devise_for :users
-
-  post "guest_login", to: "users/guest_sessions#create"
-
-  get "up" => "rails/health#show", as: :rails_health_check
-end
-</file>
-
-<file path="db/schema.rb">
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
-#
-# This file is the source Rails uses to define your schema when running `bin/rails
-# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
-# be faster and is potentially less error prone than running all of your
-# migrations from scratch. Old migrations may fail to apply correctly if those
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
-  create_table "activity_logs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
-    t.index ["user_id"], name: "index_activity_logs_on_user_id"
-  end
-
-  create_table "exercises", force: :cascade do |t|
-    t.integer "category"
-    t.string "cloudinary_public_id"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "sitting_sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.boolean "notified"
-    t.datetime "notify_at"
-    t.datetime "start_at"
-    t.integer "status", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
-  end
-
-  create_table "suggested_actions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "auth"
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "endpoint"
-    t.string "p256dh"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
-    t.datetime "updated_at", null: false
-    t.string "username", default: "", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  end
-
-  add_foreign_key "activity_logs", "exercises"
-  add_foreign_key "activity_logs", "sitting_sessions"
-  add_foreign_key "activity_logs", "users"
-  add_foreign_key "sitting_sessions", "users"
-  add_foreign_key "suggested_actions", "exercises"
-  add_foreign_key "suggested_actions", "sitting_sessions"
-end
 </file>
 
 <file path="app/views/sitting_sessions/new.html.erb">
