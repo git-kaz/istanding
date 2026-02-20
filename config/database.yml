@@ -66,3 +66,10 @@ test:
 production:
   <<: *default
   url: <%= ENV['DATABASE_URL'] %>
+# Solid Queue用：同じURL（メインDB）を使う
+  queue:
+    <<: *primary_production
+  cable:
+    <<: *primary_production
+  cache:
+    <<: *primary_production
