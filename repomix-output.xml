@@ -213,9 +213,6 @@ db/
     20260209222639_add_webpush_columns_to_users.rb
     20260209222652_remove_webpush_columns_from_sitting_sessions.rb
     20260216203641_create_activity_logs.rb
-  cable_schema.rb
-  cache_schema.rb
-  queue_schema.rb
   schema.rb
   seeds.rb
 lib/
@@ -237,6 +234,17 @@ script/
   .keep
 sitting-timer/
   README.md
+spec/
+  factories/
+    sitting_sessions.rb
+    users.rb
+  models/
+    sitting_session_spec.rb
+  system/
+    logins_spec.rb
+    sitting_sessions_spec.rb
+  rails_helper.rb
+  spec_helper.rb
 storage/
   .keep
 test/
@@ -277,6 +285,7 @@ test/
 .gitattributes
 .gitignore
 .node-version
+.rspec
 .rubocop.yml
 .ruby-version
 compose.yml
@@ -857,8 +866,23 @@ class StaticPagesController < ApplicationController
 end
 </file>
 
+<file path="app/helpers/users/guest_sessions_helper.rb">
+module Users::GuestSessionsHelper
+end
+</file>
+
 <file path="app/helpers/application_helper.rb">
 module ApplicationHelper
+end
+</file>
+
+<file path="app/helpers/exercises_helper.rb">
+module ExercisesHelper
+end
+</file>
+
+<file path="app/helpers/sitting_sessions_helper.rb">
+module SittingSessionsHelper
 end
 </file>
 
@@ -919,6 +943,25 @@ end
 <file path="app/models/application_record.rb">
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
+end
+</file>
+
+<file path="app/models/exercise.rb">
+class Exercise < ApplicationRecord
+  has_many :suggested_actions, dependent: :destroy
+  has_many :sitting_sessions, through: :suggested_actions
+
+  enum :category, { stretch: 0, training: 1, walk: 2 }
+
+  validates :name, presence: true
+  validates :category, presence: true
+end
+</file>
+
+<file path="app/models/suggested_action.rb">
+class SuggestedAction < ApplicationRecord
+  belongs_to :sitting_session
+  belongs_to :exercise
 end
 </file>
 
@@ -1259,6 +1302,11 @@ end
 <%= render "devise/shared/links" %>
 </file>
 
+<file path="app/views/exercises/index.html.erb">
+<h1>Exercises#index</h1>
+<p>Find me in app/views/exercises/index.html.erb</p>
+</file>
+
 <file path="app/views/layouts/mailer.html.erb">
 <!DOCTYPE html>
 <html>
@@ -1331,6 +1379,11 @@ end
 //     })
 //   )
 // })
+</file>
+
+<file path="app/views/sitting_sessions/show.html.erb">
+<h1>SittingSessions#show</h1>
+<p>Find me in app/views/sitting_sessions/show.html.erb</p>
 </file>
 
 <file path="bin/brakeman">
@@ -1635,6 +1688,15 @@ Rails.application.config.assets.version = "1.0"
 # Rails.application.config.assets.paths << Emoji.images_path
 </file>
 
+<file path="config/initializers/cloudinay.rb">
+Cloudinary.config do |config|
+  config.cloud_name = Rails.application.credentials.dig(:cloudinary, :cloud_name)
+  config.api_key    = Rails.application.credentials.dig(:cloudinary, :api_key)
+  config.api_secret = Rails.application.credentials.dig(:cloudinary, :api_secret)
+  config.secure     = true
+end
+</file>
+
 <file path="config/initializers/content_security_policy.rb">
 # Be sure to restart your server when you modify this file.
 
@@ -1665,6 +1727,325 @@ Rails.application.config.assets.version = "1.0"
 #   # Report violations without enforcing the policy.
 #   # config.content_security_policy_report_only = true
 # end
+</file>
+
+<file path="config/initializers/devise.rb">
+# frozen_string_literal: true
+
+# Assuming you have not yet modified this file, each configuration option below
+# is set to its default value. Note that some are commented out while others
+# are not: uncommented lines are intended to protect your configuration from
+# breaking changes in upgrades (i.e., in the event that future versions of
+# Devise change the default values for those options).
+#
+# Use this hook to configure devise mailer, warden hooks and so forth.
+# Many of these configuration options can be set straight in your model.
+Devise.setup do |config|
+  # The secret key used by Devise. Devise uses this key to generate
+  # random tokens. Changing this key will render invalid all existing
+  # confirmation, reset password and unlock tokens in the database.
+  # Devise will use the `secret_key_base` as its `secret_key`
+  # by default. You can change it below and use your own secret key.
+  # config.secret_key = '1757685b874fdb6ad0eb99096d6364d8ef358bcb2959619f00c9913aef1d911ceec8e8b1c2cb46c3ff2acaa17e6641deeaf84c7d3e9bce17dadb74a8bd8316bc'
+
+  # ==> Controller configuration
+  # Configure the parent class to the devise controllers.
+  # config.parent_controller = 'DeviseController'
+
+  # ==> Mailer Configuration
+  # Configure the e-mail address which will be shown in Devise::Mailer,
+  # note that it will be overwritten if you use your own mailer class
+  # with default "from" parameter.
+  config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+
+  # Configure the class responsible to send e-mails.
+  # config.mailer = 'Devise::Mailer'
+
+  # Configure the parent class responsible to send e-mails.
+  # config.parent_mailer = 'ActionMailer::Base'
+
+  # ==> ORM configuration
+  # Load and configure the ORM. Supports :active_record (default) and
+  # :mongoid (bson_ext recommended) by default. Other ORMs may be
+  # available as additional gems.
+  require "devise/orm/active_record"
+
+  # ==> Configuration for any authentication mechanism
+  # Configure which keys are used when authenticating a user. The default is
+  # just :email. You can configure it to use [:username, :subdomain], so for
+  # authenticating a user, both parameters are required. Remember that those
+  # parameters are used only when authenticating and not when retrieving from
+  # session. If you need permissions, you should implement that in a before filter.
+  # You can also supply a hash where the value is a boolean determining whether
+  # or not authentication should be aborted when the value is not present.
+  # config.authentication_keys = [:email]
+
+  # Configure parameters from the request object used for authentication. Each entry
+  # given should be a request method and it will automatically be passed to the
+  # find_for_authentication method and considered in your model lookup. For instance,
+  # if you set :request_keys to [:subdomain], :subdomain will be used on authentication.
+  # The same considerations mentioned for authentication_keys also apply to request_keys.
+  # config.request_keys = []
+
+  # Configure which authentication keys should be case-insensitive.
+  # These keys will be downcased upon creating or modifying a user and when used
+  # to authenticate or find a user. Default is :email.
+  config.case_insensitive_keys = [ :email ]
+
+  # Configure which authentication keys should have whitespace stripped.
+  # These keys will have whitespace before and after removed upon creating or
+  # modifying a user and when used to authenticate or find a user. Default is :email.
+  config.strip_whitespace_keys = [ :email ]
+
+  # Tell if authentication through request.params is enabled. True by default.
+  # It can be set to an array that will enable params authentication only for the
+  # given strategies, for example, `config.params_authenticatable = [:database]` will
+  # enable it only for database (email + password) authentication.
+  # config.params_authenticatable = true
+
+  # Tell if authentication through HTTP Auth is enabled. False by default.
+  # It can be set to an array that will enable http authentication only for the
+  # given strategies, for example, `config.http_authenticatable = [:database]` will
+  # enable it only for database authentication.
+  # For API-only applications to support authentication "out-of-the-box", you will likely want to
+  # enable this with :database unless you are using a custom strategy.
+  # The supported strategies are:
+  # :database      = Support basic authentication with authentication key + password
+  # config.http_authenticatable = false
+
+  # If 401 status code should be returned for AJAX requests. True by default.
+  # config.http_authenticatable_on_xhr = true
+
+  # The realm used in Http Basic Authentication. 'Application' by default.
+  # config.http_authentication_realm = 'Application'
+
+  # It will change confirmation, password recovery and other workflows
+  # to behave the same regardless if the e-mail provided was right or wrong.
+  # Does not affect registerable.
+  # config.paranoid = true
+
+  # By default Devise will store the user in session. You can skip storage for
+  # particular strategies by setting this option.
+  # Notice that if you are skipping storage for all authentication paths, you
+  # may want to disable generating routes to Devise's sessions controller by
+  # passing skip: :sessions to `devise_for` in your config/routes.rb
+  config.skip_session_storage = [ :http_auth ]
+
+  # By default, Devise cleans up the CSRF token on authentication to
+  # avoid CSRF token fixation attacks. This means that, when using AJAX
+  # requests for sign in and sign up, you need to get a new CSRF token
+  # from the server. You can disable this option at your own risk.
+  # config.clean_up_csrf_token_on_authentication = true
+
+  # When false, Devise will not attempt to reload routes on eager load.
+  # This can reduce the time taken to boot the app but if your application
+  # requires the Devise mappings to be loaded during boot time the application
+  # won't boot properly.
+  # config.reload_routes = true
+
+  # ==> Configuration for :database_authenticatable
+  # For bcrypt, this is the cost for hashing the password and defaults to 12. If
+  # using other algorithms, it sets how many times you want the password to be hashed.
+  # The number of stretches used for generating the hashed password are stored
+  # with the hashed password. This allows you to change the stretches without
+  # invalidating existing passwords.
+  #
+  # Limiting the stretches to just one in testing will increase the performance of
+  # your test suite dramatically. However, it is STRONGLY RECOMMENDED to not use
+  # a value less than 10 in other environments. Note that, for bcrypt (the default
+  # algorithm), the cost increases exponentially with the number of stretches (e.g.
+  # a value of 20 is already extremely slow: approx. 60 seconds for 1 calculation).
+  config.stretches = Rails.env.test? ? 1 : 12
+
+  # Set up a pepper to generate the hashed password.
+  # config.pepper = '14be7d0b3c033761c398e19df6884e400a0ac72e9cb4d8ac5665e9e00f64101d243cd75aea4f02aaf17d15071b0cbe0ffa86f04de879bc2a90039c4719512953'
+
+  # Send a notification to the original email when the user's email is changed.
+  # config.send_email_changed_notification = false
+
+  # Send a notification email when the user's password is changed.
+  # config.send_password_change_notification = false
+
+  # ==> Configuration for :confirmable
+  # A period that the user is allowed to access the website even without
+  # confirming their account. For instance, if set to 2.days, the user will be
+  # able to access the website for two days without confirming their account,
+  # access will be blocked just in the third day.
+  # You can also set it to nil, which will allow the user to access the website
+  # without confirming their account.
+  # Default is 0.days, meaning the user cannot access the website without
+  # confirming their account.
+  # config.allow_unconfirmed_access_for = 2.days
+
+  # A period that the user is allowed to confirm their account before their
+  # token becomes invalid. For example, if set to 3.days, the user can confirm
+  # their account within 3 days after the mail was sent, but on the fourth day
+  # their account can't be confirmed with the token any more.
+  # Default is nil, meaning there is no restriction on how long a user can take
+  # before confirming their account.
+  # config.confirm_within = 3.days
+
+  # If true, requires any email changes to be confirmed (exactly the same way as
+  # initial account confirmation) to be applied. Requires additional unconfirmed_email
+  # db field (see migrations). Until confirmed, new email is stored in
+  # unconfirmed_email column, and copied to email column on successful confirmation.
+  # Also, when used in conjunction with `send_email_changed_notification`,
+  # the notification is sent to the original email when the change is requested,
+  # not when the unconfirmed email is confirmed.
+  config.reconfirmable = true
+
+  # Defines which key will be used when confirming an account
+  # config.confirmation_keys = [:email]
+
+  # ==> Configuration for :rememberable
+  # The time the user will be remembered without asking for credentials again.
+  # config.remember_for = 2.weeks
+
+  # Invalidates all the remember me tokens when the user signs out.
+  config.expire_all_remember_me_on_sign_out = true
+
+  # If true, extends the user's remember period when remembered via cookie.
+  # config.extend_remember_period = false
+
+  # Options to be passed to the created cookie. For instance, you can set
+  # secure: true in order to force SSL only cookies.
+  # config.rememberable_options = {}
+
+  # ==> Configuration for :validatable
+  # Range for password length.
+  config.password_length = 6..128
+
+  # Email regex used to validate email formats. It simply asserts that
+  # one (and only one) @ exists in the given string. This is mainly
+  # to give user feedback and not to assert the e-mail validity.
+  config.email_regexp = /\A[^@\s]+@[^@\s]+\z/
+
+  # ==> Configuration for :timeoutable
+  # The time you want to timeout the user session without activity. After this
+  # time the user will be asked for credentials again. Default is 30 minutes.
+  # config.timeout_in = 30.minutes
+
+  # ==> Configuration for :lockable
+  # Defines which strategy will be used to lock an account.
+  # :failed_attempts = Locks an account after a number of failed attempts to sign in.
+  # :none            = No lock strategy. You should handle locking by yourself.
+  # config.lock_strategy = :failed_attempts
+
+  # Defines which key will be used when locking and unlocking an account
+  # config.unlock_keys = [:email]
+
+  # Defines which strategy will be used to unlock an account.
+  # :email = Sends an unlock link to the user email
+  # :time  = Re-enables login after a certain amount of time (see :unlock_in below)
+  # :both  = Enables both strategies
+  # :none  = No unlock strategy. You should handle unlocking by yourself.
+  # config.unlock_strategy = :both
+
+  # Number of authentication tries before locking an account if lock_strategy
+  # is failed attempts.
+  # config.maximum_attempts = 20
+
+  # Time interval to unlock the account if :time is enabled as unlock_strategy.
+  # config.unlock_in = 1.hour
+
+  # Warn on the last attempt before the account is locked.
+  # config.last_attempt_warning = true
+
+  # ==> Configuration for :recoverable
+  #
+  # Defines which key will be used when recovering the password for an account
+  # config.reset_password_keys = [:email]
+
+  # Time interval you can reset your password with a reset password key.
+  # Don't put a too small interval or your users won't have the time to
+  # change their passwords.
+  config.reset_password_within = 6.hours
+
+  # When set to false, does not sign a user in automatically after their password is
+  # reset. Defaults to true, so a user is signed in automatically after a reset.
+  # config.sign_in_after_reset_password = true
+
+  # ==> Configuration for :encryptable
+  # Allow you to use another hashing or encryption algorithm besides bcrypt (default).
+  # You can use :sha1, :sha512 or algorithms from others authentication tools as
+  # :clearance_sha1, :authlogic_sha512 (then you should set stretches above to 20
+  # for default behavior) and :restful_authentication_sha1 (then you should set
+  # stretches to 10, and copy REST_AUTH_SITE_KEY to pepper).
+  #
+  # Require the `devise-encryptable` gem when using anything other than bcrypt
+  # config.encryptor = :sha512
+
+  # ==> Scopes configuration
+  # Turn scoped views on. Before rendering "sessions/new", it will first check for
+  # "users/sessions/new". It's turned off by default because it's slower if you
+  # are using only default views.
+  # config.scoped_views = false
+
+  # Configure the default scope given to Warden. By default it's the first
+  # devise role declared in your routes (usually :user).
+  # config.default_scope = :user
+
+  # Set this configuration to false if you want /users/sign_out to sign out
+  # only the current scope. By default, Devise signs out all scopes.
+  # config.sign_out_all_scopes = true
+
+  # ==> Navigation configuration
+  # Lists the formats that should be treated as navigational. Formats like
+  # :html should redirect to the sign in page when the user does not have
+  # access, but formats like :xml or :json, should return 401.
+  #
+  # If you have any extra navigational formats, like :iphone or :mobile, you
+  # should add them to the navigational formats lists.
+  #
+  # The "*/*" below is required to match Internet Explorer requests.
+  # config.navigational_formats = ['*/*', :html, :turbo_stream]
+
+  # The default HTTP method used to sign out a resource. Default is :delete.
+  config.sign_out_via = :delete
+
+  # ==> OmniAuth
+  # Add a new OmniAuth provider. Check the wiki for more information on setting
+  # up on your models and hooks.
+  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+
+  # ==> Warden configuration
+  # If you want to use other strategies, that are not supported by Devise, or
+  # change the failure app, you can configure them inside the config.warden block.
+  #
+  # config.warden do |warden_config|
+  #   warden_config.intercept_401 = false
+  #   warden_config.default_strategies(scope: :user).unshift :some_external_strategy
+  # end
+
+  # ==> Mountable engine configurations
+  # When using Devise inside an engine, let's call it `MyEngine`, and this engine
+  # is mountable, there are some extra configurations to be taken into account.
+  # The following options are available, assuming the engine is mounted as:
+  #
+  #     mount MyEngine, at: '/my_engine'
+  #
+  # The router that invoked `devise_for`, in the example above, would be:
+  # config.router_name = :my_engine
+  #
+  # When using OmniAuth, Devise cannot automatically set OmniAuth path,
+  # so you need to do it manually. For the users scope, it would be:
+  # config.omniauth_path_prefix = '/my_engine/users/auth'
+
+  # ==> Hotwire/Turbo configuration
+  # When using Devise with Hotwire/Turbo, the http status for error responses
+  # and some redirects must match the following. The default in Devise for existing
+  # apps is `200 OK` and `302 Found` respectively, but new apps are generated with
+  # these new defaults that match Hotwire/Turbo behavior.
+  # Note: These might become the new default in future versions of Devise.
+  config.responder.error_status = :unprocessable_content
+  config.responder.redirect_status = :see_other
+
+  # ==> Configuration for :registerable
+
+  # When set to false, does not sign a user in automatically after their password is
+  # changed. Defaults to true, so a user is signed in automatically after changing a password.
+  # config.sign_in_after_change_password = true
+end
 </file>
 
 <file path="config/initializers/filter_parameter_logging.rb">
@@ -1910,6 +2291,22 @@ CI.run do
 end
 </file>
 
+<file path="config/cloudinary.yml">
+development:
+  cloud_name: <%= Rails.application.credentials.dig(:cloudinary, :cloud_name) %>
+  api_key: <%= Rails.application.credentials.dig(:cloudinary, :api_key) %>
+  api_secret: <%= Rails.application.credentials.dig(:cloudinary, :api_secret) %>
+  enhance_image_tag: true
+  static_file_support: false
+
+production:
+  cloud_name: Rails.application.credentials.cloudinary[:cloud_name]
+  api_key: Rails.application.credentials.cloudinary[:api_key]
+  api_secret: Rails.application.credentials.cloudinary[:api_secret]
+  enhance_image_tag: true
+  static_file_support: true
+</file>
+
 <file path="config/deploy.yml">
 # Name of your application. Used to uniquely configure containers.
 service: myapp
@@ -2040,51 +2437,6 @@ require_relative "application"
 Rails.application.initialize!
 </file>
 
-<file path="config/puma.rb">
-# This configuration file will be evaluated by Puma. The top-level methods that
-# are invoked here are part of Puma's configuration DSL. For more information
-# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
-#
-# Puma starts a configurable number of processes (workers) and each process
-# serves each request in a thread from an internal thread pool.
-#
-# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
-# should only set this value when you want to run 2 or more workers. The
-# default is already 1. You can set it to `auto` to automatically start a worker
-# for each available processor.
-#
-# The ideal number of threads per worker depends both on how much time the
-# application spends waiting for IO operations and on how much you wish to
-# prioritize throughput over latency.
-#
-# As a rule of thumb, increasing the number of threads will increase how much
-# traffic a given process can handle (throughput), but due to CRuby's
-# Global VM Lock (GVL) it has diminishing returns and will degrade the
-# response time (latency) of the application.
-#
-# The default is set to 3 threads as it's deemed a decent compromise between
-# throughput and latency for the average Rails application.
-#
-# Any libraries that use a connection pool or another resource pool should
-# be configured to provide at least as many connections as the number of
-# threads. This includes Active Record's `pool` parameter in `database.yml`.
-threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
-threads threads_count, threads_count
-
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch("PORT", 3000)
-
-# Allow puma to be restarted by `bin/rails restart` command.
-plugin :tmp_restart
-
-# Run the Solid Queue supervisor inside of Puma for single-server deployments.
-plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
-
-# Specify the PID file. Defaults to tmp/pids/server.pid in development.
-# In other environments, only set the PID file if requested.
-pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
-</file>
-
 <file path="config/queue.yml">
 default: &default
   dispatchers:
@@ -2154,31 +2506,99 @@ local:
 #   mirrors: [ amazon, google, microsoft ]
 </file>
 
-<file path="db/cable_schema.rb">
-ActiveRecord::Schema[7.1].define(version: 1) do
-  create_table "solid_cable_messages", force: :cascade do |t|
-    t.binary "channel", limit: 1024, null: false
-    t.binary "payload", limit: 536870912, null: false
-    t.datetime "created_at", null: false
-    t.integer "channel_hash", limit: 8, null: false
-    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
-    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
-    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+<file path="db/migrate/20260201010209_devise_create_users.rb">
+# frozen_string_literal: true
+
+class DeviseCreateUsers < ActiveRecord::Migration[8.1]
+  def change
+    create_table :users do |t|
+      ## Database authenticatable
+      t.string :email,              null: false, default: ""
+      t.string :encrypted_password, null: false, default: ""
+
+      ## usernameの追加
+      t.string :username, null: false, default: ""
+
+      ## Recoverable
+      t.string   :reset_password_token
+      t.datetime :reset_password_sent_at
+
+      ## Rememberable
+      t.datetime :remember_created_at
+
+
+      ## Trackable
+      # t.integer  :sign_in_count, default: 0, null: false
+      # t.datetime :current_sign_in_at
+      # t.datetime :last_sign_in_at
+      # t.string   :current_sign_in_ip
+      # t.string   :last_sign_in_ip
+
+      ## Confirmable
+      # t.string   :confirmation_token
+      # t.datetime :confirmed_at
+      # t.datetime :confirmation_sent_at
+      # t.string   :unconfirmed_email # Only if using reconfirmable
+
+      ## Lockable
+      # t.integer  :failed_attempts, default: 0, null: false # Only if lock strategy is :failed_attempts
+      # t.string   :unlock_token # Only if unlock strategy is :email or :both
+      # t.datetime :locked_at
+
+
+      t.timestamps null: false
+    end
+
+    add_index :users, :email,                unique: true
+    add_index :users, :reset_password_token, unique: true
+    # add_index :users, :confirmation_token,   unique: true
+    # add_index :users, :unlock_token,         unique: true
   end
 end
 </file>
 
-<file path="db/cache_schema.rb">
-ActiveRecord::Schema[7.2].define(version: 1) do
-  create_table "solid_cache_entries", force: :cascade do |t|
-    t.binary "key", limit: 1024, null: false
-    t.binary "value", limit: 536870912, null: false
-    t.datetime "created_at", null: false
-    t.integer "key_hash", limit: 8, null: false
-    t.integer "byte_size", limit: 4, null: false
-    t.index ["byte_size"], name: "index_solid_cache_entries_on_byte_size"
-    t.index ["key_hash", "byte_size"], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
-    t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash", unique: true
+<file path="db/migrate/20260202122701_create_sitting_sessions.rb">
+class CreateSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    create_table :sitting_sessions do |t|
+      t.references :user, null: false, foreign_key: true
+      t.datetime :start_at
+      t.datetime :notify_at
+      t.boolean :notified
+      t.string :endpoint
+      t.string :p256dh
+      t.string :auth
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260202123136_create_exercises.rb">
+class CreateExercises < ActiveRecord::Migration[8.1]
+  def change
+    create_table :exercises do |t|
+      t.string :name
+      t.integer :category
+      t.text :description
+      t.string :cloudinary_public_id
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260202123308_create_suggested_actions.rb">
+class CreateSuggestedActions < ActiveRecord::Migration[8.1]
+  def change
+    create_table :suggested_actions do |t|
+      t.references :sitting_session, null: false, foreign_key: true
+      t.references :exercise, null: false, foreign_key: true
+
+      t.timestamps
+    end
   end
 end
 </file>
@@ -3119,12 +3539,87 @@ YMYL, E-E-A-T への留意が必要になる
 [![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
 </file>
 
+<file path="spec/factories/sitting_sessions.rb">
+FactoryBot.define do
+  factory :sitting_session do
+    association :user 
+    start_at { Time.current }
+  end
+end
+</file>
+
+<file path="spec/models/sitting_session_spec.rb">
+require 'rails_helper'
+
+RSpec.describe SittingSession, type: :model do
+  it "有効なファクトリを持つこと" do
+    expect(build(:sitting_session)).to be_valid
+  end
+
+  describe "バリデーション" do
+    it "開始時間がなければ無効であること" do
+      session = build(:sitting_session, start_at: nil)
+      expect(session).not_to be_valid
+    end
+  end
+
+  describe "アソシエーション" do
+    it "Userモデルに属していること" do
+      t = SittingSession.reflect_on_association(:user)
+      expect(t.macro).to eq :belongs_to
+    end
+  end
+end
+</file>
+
 <file path="storage/.keep">
 
 </file>
 
+<file path="test/controllers/users/guest_sessions_controller_test.rb">
+require "test_helper"
+
+class Users::GuestSessionsControllerTest < ActionDispatch::IntegrationTest
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
 <file path="test/controllers/.keep">
 
+</file>
+
+<file path="test/controllers/exercises_controller_test.rb">
+require "test_helper"
+
+class ExercisesControllerTest < ActionDispatch::IntegrationTest
+  test "should get index" do
+    get exercises_index_url
+    assert_response :success
+  end
+
+  test "should get show" do
+    get exercises_show_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/sitting_sessions_controller_test.rb">
+require "test_helper"
+
+class SittingSessionsControllerTest < ActionDispatch::IntegrationTest
+  test "should get new" do
+    get sitting_sessions_new_url
+    assert_response :success
+  end
+
+  test "should get show" do
+    get sitting_sessions_show_url
+    assert_response :success
+  end
+end
 </file>
 
 <file path="test/controllers/static_pages_controller_test.rb">
@@ -3140,6 +3635,56 @@ end
 
 <file path="test/fixtures/files/.keep">
 
+</file>
+
+<file path="test/fixtures/exercises.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  category: 1
+  description: MyText
+  cloudinary_public_id: MyString
+
+two:
+  name: MyString
+  category: 1
+  description: MyText
+  cloudinary_public_id: MyString
+</file>
+
+<file path="test/fixtures/sitting_sessions.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
+
+two:
+  user: two
+  start_at: 2026-02-02 21:27:01
+  notify_at: 2026-02-02 21:27:01
+  notified: false
+  endpoint: MyString
+  p256dh: MyString
+  auth: MyString
+</file>
+
+<file path="test/fixtures/suggested_actions.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sitting_settion: one
+  exercise: one
+
+two:
+  sitting_settion: two
+  exercise: two
 </file>
 
 <file path="test/fixtures/users.yml">
@@ -3170,6 +3715,36 @@ two: {}
 
 <file path="test/models/.keep">
 
+</file>
+
+<file path="test/models/exercise_test.rb">
+require "test_helper"
+
+class ExerciseTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/sitting_session_test.rb">
+require "test_helper"
+
+class SittingSessionTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/suggested_action_test.rb">
+require "test_helper"
+
+class SuggestedActionTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
 </file>
 
 <file path="test/models/user_test.rb">
@@ -3782,23 +4357,42 @@ YMYL, E-E-A-T への留意が必要になる
 }
 </file>
 
-<file path="app/helpers/users/guest_sessions_helper.rb">
-module Users::GuestSessionsHelper
+<file path="app/controllers/users/guest_sessions_controller.rb">
+class Users::GuestSessionsController < ApplicationController
+  def create
+    user = User.guest
+    sign_in user
+    redirect_to root_path, notice: "ゲストユーザーとしてログインしました。"
+  end
+end
+</file>
+
+<file path="app/controllers/application_controller.rb">
+class ApplicationController < ActionController::Base
+  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
+  allow_browser versions: :modern
+
+  protected
+  # ログイン後のタイマー画面への遷移を共通化
+  def after_sign_in_path_for(resource)
+    root_path
+  end
+end
+</file>
+
+<file path="app/controllers/exercises_controller.rb">
+class ExercisesController < ApplicationController
+  def index
+  end
+
+  def show
+    @exercise = Exercise.find(params[:id])
+  end
 end
 </file>
 
 <file path="app/helpers/activity_logs_helper.rb">
 module ActivityLogsHelper
-end
-</file>
-
-<file path="app/helpers/exercises_helper.rb">
-module ExercisesHelper
-end
-</file>
-
-<file path="app/helpers/sitting_sessions_helper.rb">
-module SittingSessionsHelper
 end
 </file>
 
@@ -3881,13 +4475,6 @@ class ActivityLog < ApplicationRecord
   belongs_to :sitting_session, optional: true
 
   scope :today, -> { where(created_at: Time.zone.now.all_day) }
-end
-</file>
-
-<file path="app/models/suggested_action.rb">
-class SuggestedAction < ApplicationRecord
-  belongs_to :sitting_session
-  belongs_to :exercise
 end
 </file>
 
@@ -4023,452 +4610,14 @@ end
 <% end %>
 </file>
 
-<file path="app/views/exercises/index.html.erb">
-<h1>Exercises#index</h1>
-<p>Find me in app/views/exercises/index.html.erb</p>
-</file>
-
 <file path="app/views/sitting_sessions/create.turbo_stream.erb">
 <%= turbo_stream.update "modal_container" do%>
     <%= render partial: "shared/modal", locals: { exercise: @recommended_exercise} %>
 <% end %>
 </file>
 
-<file path="app/views/sitting_sessions/show.html.erb">
-<h1>SittingSessions#show</h1>
-<p>Find me in app/views/sitting_sessions/show.html.erb</p>
-</file>
-
-<file path="config/initializers/devise.rb">
-# frozen_string_literal: true
-
-# Assuming you have not yet modified this file, each configuration option below
-# is set to its default value. Note that some are commented out while others
-# are not: uncommented lines are intended to protect your configuration from
-# breaking changes in upgrades (i.e., in the event that future versions of
-# Devise change the default values for those options).
-#
-# Use this hook to configure devise mailer, warden hooks and so forth.
-# Many of these configuration options can be set straight in your model.
-Devise.setup do |config|
-  # The secret key used by Devise. Devise uses this key to generate
-  # random tokens. Changing this key will render invalid all existing
-  # confirmation, reset password and unlock tokens in the database.
-  # Devise will use the `secret_key_base` as its `secret_key`
-  # by default. You can change it below and use your own secret key.
-  # config.secret_key = '1757685b874fdb6ad0eb99096d6364d8ef358bcb2959619f00c9913aef1d911ceec8e8b1c2cb46c3ff2acaa17e6641deeaf84c7d3e9bce17dadb74a8bd8316bc'
-
-  # ==> Controller configuration
-  # Configure the parent class to the devise controllers.
-  # config.parent_controller = 'DeviseController'
-
-  # ==> Mailer Configuration
-  # Configure the e-mail address which will be shown in Devise::Mailer,
-  # note that it will be overwritten if you use your own mailer class
-  # with default "from" parameter.
-  config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
-
-  # Configure the class responsible to send e-mails.
-  # config.mailer = 'Devise::Mailer'
-
-  # Configure the parent class responsible to send e-mails.
-  # config.parent_mailer = 'ActionMailer::Base'
-
-  # ==> ORM configuration
-  # Load and configure the ORM. Supports :active_record (default) and
-  # :mongoid (bson_ext recommended) by default. Other ORMs may be
-  # available as additional gems.
-  require "devise/orm/active_record"
-
-  # ==> Configuration for any authentication mechanism
-  # Configure which keys are used when authenticating a user. The default is
-  # just :email. You can configure it to use [:username, :subdomain], so for
-  # authenticating a user, both parameters are required. Remember that those
-  # parameters are used only when authenticating and not when retrieving from
-  # session. If you need permissions, you should implement that in a before filter.
-  # You can also supply a hash where the value is a boolean determining whether
-  # or not authentication should be aborted when the value is not present.
-  # config.authentication_keys = [:email]
-
-  # Configure parameters from the request object used for authentication. Each entry
-  # given should be a request method and it will automatically be passed to the
-  # find_for_authentication method and considered in your model lookup. For instance,
-  # if you set :request_keys to [:subdomain], :subdomain will be used on authentication.
-  # The same considerations mentioned for authentication_keys also apply to request_keys.
-  # config.request_keys = []
-
-  # Configure which authentication keys should be case-insensitive.
-  # These keys will be downcased upon creating or modifying a user and when used
-  # to authenticate or find a user. Default is :email.
-  config.case_insensitive_keys = [ :email ]
-
-  # Configure which authentication keys should have whitespace stripped.
-  # These keys will have whitespace before and after removed upon creating or
-  # modifying a user and when used to authenticate or find a user. Default is :email.
-  config.strip_whitespace_keys = [ :email ]
-
-  # Tell if authentication through request.params is enabled. True by default.
-  # It can be set to an array that will enable params authentication only for the
-  # given strategies, for example, `config.params_authenticatable = [:database]` will
-  # enable it only for database (email + password) authentication.
-  # config.params_authenticatable = true
-
-  # Tell if authentication through HTTP Auth is enabled. False by default.
-  # It can be set to an array that will enable http authentication only for the
-  # given strategies, for example, `config.http_authenticatable = [:database]` will
-  # enable it only for database authentication.
-  # For API-only applications to support authentication "out-of-the-box", you will likely want to
-  # enable this with :database unless you are using a custom strategy.
-  # The supported strategies are:
-  # :database      = Support basic authentication with authentication key + password
-  # config.http_authenticatable = false
-
-  # If 401 status code should be returned for AJAX requests. True by default.
-  # config.http_authenticatable_on_xhr = true
-
-  # The realm used in Http Basic Authentication. 'Application' by default.
-  # config.http_authentication_realm = 'Application'
-
-  # It will change confirmation, password recovery and other workflows
-  # to behave the same regardless if the e-mail provided was right or wrong.
-  # Does not affect registerable.
-  # config.paranoid = true
-
-  # By default Devise will store the user in session. You can skip storage for
-  # particular strategies by setting this option.
-  # Notice that if you are skipping storage for all authentication paths, you
-  # may want to disable generating routes to Devise's sessions controller by
-  # passing skip: :sessions to `devise_for` in your config/routes.rb
-  config.skip_session_storage = [ :http_auth ]
-
-  # By default, Devise cleans up the CSRF token on authentication to
-  # avoid CSRF token fixation attacks. This means that, when using AJAX
-  # requests for sign in and sign up, you need to get a new CSRF token
-  # from the server. You can disable this option at your own risk.
-  # config.clean_up_csrf_token_on_authentication = true
-
-  # When false, Devise will not attempt to reload routes on eager load.
-  # This can reduce the time taken to boot the app but if your application
-  # requires the Devise mappings to be loaded during boot time the application
-  # won't boot properly.
-  # config.reload_routes = true
-
-  # ==> Configuration for :database_authenticatable
-  # For bcrypt, this is the cost for hashing the password and defaults to 12. If
-  # using other algorithms, it sets how many times you want the password to be hashed.
-  # The number of stretches used for generating the hashed password are stored
-  # with the hashed password. This allows you to change the stretches without
-  # invalidating existing passwords.
-  #
-  # Limiting the stretches to just one in testing will increase the performance of
-  # your test suite dramatically. However, it is STRONGLY RECOMMENDED to not use
-  # a value less than 10 in other environments. Note that, for bcrypt (the default
-  # algorithm), the cost increases exponentially with the number of stretches (e.g.
-  # a value of 20 is already extremely slow: approx. 60 seconds for 1 calculation).
-  config.stretches = Rails.env.test? ? 1 : 12
-
-  # Set up a pepper to generate the hashed password.
-  # config.pepper = '14be7d0b3c033761c398e19df6884e400a0ac72e9cb4d8ac5665e9e00f64101d243cd75aea4f02aaf17d15071b0cbe0ffa86f04de879bc2a90039c4719512953'
-
-  # Send a notification to the original email when the user's email is changed.
-  # config.send_email_changed_notification = false
-
-  # Send a notification email when the user's password is changed.
-  # config.send_password_change_notification = false
-
-  # ==> Configuration for :confirmable
-  # A period that the user is allowed to access the website even without
-  # confirming their account. For instance, if set to 2.days, the user will be
-  # able to access the website for two days without confirming their account,
-  # access will be blocked just in the third day.
-  # You can also set it to nil, which will allow the user to access the website
-  # without confirming their account.
-  # Default is 0.days, meaning the user cannot access the website without
-  # confirming their account.
-  # config.allow_unconfirmed_access_for = 2.days
-
-  # A period that the user is allowed to confirm their account before their
-  # token becomes invalid. For example, if set to 3.days, the user can confirm
-  # their account within 3 days after the mail was sent, but on the fourth day
-  # their account can't be confirmed with the token any more.
-  # Default is nil, meaning there is no restriction on how long a user can take
-  # before confirming their account.
-  # config.confirm_within = 3.days
-
-  # If true, requires any email changes to be confirmed (exactly the same way as
-  # initial account confirmation) to be applied. Requires additional unconfirmed_email
-  # db field (see migrations). Until confirmed, new email is stored in
-  # unconfirmed_email column, and copied to email column on successful confirmation.
-  # Also, when used in conjunction with `send_email_changed_notification`,
-  # the notification is sent to the original email when the change is requested,
-  # not when the unconfirmed email is confirmed.
-  config.reconfirmable = true
-
-  # Defines which key will be used when confirming an account
-  # config.confirmation_keys = [:email]
-
-  # ==> Configuration for :rememberable
-  # The time the user will be remembered without asking for credentials again.
-  # config.remember_for = 2.weeks
-
-  # Invalidates all the remember me tokens when the user signs out.
-  config.expire_all_remember_me_on_sign_out = true
-
-  # If true, extends the user's remember period when remembered via cookie.
-  # config.extend_remember_period = false
-
-  # Options to be passed to the created cookie. For instance, you can set
-  # secure: true in order to force SSL only cookies.
-  # config.rememberable_options = {}
-
-  # ==> Configuration for :validatable
-  # Range for password length.
-  config.password_length = 6..128
-
-  # Email regex used to validate email formats. It simply asserts that
-  # one (and only one) @ exists in the given string. This is mainly
-  # to give user feedback and not to assert the e-mail validity.
-  config.email_regexp = /\A[^@\s]+@[^@\s]+\z/
-
-  # ==> Configuration for :timeoutable
-  # The time you want to timeout the user session without activity. After this
-  # time the user will be asked for credentials again. Default is 30 minutes.
-  # config.timeout_in = 30.minutes
-
-  # ==> Configuration for :lockable
-  # Defines which strategy will be used to lock an account.
-  # :failed_attempts = Locks an account after a number of failed attempts to sign in.
-  # :none            = No lock strategy. You should handle locking by yourself.
-  # config.lock_strategy = :failed_attempts
-
-  # Defines which key will be used when locking and unlocking an account
-  # config.unlock_keys = [:email]
-
-  # Defines which strategy will be used to unlock an account.
-  # :email = Sends an unlock link to the user email
-  # :time  = Re-enables login after a certain amount of time (see :unlock_in below)
-  # :both  = Enables both strategies
-  # :none  = No unlock strategy. You should handle unlocking by yourself.
-  # config.unlock_strategy = :both
-
-  # Number of authentication tries before locking an account if lock_strategy
-  # is failed attempts.
-  # config.maximum_attempts = 20
-
-  # Time interval to unlock the account if :time is enabled as unlock_strategy.
-  # config.unlock_in = 1.hour
-
-  # Warn on the last attempt before the account is locked.
-  # config.last_attempt_warning = true
-
-  # ==> Configuration for :recoverable
-  #
-  # Defines which key will be used when recovering the password for an account
-  # config.reset_password_keys = [:email]
-
-  # Time interval you can reset your password with a reset password key.
-  # Don't put a too small interval or your users won't have the time to
-  # change their passwords.
-  config.reset_password_within = 6.hours
-
-  # When set to false, does not sign a user in automatically after their password is
-  # reset. Defaults to true, so a user is signed in automatically after a reset.
-  # config.sign_in_after_reset_password = true
-
-  # ==> Configuration for :encryptable
-  # Allow you to use another hashing or encryption algorithm besides bcrypt (default).
-  # You can use :sha1, :sha512 or algorithms from others authentication tools as
-  # :clearance_sha1, :authlogic_sha512 (then you should set stretches above to 20
-  # for default behavior) and :restful_authentication_sha1 (then you should set
-  # stretches to 10, and copy REST_AUTH_SITE_KEY to pepper).
-  #
-  # Require the `devise-encryptable` gem when using anything other than bcrypt
-  # config.encryptor = :sha512
-
-  # ==> Scopes configuration
-  # Turn scoped views on. Before rendering "sessions/new", it will first check for
-  # "users/sessions/new". It's turned off by default because it's slower if you
-  # are using only default views.
-  # config.scoped_views = false
-
-  # Configure the default scope given to Warden. By default it's the first
-  # devise role declared in your routes (usually :user).
-  # config.default_scope = :user
-
-  # Set this configuration to false if you want /users/sign_out to sign out
-  # only the current scope. By default, Devise signs out all scopes.
-  # config.sign_out_all_scopes = true
-
-  # ==> Navigation configuration
-  # Lists the formats that should be treated as navigational. Formats like
-  # :html should redirect to the sign in page when the user does not have
-  # access, but formats like :xml or :json, should return 401.
-  #
-  # If you have any extra navigational formats, like :iphone or :mobile, you
-  # should add them to the navigational formats lists.
-  #
-  # The "*/*" below is required to match Internet Explorer requests.
-  # config.navigational_formats = ['*/*', :html, :turbo_stream]
-
-  # The default HTTP method used to sign out a resource. Default is :delete.
-  config.sign_out_via = :delete
-
-  # ==> OmniAuth
-  # Add a new OmniAuth provider. Check the wiki for more information on setting
-  # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-
-  # ==> Warden configuration
-  # If you want to use other strategies, that are not supported by Devise, or
-  # change the failure app, you can configure them inside the config.warden block.
-  #
-  # config.warden do |warden_config|
-  #   warden_config.intercept_401 = false
-  #   warden_config.default_strategies(scope: :user).unshift :some_external_strategy
-  # end
-
-  # ==> Mountable engine configurations
-  # When using Devise inside an engine, let's call it `MyEngine`, and this engine
-  # is mountable, there are some extra configurations to be taken into account.
-  # The following options are available, assuming the engine is mounted as:
-  #
-  #     mount MyEngine, at: '/my_engine'
-  #
-  # The router that invoked `devise_for`, in the example above, would be:
-  # config.router_name = :my_engine
-  #
-  # When using OmniAuth, Devise cannot automatically set OmniAuth path,
-  # so you need to do it manually. For the users scope, it would be:
-  # config.omniauth_path_prefix = '/my_engine/users/auth'
-
-  # ==> Hotwire/Turbo configuration
-  # When using Devise with Hotwire/Turbo, the http status for error responses
-  # and some redirects must match the following. The default in Devise for existing
-  # apps is `200 OK` and `302 Found` respectively, but new apps are generated with
-  # these new defaults that match Hotwire/Turbo behavior.
-  # Note: These might become the new default in future versions of Devise.
-  config.responder.error_status = :unprocessable_content
-  config.responder.redirect_status = :see_other
-
-  # ==> Configuration for :registerable
-
-  # When set to false, does not sign a user in automatically after their password is
-  # changed. Defaults to true, so a user is signed in automatically after changing a password.
-  # config.sign_in_after_change_password = true
-end
-</file>
-
-<file path="config/cloudinary.yml">
-development:
-  cloud_name: <%= Rails.application.credentials.dig(:cloudinary, :cloud_name) %>
-  api_key: <%= Rails.application.credentials.dig(:cloudinary, :api_key) %>
-  api_secret: <%= Rails.application.credentials.dig(:cloudinary, :api_secret) %>
-  enhance_image_tag: true
-  static_file_support: false
-
-production:
-  cloud_name: Rails.application.credentials.cloudinary[:cloud_name]
-  api_key: Rails.application.credentials.cloudinary[:api_key]
-  api_secret: Rails.application.credentials.cloudinary[:api_secret]
-  enhance_image_tag: true
-  static_file_support: true
-</file>
-
-<file path="db/migrate/20260201010209_devise_create_users.rb">
-# frozen_string_literal: true
-
-class DeviseCreateUsers < ActiveRecord::Migration[8.1]
-  def change
-    create_table :users do |t|
-      ## Database authenticatable
-      t.string :email,              null: false, default: ""
-      t.string :encrypted_password, null: false, default: ""
-
-      ## usernameの追加
-      t.string :username, null: false, default: ""
-
-      ## Recoverable
-      t.string   :reset_password_token
-      t.datetime :reset_password_sent_at
-
-      ## Rememberable
-      t.datetime :remember_created_at
-
-
-      ## Trackable
-      # t.integer  :sign_in_count, default: 0, null: false
-      # t.datetime :current_sign_in_at
-      # t.datetime :last_sign_in_at
-      # t.string   :current_sign_in_ip
-      # t.string   :last_sign_in_ip
-
-      ## Confirmable
-      # t.string   :confirmation_token
-      # t.datetime :confirmed_at
-      # t.datetime :confirmation_sent_at
-      # t.string   :unconfirmed_email # Only if using reconfirmable
-
-      ## Lockable
-      # t.integer  :failed_attempts, default: 0, null: false # Only if lock strategy is :failed_attempts
-      # t.string   :unlock_token # Only if unlock strategy is :email or :both
-      # t.datetime :locked_at
-
-
-      t.timestamps null: false
-    end
-
-    add_index :users, :email,                unique: true
-    add_index :users, :reset_password_token, unique: true
-    # add_index :users, :confirmation_token,   unique: true
-    # add_index :users, :unlock_token,         unique: true
-  end
-end
-</file>
-
-<file path="db/migrate/20260202122701_create_sitting_sessions.rb">
-class CreateSittingSessions < ActiveRecord::Migration[8.1]
-  def change
-    create_table :sitting_sessions do |t|
-      t.references :user, null: false, foreign_key: true
-      t.datetime :start_at
-      t.datetime :notify_at
-      t.boolean :notified
-      t.string :endpoint
-      t.string :p256dh
-      t.string :auth
-
-      t.timestamps
-    end
-  end
-end
-</file>
-
-<file path="db/migrate/20260202123136_create_exercises.rb">
-class CreateExercises < ActiveRecord::Migration[8.1]
-  def change
-    create_table :exercises do |t|
-      t.string :name
-      t.integer :category
-      t.text :description
-      t.string :cloudinary_public_id
-
-      t.timestamps
-    end
-  end
-end
-</file>
-
-<file path="db/migrate/20260202123308_create_suggested_actions.rb">
-class CreateSuggestedActions < ActiveRecord::Migration[8.1]
-  def change
-    create_table :suggested_actions do |t|
-      t.references :sitting_session, null: false, foreign_key: true
-      t.references :exercise, null: false, foreign_key: true
-
-      t.timestamps
-    end
-  end
-end
+<file path="config/credentials.yml.enc">
+f4S18dfTWp7a6mtH+xGACjkoZ4DKjKnpbMu7PNdC8aFHScuHCo9u30BE9/uozU1TTdf+DnNqaMcSUTnm8dmuTVp2eT9cwCgUlP4swbYCo5mqXUwIJJVf3KWuynlR0+22qBZUunvYjOvt6iMkW/gHZSRfDpbQGrtw4gNxVwuJ4Czgadh27kteYZqzAaMEJ2lXcXQa2vBKBlef9ank2likhS4VsHDHmEPgRhmB0FjgR9+08A+dRVFQUVC+Bm6IFrg4DvUP8PaOrm6verHJH24Ara5cJSWgf6D0n/yDZgN9yMCTxTh5Z+D5TlQ9iNsDaUFbqrVQWQL1JOqUpqAw+lwTvFrKUIByWwjN2uw+bSP6elQt3dCn9yz5xbRi6LSAUTi7FJEdd4jihZpaUsDY5SwG9DqfwESLA5Oux6gG+zDEbq12vy56zYNNBPxc/dI3Dbgmnm8jvTAeLGOMtTIO3FDi8WDu0I7Qr3k3cJvtFI/V6Cw+gTq74eWl7iavDDWE8lq6QLZJLl/XwwIiYVJH7pIVb+iAKd61jzgk3HqE/4tGzqQ/0oJuzAxgElS5T1AxhdHjTF7d1CL6filrGGBbln4qHLwJOmljQj0ZjhkygBkJAKpP2DsUhb5hkf1uKXLje2MdYR7olwUTKDWtIzTMRd8IB0ek79qkcLPih0ueWi7xpXNZCPtQmKFZP09wBs5Z/Ao8vHce/Rdx0gRj4dZnPlQP9QWl6aLe+t8ahEidRvJ+aMSE4B8ZvAuwEbrMut1Uj/c8e+e6syqsj+CuHTS/CAYuOCezh8ejO0epZBtvVs3HG8LZ8Ghw79HIIEA/sFtZXYAdMpxq2GNTzqcHVDrbx6ji1wWtLfDVKRRF78mg8nxCERyOg+uzMw2S+GqUwIVgWcnjl0g=--2uhRJWZLgp1aeyCZ--dRD1EbiGIiSuHTVaUTi+pg==
 </file>
 
 <file path="db/migrate/20260205214818_add_duration_to_sitting_sessions.rb">
@@ -4499,13 +4648,227 @@ class RemoveWebpushColumnsFromSittingSessions < ActiveRecord::Migration[8.1]
 end
 </file>
 
-<file path="test/controllers/users/guest_sessions_controller_test.rb">
-require "test_helper"
+<file path="spec/factories/users.rb">
+FactoryBot.define do
+  factory :user do
+    username { "テストユーザー" }
+    #毎回違うアドレスを生成
+    sequence (:email) { |n| "test#{n}@example.com" }
+    password { "password" }
+    password_confirmation { "password" }
+  end
+end
+</file>
 
-class Users::GuestSessionsControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
+<file path="spec/system/logins_spec.rb">
+require 'rails_helper'
+
+RSpec.describe "ログイン機能", type: :system do
+  before do
+    driven_by(:rack_test)
+  end
+
+  let!(:user) { create(:user) }
+
+  it "ユーザーがログインできること" do
+    visit new_user_session_path
+    fill_in "メールアドレス", with: user.email
+    fill_in "パスワード", with: user.password
+    click_button "ログインする"
+    expect(page).to have_current_path root_path
+  end
+  
+end
+</file>
+
+<file path="spec/system/sitting_sessions_spec.rb">
+require 'rails_helper'
+
+RSpec.describe "SittingSessions", type: :system do
+  before do
+    driven_by(:rack_test)
+  end
+
+  it "トップページにアクセスできること" do
+    visit root_path
+    expect(page).to have_content "座りすぎは喫煙と同等に身体に悪影響を及ぼすとされています"
+  end
+
+  
+end
+</file>
+
+<file path="spec/rails_helper.rb">
+# This file is copied to spec/ when you run 'rails generate rspec:install'
+require 'spec_helper'
+ENV['RAILS_ENV'] ||= 'test'
+require_relative '../config/environment'
+# Prevent database truncation if the environment is production
+abort("The Rails environment is running in production mode!") if Rails.env.production?
+# Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
+# that will avoid rails generators crashing because migrations haven't been run yet
+# return unless Rails.env.test?
+require 'rspec/rails'
+# Add additional requires below this line. Rails is not loaded until this point!
+
+# Requires supporting ruby files with custom matchers and macros, etc, in
+# spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
+# run as spec files by default. This means that files in spec/support that end
+# in _spec.rb will both be required and run as specs, causing the specs to be
+# run twice. It is recommended that you do not name files matching this glob to
+# end with _spec.rb. You can configure this pattern with the --pattern
+# option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
+#
+# The following line is provided for convenience purposes. It has the downside
+# of increasing the boot-up time by auto-requiring all files in the support
+# directory. Alternatively, in the individual `*_spec.rb` files, manually
+# require only the support files necessary.
+#
+# Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
+
+# Ensures that the test database schema matches the current schema file.
+# If there are pending migrations it will invoke `db:test:prepare` to
+# recreate the test database by loading the schema.
+# If you are not using ActiveRecord, you can remove these lines.
+begin
+  ActiveRecord::Migration.maintain_test_schema!
+rescue ActiveRecord::PendingMigrationError => e
+  abort e.to_s.strip
+end
+RSpec.configure do |config|
+  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
+  config.fixture_paths = [
+    Rails.root.join('spec/fixtures')
+  ]
+  #FactoryBot.createをcreateと書くため
+  config.include FactoryBot::Syntax::Methods
+
+  # If you're not using ActiveRecord, or you'd prefer not to run each of your
+  # examples within a transaction, remove the following line or assign false
+  # instead of true.
+  config.use_transactional_fixtures = true
+
+  # You can uncomment this line to turn off ActiveRecord support entirely.
+  # config.use_active_record = false
+
+  # RSpec Rails uses metadata to mix in different behaviours to your tests,
+  # for example enabling you to call `get` and `post` in request specs. e.g.:
+  #
+  #     RSpec.describe UsersController, type: :request do
+  #       # ...
+  #     end
+  #
+  # The different available types are documented in the features, such as in
+  # https://rspec.info/features/8-0/rspec-rails
+  #
+  # You can also infer these behaviours automatically by location, e.g.
+  # /spec/models would pull in the same behaviour as `type: :model` but this
+  # behaviour is considered legacy and will be removed in a future version.
+  #
+  # To enable this behaviour uncomment the line below.
+  # config.infer_spec_type_from_file_location!
+
+  # Filter lines from Rails gems in backtraces.
+  config.filter_rails_from_backtrace!
+  # arbitrary gems may also be filtered via:
+  # config.filter_gems_from_backtrace("gem name")
+end
+</file>
+
+<file path="spec/spec_helper.rb">
+# This file was generated by the `rails generate rspec:install` command. Conventionally, all
+# specs live under a `spec` directory, which RSpec adds to the `$LOAD_PATH`.
+# The generated `.rspec` file contains `--require spec_helper` which will cause
+# this file to always be loaded, without a need to explicitly require it in any
+# files.
+#
+# Given that it is always loaded, you are encouraged to keep this file as
+# light-weight as possible. Requiring heavyweight dependencies from this file
+# will add to the boot time of your test suite on EVERY test run, even for an
+# individual file that may not need all of that loaded. Instead, consider making
+# a separate helper file that requires the additional dependencies and performs
+# the additional setup, and require it from the spec files that actually need
+# it.
+#
+# See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+RSpec.configure do |config|
+  # rspec-expectations config goes here. You can use an alternate
+  # assertion/expectation library such as wrong or the stdlib/minitest
+  # assertions if you prefer.
+  config.expect_with :rspec do |expectations|
+    # This option will default to `true` in RSpec 4. It makes the `description`
+    # and `failure_message` of custom matchers include text for helper methods
+    # defined using `chain`, e.g.:
+    #     be_bigger_than(2).and_smaller_than(4).description
+    #     # => "be bigger than 2 and smaller than 4"
+    # ...rather than:
+    #     # => "be bigger than 2"
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
+
+  # rspec-mocks config goes here. You can use an alternate test double
+  # library (such as bogus or mocha) by changing the `mock_with` option here.
+  config.mock_with :rspec do |mocks|
+    # Prevents you from mocking or stubbing a method that does not exist on
+    # a real object. This is generally recommended, and will default to
+    # `true` in RSpec 4.
+    mocks.verify_partial_doubles = true
+  end
+
+  # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
+  # have no way to turn it off -- the option exists only for backwards
+  # compatibility in RSpec 3). It causes shared context metadata to be
+  # inherited by the metadata hash of host groups and examples, rather than
+  # triggering implicit auto-inclusion in groups with matching metadata.
+  config.shared_context_metadata_behavior = :apply_to_host_groups
+
+# The settings below are suggested to provide a good initial experience
+# with RSpec, but feel free to customize to your heart's content.
+=begin
+  # This allows you to limit a spec run to individual examples or groups
+  # you care about by tagging them with `:focus` metadata. When nothing
+  # is tagged with `:focus`, all examples get run. RSpec also provides
+  # aliases for `it`, `describe`, and `context` that include `:focus`
+  # metadata: `fit`, `fdescribe` and `fcontext`, respectively.
+  config.filter_run_when_matching :focus
+
+  # Allows RSpec to persist some state between runs in order to support
+  # the `--only-failures` and `--next-failure` CLI options. We recommend
+  # you configure your source control system to ignore this file.
+  config.example_status_persistence_file_path = "spec/examples.txt"
+
+  # Limits the available syntax to the non-monkey patched syntax that is
+  # recommended. For more details, see:
+  # https://rspec.info/features/3-12/rspec-core/configuration/zero-monkey-patching-mode/
+  config.disable_monkey_patching!
+
+  # Many RSpec users commonly either run the entire suite or an individual
+  # file, and it's useful to allow more verbose output when running an
+  # individual spec file.
+  if config.files_to_run.one?
+    # Use the documentation formatter for detailed output,
+    # unless a formatter has already been configured
+    # (e.g. via a command-line flag).
+    config.default_formatter = "doc"
+  end
+
+  # Print the 10 slowest examples and example groups at the
+  # end of the spec run, to help surface which specs are running
+  # particularly slow.
+  config.profile_examples = 10
+
+  # Run specs in random order to surface order dependencies. If you find an
+  # order dependency and want to debug it, you can fix the order by providing
+  # the seed, which is printed after each run.
+  #     --seed 1234
+  config.order = :random
+
+  # Seed global randomization in this process using the `--seed` CLI option.
+  # Setting this allows you to use `--seed` to deterministically reproduce
+  # test failures related to randomization by passing the same `--seed` value
+  # as the one that triggered the failure.
+  Kernel.srand config.seed
+=end
 end
 </file>
 
@@ -4516,38 +4879,6 @@ class ActivityLogsControllerTest < ActionDispatch::IntegrationTest
   # test "the truth" do
   #   assert true
   # end
-end
-</file>
-
-<file path="test/controllers/exercises_controller_test.rb">
-require "test_helper"
-
-class ExercisesControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
-    get exercises_index_url
-    assert_response :success
-  end
-
-  test "should get show" do
-    get exercises_show_url
-    assert_response :success
-  end
-end
-</file>
-
-<file path="test/controllers/sitting_sessions_controller_test.rb">
-require "test_helper"
-
-class SittingSessionsControllerTest < ActionDispatch::IntegrationTest
-  test "should get new" do
-    get sitting_sessions_new_url
-    assert_response :success
-  end
-
-  test "should get show" do
-    get sitting_sessions_show_url
-    assert_response :success
-  end
 end
 </file>
 
@@ -4575,56 +4906,6 @@ two:
   sitting_session: two
 </file>
 
-<file path="test/fixtures/exercises.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  name: MyString
-  category: 1
-  description: MyText
-  cloudinary_public_id: MyString
-
-two:
-  name: MyString
-  category: 1
-  description: MyText
-  cloudinary_public_id: MyString
-</file>
-
-<file path="test/fixtures/sitting_sessions.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  user: one
-  start_at: 2026-02-02 21:27:01
-  notify_at: 2026-02-02 21:27:01
-  notified: false
-  endpoint: MyString
-  p256dh: MyString
-  auth: MyString
-
-two:
-  user: two
-  start_at: 2026-02-02 21:27:01
-  notify_at: 2026-02-02 21:27:01
-  notified: false
-  endpoint: MyString
-  p256dh: MyString
-  auth: MyString
-</file>
-
-<file path="test/fixtures/suggested_actions.yml">
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  sitting_settion: one
-  exercise: one
-
-two:
-  sitting_settion: two
-  exercise: two
-</file>
-
 <file path="test/jobs/send_notification_job_test.rb">
 require "test_helper"
 
@@ -4645,55 +4926,8 @@ class ActivityLogTest < ActiveSupport::TestCase
 end
 </file>
 
-<file path="test/models/exercise_test.rb">
-require "test_helper"
-
-class ExerciseTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/models/sitting_session_test.rb">
-require "test_helper"
-
-class SittingSessionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="test/models/suggested_action_test.rb">
-require "test_helper"
-
-class SuggestedActionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
-</file>
-
-<file path="app/controllers/users/guest_sessions_controller.rb">
-class Users::GuestSessionsController < ApplicationController
-  def create
-    user = User.guest
-    sign_in user
-    redirect_to root_path, notice: "ゲストユーザーとしてログインしました。"
-  end
-end
-</file>
-
-<file path="app/controllers/exercises_controller.rb">
-class ExercisesController < ApplicationController
-  def index
-  end
-
-  def show
-    @exercise = Exercise.find(params[:id])
-  end
-end
+<file path=".rspec">
+--require spec_helper
 </file>
 
 <file path="app/javascript/controllers/mobile_menu_controller.js">
@@ -4787,189 +5021,6 @@ export default class extends Controller {
     return outputArray;
   }
 }
-</file>
-
-<file path="app/models/exercise.rb">
-class Exercise < ApplicationRecord
-  has_many :suggested_actions, dependent: :destroy
-  has_many :sitting_sessions, through: :suggested_actions
-
-  enum :category, { stretch: 0, training: 1, walk: 2 }
-
-  validates :name, presence: true
-  validates :category, presence: true
-end
-</file>
-
-<file path="config/environments/production.rb">
-require "active_support/core_ext/integer/time"
-
-Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
-  # Code is not reloaded between requests.
-  config.enable_reloading = false
-
-  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
-  config.eager_load = true
-
-  # Full error reports are disabled.
-  config.consider_all_requests_local = false
-
-  # Turn on fragment caching in view templates.
-  config.action_controller.perform_caching = true
-
-  # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
-
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
-
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
-
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-
-  # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
-
-  # Change to "debug" to log everything (including potentially personally-identifiable information!).
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
-
-  # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
-
-  # Don't log any deprecations.
-  config.active_support.report_deprecations = false
-
-  # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :solid_cache_store
-
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
-
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
-
-  # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
-
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
-  config.i18n.fallbacks = true
-
-  # Do not dump schema after migrations.
-  config.active_record.dump_schema_after_migration = false
-
-  # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
-
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-end
-</file>
-
-<file path="config/initializers/cloudinay.rb">
-Cloudinary.config do |config|
-  config.cloud_name = Rails.application.credentials.dig(:cloudinary, :cloud_name)
-  config.api_key    = Rails.application.credentials.dig(:cloudinary, :api_key)
-  config.api_secret = Rails.application.credentials.dig(:cloudinary, :api_secret)
-  config.secure     = true
-end
-</file>
-
-<file path="db/migrate/20260216203641_create_activity_logs.rb">
-class CreateActivityLogs < ActiveRecord::Migration[8.1]
-  def change
-    create_table :activity_logs do |t|
-      t.references :user, null: false, foreign_key: true
-      t.references :exercise, null: false, foreign_key: true
-      # session_idはnull許可にして、セッションがない場合もログを残せるようにする
-      t.references :sitting_session, null: true, foreign_key: true
-
-      t.timestamps
-    end
-  end
-end
-</file>
-
-<file path="app/controllers/application_controller.rb">
-class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
-
-  protected
-  # ログイン後のタイマー画面への遷移を共通化
-  def after_sign_in_path_for(resource)
-    root_path
-  end
-end
-</file>
-
-<file path="app/jobs/send_notification_job.rb">
-require "web-push"
-
-class SendNotificationJob < ApplicationJob
-  queue_as :default
-
-  def perform(sitting_session_id)
-    session = SittingSession.find_by(id: sitting_session_id)
-
-    return if session.nil?
-
-    return unless session.in_progress?
-
-    user = session.user
-    return if user.endpoint.blank?
-
-    begin
-      WebPush.payload_send(
-        message: "休憩しましょう！",
-        endpoint: user.endpoint,
-        p256dh: user.p256dh,
-        auth: user.auth,
-        vapid: {
-          public_key: Rails.application.credentials.dig(:webpush, :public_key),
-          private_key: Rails.application.credentials.dig(:webpush, :private_key),
-          subject: "mailto:okw.kzk@gmail.com"
-        }
-      )
-      session.update!(notified: true)
-    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
-
-      user.update(endpoint: nil, p256dh: nil, auth: nil)
-
-    rescue => e
-      Rails.logger.error "通信エラー: #{e.message}"
-
-    end
-  end
-end
 </file>
 
 <file path="app/views/static_pages/top.html.erb">
@@ -5079,6 +5130,183 @@ end
 
   </main>
 </div>
+</file>
+
+<file path="db/migrate/20260216203641_create_activity_logs.rb">
+class CreateActivityLogs < ActiveRecord::Migration[8.1]
+  def change
+    create_table :activity_logs do |t|
+      t.references :user, null: false, foreign_key: true
+      t.references :exercise, null: false, foreign_key: true
+      # session_idはnull許可にして、セッションがない場合もログを残せるようにする
+      t.references :sitting_session, null: true, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="Gemfile">
+source "https://rubygems.org"
+
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 8.1.2"
+# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
+gem "propshaft"
+# Use postgresql as the database for Active Record
+gem "pg", "~> 1.1"
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", ">= 5.0"
+# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
+gem "jsbundling-rails"
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem "stimulus-rails"
+# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
+gem "cssbundling-rails"
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem "jbuilder"
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem "solid_cache"
+gem "solid_queue"
+gem "solid_cable"
+
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
+
+# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
+gem "kamal", require: false
+
+# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+gem "thruster", require: false
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "image_processing", "~> 1.2"
+
+# ユーザー認証
+gem "devise"
+
+# 画像CDN
+gem "cloudinary"
+
+gem "web-push"
+
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
+  gem "bundler-audit", require: false
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+
+  #テスト用
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+end
+
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+</file>
+
+<file path="app/jobs/send_notification_job.rb">
+require "web-push"
+
+class SendNotificationJob < ApplicationJob
+  queue_as :default
+
+  def perform(sitting_session_id)
+    session = SittingSession.find_by(id: sitting_session_id)
+
+    return if session.nil?
+
+    return unless session.in_progress?
+
+    user = session.user
+    return if user.endpoint.blank?
+
+    begin
+      WebPush.payload_send(
+        message: "休憩しましょう！",
+        endpoint: user.endpoint,
+        p256dh: user.p256dh,
+        auth: user.auth,
+        vapid: {
+          public_key: Rails.application.credentials.dig(:webpush, :public_key),
+          private_key: Rails.application.credentials.dig(:webpush, :private_key),
+          subject: "mailto:okw.kzk@gmail.com"
+        }
+      )
+      session.update!(notified: true)
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
+
+      user.update(endpoint: nil, p256dh: nil, auth: nil)
+
+    rescue => e
+      Rails.logger.error "通信エラー: #{e.message}"
+
+    end
+  end
+end
+</file>
+
+<file path="app/models/user.rb">
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  has_many :sitting_sessions, dependent: :destroy
+  has_many :activity_logs, dependent: :destroy
+  has_many :exercises, through: :activity_logs
+
+  # 　一日の座位時間合計
+  def today_total_sitting_seconds
+    sitting_sessions.today.sum(:duration)
+  end
+
+  # 座位時間の上限を超えているか？
+  def sitting_progress_percentage
+    limit = SittingSession::SITTING_TIME_LIMIT
+    [ ((today_total_sitting_seconds.to_f / limit) * 100).round, 100 ].min
+  end
+
+  # 今日の運動回数
+  def today_exercise_count
+    activity_logs.today.count
+  end
+
+  # ゲストログインの実装
+  def self.guest
+    find_or_create_by!(email: "guest@example.com") do |user|
+      user.password = SecureRandom.urlsafe_base64
+      user.username = "ゲストユーザー"
+    end
+  end
+end
 </file>
 
 <file path="app/views/top/index.html.erb">
@@ -5191,8 +5419,147 @@ end
 </div>
 </file>
 
-<file path="config/credentials.yml.enc">
-f4S18dfTWp7a6mtH+xGACjkoZ4DKjKnpbMu7PNdC8aFHScuHCo9u30BE9/uozU1TTdf+DnNqaMcSUTnm8dmuTVp2eT9cwCgUlP4swbYCo5mqXUwIJJVf3KWuynlR0+22qBZUunvYjOvt6iMkW/gHZSRfDpbQGrtw4gNxVwuJ4Czgadh27kteYZqzAaMEJ2lXcXQa2vBKBlef9ank2likhS4VsHDHmEPgRhmB0FjgR9+08A+dRVFQUVC+Bm6IFrg4DvUP8PaOrm6verHJH24Ara5cJSWgf6D0n/yDZgN9yMCTxTh5Z+D5TlQ9iNsDaUFbqrVQWQL1JOqUpqAw+lwTvFrKUIByWwjN2uw+bSP6elQt3dCn9yz5xbRi6LSAUTi7FJEdd4jihZpaUsDY5SwG9DqfwESLA5Oux6gG+zDEbq12vy56zYNNBPxc/dI3Dbgmnm8jvTAeLGOMtTIO3FDi8WDu0I7Qr3k3cJvtFI/V6Cw+gTq74eWl7iavDDWE8lq6QLZJLl/XwwIiYVJH7pIVb+iAKd61jzgk3HqE/4tGzqQ/0oJuzAxgElS5T1AxhdHjTF7d1CL6filrGGBbln4qHLwJOmljQj0ZjhkygBkJAKpP2DsUhb5hkf1uKXLje2MdYR7olwUTKDWtIzTMRd8IB0ek79qkcLPih0ueWi7xpXNZCPtQmKFZP09wBs5Z/Ao8vHce/Rdx0gRj4dZnPlQP9QWl6aLe+t8ahEidRvJ+aMSE4B8ZvAuwEbrMut1Uj/c8e+e6syqsj+CuHTS/CAYuOCezh8ejO0epZBtvVs3HG8LZ8Ghw79HIIEA/sFtZXYAdMpxq2GNTzqcHVDrbx6ji1wWtLfDVKRRF78mg8nxCERyOg+uzMw2S+GqUwIVgWcnjl0g=--2uhRJWZLgp1aeyCZ--dRD1EbiGIiSuHTVaUTi+pg==
+<file path="config/environments/production.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
+
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
+
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
+  config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # config.assume_ssl = true
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+  # キャッシュ管理をメモリストアに変更
+  config.cache_store = :memory_store, { size: 64.megabytes }
+
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Ignore bad email addresses and do not raise email delivery errors.
+  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # config.action_mailer.smtp_settings = {
+  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
+  #   password: Rails.application.credentials.dig(:smtp, :password),
+  #   address: "smtp.example.com",
+  #   port: 587,
+  #   authentication: :plain
+  # }
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  config.active_record.attributes_for_inspect = [ :id ]
+
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  # config.hosts = [
+  #   "example.com",     # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
+  #
+  # Skip DNS rebinding protection for the default health check endpoint.
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+end
+</file>
+
+<file path="config/puma.rb">
+# This configuration file will be evaluated by Puma. The top-level methods that
+# are invoked here are part of Puma's configuration DSL. For more information
+# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
+#
+# Puma starts a configurable number of processes (workers) and each process
+# serves each request in a thread from an internal thread pool.
+#
+# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
+# should only set this value when you want to run 2 or more workers. The
+# default is already 1. You can set it to `auto` to automatically start a worker
+# for each available processor.
+#
+# The ideal number of threads per worker depends both on how much time the
+# application spends waiting for IO operations and on how much you wish to
+# prioritize throughput over latency.
+#
+# As a rule of thumb, increasing the number of threads will increase how much
+# traffic a given process can handle (throughput), but due to CRuby's
+# Global VM Lock (GVL) it has diminishing returns and will degrade the
+# response time (latency) of the application.
+#
+# The default is set to 3 threads as it's deemed a decent compromise between
+# throughput and latency for the average Rails application.
+#
+# Any libraries that use a connection pool or another resource pool should
+# be configured to provide at least as many connections as the number of
+# threads. This includes Active Record's `pool` parameter in `database.yml`.
+
+#スレッド数を2つにしてメモリを制限
+threads_count = ENV.fetch("RAILS_MAX_THREADS", 2)
+threads threads_count, threads_count
+
+# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+port ENV.fetch("PORT", 3000)
+
+# Allow puma to be restarted by `bin/rails restart` command.
+plugin :tmp_restart
+
+# Run the Solid Queue supervisor inside of Puma for single-server deployments.
+plugin :solid_queue # if ENV["SOLID_QUEUE_IN_PUMA"]
+
+# Specify the PID file. Defaults to tmp/pids/server.pid in development.
+# In other environments, only set the PID file if requested.
+pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+#シングルスレッドで動かす
+workers 0
 </file>
 
 <file path="app/controllers/activity_logs_controller.rb">
@@ -5253,123 +5620,6 @@ application.register("notification", NotificationController)
 
 import TimerController from "./timer_controller"
 application.register("timer", TimerController)
-</file>
-
-<file path="Gemfile">
-source "https://rubygems.org"
-
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.2"
-# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem "propshaft"
-# Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
-# Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
-# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
-gem "jsbundling-rails"
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
-# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
-gem "cssbundling-rails"
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
-
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem "solid_cache"
-gem "solid_queue"
-gem "solid_cable"
-
-# Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
-
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
-
-# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
-gem "thruster", require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
-
-# ユーザー認証
-gem "devise"
-
-# 画像CDN
-gem "cloudinary"
-
-gem "web-push"
-
-
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
-end
-
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-end
-</file>
-
-<file path="app/models/user.rb">
-class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
-
-  has_many :sitting_sessions, dependent: :destroy
-  has_many :activity_logs, dependent: :destroy
-  has_many :exercises, through: :activity_logs
-
-  # 　一日の座位時間合計
-  def today_total_sitting_seconds
-    sitting_sessions.today.sum(:duration)
-  end
-
-  # 座位時間の上限を超えているか？
-  def sitting_progress_percentage
-    limit = SittingSession::SITTING_TIME_LIMIT
-    [ ((today_total_sitting_seconds.to_f / limit) * 100).round, 100 ].min
-  end
-
-  # 今日の運動回数
-  def today_exercise_count
-    activity_logs.today.count
-  end
-
-  # ゲストログインの実装
-  def self.guest
-    find_or_create_by!(email: "guest@example.com") do |user|
-      user.password = SecureRandom.urlsafe_base64
-      user.username = "ゲストユーザー"
-    end
-  end
-end
 </file>
 
 <file path="app/views/layouts/application.html.erb">
@@ -5530,6 +5780,129 @@ end
     <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
   </body>
 </html>
+</file>
+
+<file path="app/views/exercises/show.html.erb">
+<%# 全体の背景設定と装飾用のBlob要素 %>
+<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
+  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
+</div>
+
+<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
+  
+  <%# ヘッダーラベルとタイトル %>
+  <div class="text-center mb-10 mt-8">
+    <div class="inline-flex items-center gap-2 mb-3 text-primary">
+      <span class="material-symbols-outlined text-xl">spa</span>
+      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
+      <%= @exercise.name %>
+    </h1>
+  </div>
+
+  <%# メインビジュアル（画像部分） %>
+  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
+    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
+      <% if @exercise.cloudinary_public_id.present? %>
+        <%= cl_image_tag(@exercise.cloudinary_public_id, 
+            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
+      <% end %>
+      
+      <%# 再生ガイド用バッジ %>
+      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
+        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
+      </div>
+    </div>
+  </div>
+
+  <%# コンテンツエリア %>
+  <div class="w-full grid md:grid-cols-3 gap-10">
+    <%# やり方の解説（左側 2/3） %>
+    <div class="md:col-span-2 space-y-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
+      </div>
+
+      <div class="space-y-4">
+        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
+        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
+          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
+              <%= index + 1 %>
+            </div>
+            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
+              <%= step %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 注意ポイント（右側 1/3） %>
+    <div class="space-y-6">
+      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
+        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-xl">info</span>
+          注意ポイント
+        </h3>
+        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%# 下部に固定されたアクションバー %>
+<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
+  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      
+      <%# 進捗バー（演出用） %>
+      <div class="flex-1 w-full px-2"
+           data-controller="exercise-timer"
+           data-exercise-timer-duration-value="300">
+        <div class="flex justify-between items-end mb-2">
+          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
+          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
+        </div>
+        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
+        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
+             data-exercise-timer-target="bar"
+             style="width: 100%;">
+  
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+        </div>
+        </div>
+        </div>
+
+      <%# アクションボタン %>
+      <div class="flex items-center gap-4 w-full md:w-auto">
+        <%= link_to new_sitting_session_path(reopen_modal: true),
+            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
+          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
+          <span>他の運動</span>
+        <% end %>
+
+        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
+            method: :post,
+            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
+          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
+          <span>完了して戻る</span>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
 </file>
 
 <file path="db/seeds.rb">
@@ -5714,129 +6087,6 @@ end
 puts "完了！"
 </file>
 
-<file path="app/views/exercises/show.html.erb">
-<%# 全体の背景設定と装飾用のBlob要素 %>
-<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
-  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
-</div>
-
-<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
-  
-  <%# ヘッダーラベルとタイトル %>
-  <div class="text-center mb-10 mt-8">
-    <div class="inline-flex items-center gap-2 mb-3 text-primary">
-      <span class="material-symbols-outlined text-xl">spa</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
-    </div>
-    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
-      <%= @exercise.name %>
-    </h1>
-  </div>
-
-  <%# メインビジュアル（画像部分） %>
-  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
-    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
-      <% if @exercise.cloudinary_public_id.present? %>
-        <%= cl_image_tag(@exercise.cloudinary_public_id, 
-            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
-      <% end %>
-      
-      <%# 再生ガイド用バッジ %>
-      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
-        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
-      </div>
-    </div>
-  </div>
-
-  <%# コンテンツエリア %>
-  <div class="w-full grid md:grid-cols-3 gap-10">
-    <%# やり方の解説（左側 2/3） %>
-    <div class="md:col-span-2 space-y-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-          <span class="material-symbols-outlined">description</span>
-        </div>
-        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
-      </div>
-
-      <div class="space-y-4">
-        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
-        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
-          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
-              <%= index + 1 %>
-            </div>
-            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
-              <%= step %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-
-    <%# 注意ポイント（右側 1/3） %>
-    <div class="space-y-6">
-      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
-        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-xl">info</span>
-          注意ポイント
-        </h3>
-        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</main>
-
-<%# 下部に固定されたアクションバー %>
-<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
-  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
-    <div class="flex flex-col md:flex-row items-center gap-6">
-      
-      <%# 進捗バー（演出用） %>
-      <div class="flex-1 w-full px-2"
-           data-controller="exercise-timer"
-           data-exercise-timer-duration-value="300">
-        <div class="flex justify-between items-end mb-2">
-          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
-          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
-        </div>
-        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
-        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
-             data-exercise-timer-target="bar"
-             style="width: 100%;">
-  
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
-        </div>
-        </div>
-        </div>
-
-      <%# アクションボタン %>
-      <div class="flex items-center gap-4 w-full md:w-auto">
-        <%= link_to new_sitting_session_path(reopen_modal: true),
-            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
-          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
-          <span>他の運動</span>
-        <% end %>
-
-        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
-            method: :post,
-            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
-          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
-          <span>完了して戻る</span>
-        <% end %>
-      </div>
-
-    </div>
-  </div>
-</div>
-</file>
-
 <file path="app/views/shared/_modal.html.erb">
 <%# app/views/shared/_modal.html.erb %>
 <div class="fixed inset-0 bg-background-dark/80 backdrop-blur-xs flex items-center justify-center z-50 p-6 animate-in fade-in duration-300">
@@ -5890,7 +6140,149 @@ puts "完了！"
 </div>
 </file>
 
-<file path="db/queue_schema.rb">
+<file path="public/service-worker.js">
+self.addEventListener('push', function (event) {
+    
+    
+    let data = {};
+    if (event.data) {
+        try {
+            // まずはJSONとして解析を試みる
+            data = event.data.json();
+        } catch (e) {
+            // JSONでなければ、そのままテキストとしてbodyに格納
+            data = { body: event.data.text() };
+        }
+    }
+    
+    const title = data.title || '休憩時間になりました！';
+
+    const options = {
+        body: data.body || '身体を動かしましょう！',
+        icon: new URL('/icon.png', self.location.origin).href,
+        // RailsからURLが指定されていなければ、トップページを表示
+        data: { url: data.url || '/' }
+    };
+
+    //通知を表示するまでservice workerを終了させない
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    )
+})
+
+//通知をクリックしたら発火
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close()
+    //通知のurl
+    const rootUrl = new URL('/', self.location.origin).href
+    const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
+    //指定されたurlを開く
+    event.waitUntil(
+        //開いているブラウザのタブを確認
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then(function (windowClients) {
+                //アプリのタブを探す
+                for (let i = 0; i < windowClients.length; i++) {
+                    const client = windowClients[i]
+
+                    if (client.url.startsWith(rootUrl) && 'focus' in client) {
+                        //あればフォーカス
+                        return client.focus()
+                    }
+                }
+                //なければ新しいタブを開く
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen)
+                }
+        })
+    )
+})
+</file>
+
+<file path="config/routes.rb">
+Rails.application.routes.draw do
+  # ログイン時のroot
+  authenticated :user do
+    root "top#index", as: :authenticated_root
+  end
+  # 未ログイン時のroot
+  unauthenticated do
+    root "static_pages#top"
+  end
+
+  resources :sitting_sessions, only: [ :new, :create, :show ] do
+    collection do
+      post :subscribe
+    end
+  end
+
+  resources :exercises, only: [ :index, :show ]
+
+  resources :activity_logs, only: [ :create ]
+
+  devise_for :users
+
+  post "guest_login", to: "users/guest_sessions#create"
+
+  get "up" => "rails/health#show", as: :rails_health_check
+end
+</file>
+
+<file path="app/controllers/sitting_sessions_controller.rb">
+class SittingSessionsController < ApplicationController
+  before_action :authenticate_user!
+
+  def new
+  end
+
+  def create
+    @sitting_session = current_user.sitting_sessions.build(session_params)
+
+    if @sitting_session.save
+      # 座位時間が保存されたら運動をランダムに提案
+      @exercises = Exercise.order("RANDOM()").limit(3)
+      # デバッグ用
+      SendNotificationJob.set(wait_until: Time.current + 5.seconds)
+                         .perform_later(@sitting_session.id)
+      # タイマー終了時に通知jobを予約する
+      # SendNotificationJob.set(wait_until: Time.current +@sitting_session.end_time)
+      #                    .perform_later(@sitting_session.id)
+
+      respond_to do |format|
+        # create.turbo_stream.erbを呼び出す
+        format.turbo_stream
+        # モーダル表示されない場合はshowへ
+        format.html { redirect_to sitting_session_path(@sitting_session) }
+      end
+    end
+  end
+
+  def show
+  end
+
+  def subscribe
+    auth_key = params[:subscription][:keys]
+
+    if current_user.update(
+      endpoint: params[:subscription][:endpoint],
+      p256dh: auth_key[:p256dh],
+      auth: auth_key[:auth]
+    )
+      head :ok
+    else
+      head :unprocessable_entity
+    end
+  end
+
+  private
+
+  def session_params
+    params.require(:sitting_session).permit(:duration, :start_at)
+  end
+end
+</file>
+
+<file path="db/schema.rb">
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -6100,229 +6492,85 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
 end
 </file>
 
-<file path="public/service-worker.js">
-self.addEventListener('push', function (event) {
+<file path="app/views/sitting_sessions/new.html.erb">
+<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
+    data-controller="notification timer"
+    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
+
+  <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
+              bg-input-bg-light/80 backdrop-blur-3xl 
+              border border-white/40
+              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
+              w-full max-w-md transition-all duration-500">
+
+    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
+      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="2" fill="transparent"
+                class="text-border-light opacity-50" />
+
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="6" fill="transparent"
+                data-timer-target="circle"
+                class="text-primary transition-all duration-1000 ease-linear drop-shadow-[0_0_8px_rgba(107,144,128,0.5)]"
+                style="stroke-linecap: round;" />
+      </svg>
+
+      <div class="absolute flex flex-col items-center justify-center">
+        <div class="text-7xl font-extralight tracking-tighter text-text-main"
+             data-timer-target="display">
+          00:00
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 w-full space-y-8">
+      
+      <div class="flex flex-wrap gap-2 justify-center">
+        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+          <button type="button"
+                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
+                         hover:border-primary hover:bg-white rounded-2xl
+                         text-text-secondary font-semibold transition-all
+                         active:scale-90 cursor-pointer"
+                  data-action="click->timer#setTime"
+                  data-timer-minutes-param="<%= minutes %>">
+            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
+          </button>
+        <% end %>
+      </div>
+
+      <div class="space-y-4">
+        <button data-action="click->timer#start" 
+              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
+                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
+                     transition-all active:scale-[0.96] cursor-pointer">
+          スタート
+        </button>
+
+        <div class="flex gap-3">
+          <button data-action="click->timer#reset"
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-background-light text-text-secondary
+                         border border-border-light hover:bg-white hover:text-text-main
+                         transition-all active:scale-95 cursor-pointer">
+            リセット
+          </button>
+          
+          <button type="button" 
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-transparent text-text-secondary/40
+                         hover:text-text-main transition-all cursor-pointer" 
+                  data-action="click->timer#finish">
+            休憩する
+          </button>
+        </div>
+      </div>
+    </div>
     
-    
-    let data = {};
-    if (event.data) {
-        try {
-            // まずはJSONとして解析を試みる
-            data = event.data.json();
-        } catch (e) {
-            // JSONでなければ、そのままテキストとしてbodyに格納
-            data = { body: event.data.text() };
-        }
-    }
-    
-    const title = data.title || '休憩時間になりました！';
-
-    const options = {
-        body: data.body || '身体を動かしましょう！',
-        icon: new URL('/icon.png', self.location.origin).href,
-        // RailsからURLが指定されていなければ、トップページを表示
-        data: { url: data.url || '/' }
-    };
-
-    //通知を表示するまでservice workerを終了させない
-    event.waitUntil(
-        self.registration.showNotification(title, options)
-    )
-})
-
-//通知をクリックしたら発火
-self.addEventListener('notificationclick', function (event) {
-    event.notification.close()
-    //通知のurl
-    const rootUrl = new URL('/', self.location.origin).href
-    const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
-    //指定されたurlを開く
-    event.waitUntil(
-        //開いているブラウザのタブを確認
-        clients.matchAll({ type: 'window', includeUncontrolled: true })
-            .then(function (windowClients) {
-                //アプリのタブを探す
-                for (let i = 0; i < windowClients.length; i++) {
-                    const client = windowClients[i]
-
-                    if (client.url.startsWith(rootUrl) && 'focus' in client) {
-                        //あればフォーカス
-                        return client.focus()
-                    }
-                }
-                //なければ新しいタブを開く
-                if (clients.openWindow) {
-                    return clients.openWindow(urlToOpen)
-                }
-        })
-    )
-})
-</file>
-
-<file path="config/routes.rb">
-Rails.application.routes.draw do
-  # ログイン時のroot
-  authenticated :user do
-    root "top#index", as: :authenticated_root
-  end
-  # 未ログイン時のroot
-  unauthenticated do
-    root "static_pages#top"
-  end
-
-  resources :sitting_sessions, only: [ :new, :create, :show ] do
-    collection do
-      post :subscribe
-    end
-  end
-
-  resources :exercises, only: [ :index, :show ]
-
-  resources :activity_logs, only: [ :create ]
-
-  devise_for :users
-
-  post "guest_login", to: "users/guest_sessions#create"
-
-  get "up" => "rails/health#show", as: :rails_health_check
-end
-</file>
-
-<file path="app/controllers/sitting_sessions_controller.rb">
-class SittingSessionsController < ApplicationController
-  before_action :authenticate_user!
-
-  def new
-  end
-
-  def create
-    @sitting_session = current_user.sitting_sessions.build(session_params)
-
-    if @sitting_session.save
-      # 座位時間が保存されたら運動をランダムに提案
-      @exercises = Exercise.order("RANDOM()").limit(3)
-      # デバッグ用
-      SendNotificationJob.set(wait_until: Time.current + 5.seconds)
-                         .perform_later(@sitting_session.id)
-      # タイマー終了時に通知jobを予約する
-      # SendNotificationJob.set(wait_until: Time.current +@sitting_session.end_time)
-      #                    .perform_later(@sitting_session.id)
-
-      respond_to do |format|
-        # create.turbo_stream.erbを呼び出す
-        format.turbo_stream
-        # モーダル表示されない場合はshowへ
-        format.html { redirect_to sitting_session_path(@sitting_session) }
-      end
-    end
-  end
-
-  def show
-  end
-
-  def subscribe
-    auth_key = params[:subscription][:keys]
-
-    if current_user.update(
-      endpoint: params[:subscription][:endpoint],
-      p256dh: auth_key[:p256dh],
-      auth: auth_key[:auth]
-    )
-      head :ok
-    else
-      head :unprocessable_entity
-    end
-  end
-
-  private
-
-  def session_params
-    params.require(:sitting_session).permit(:duration, :start_at)
-  end
-end
-</file>
-
-<file path="db/schema.rb">
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
-#
-# This file is the source Rails uses to define your schema when running `bin/rails
-# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
-# be faster and is potentially less error prone than running all of your
-# migrations from scratch. Old migrations may fail to apply correctly if those
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
-  create_table "activity_logs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
-    t.index ["user_id"], name: "index_activity_logs_on_user_id"
-  end
-
-  create_table "exercises", force: :cascade do |t|
-    t.integer "category"
-    t.string "cloudinary_public_id"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "sitting_sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.boolean "notified"
-    t.datetime "notify_at"
-    t.datetime "start_at"
-    t.integer "status", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
-  end
-
-  create_table "suggested_actions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "auth"
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "endpoint"
-    t.string "p256dh"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
-    t.datetime "updated_at", null: false
-    t.string "username", default: "", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  end
-
-  add_foreign_key "activity_logs", "exercises"
-  add_foreign_key "activity_logs", "sitting_sessions"
-  add_foreign_key "activity_logs", "users"
-  add_foreign_key "sitting_sessions", "users"
-  add_foreign_key "suggested_actions", "exercises"
-  add_foreign_key "suggested_actions", "sitting_sessions"
-end
+  </div>
+  <div id="modal_container"></div>
+</div>
 </file>
 
 <file path="app/javascript/controllers/timer_controller.js">
@@ -6499,87 +6747,6 @@ export default class extends Controller {
         this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
     }
 }
-</file>
-
-<file path="app/views/sitting_sessions/new.html.erb">
-<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
-    data-controller="notification timer"
-    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
-
-  <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
-              bg-input-bg-light/80 backdrop-blur-3xl 
-              border border-white/40
-              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
-              w-full max-w-md transition-all duration-500">
-
-    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
-      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
-        <circle cx="150" cy="150" r="135"
-                stroke="currentColor" stroke-width="2" fill="transparent"
-                class="text-border-light opacity-50" />
-
-        <circle cx="150" cy="150" r="135"
-                stroke="currentColor" stroke-width="6" fill="transparent"
-                data-timer-target="circle"
-                class="text-primary transition-all duration-1000 ease-linear drop-shadow-[0_0_8px_rgba(107,144,128,0.5)]"
-                style="stroke-linecap: round;" />
-      </svg>
-
-      <div class="absolute flex flex-col items-center justify-center">
-        <div class="text-7xl font-extralight tracking-tighter text-text-main"
-             data-timer-target="display">
-          00:00
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-12 w-full space-y-8">
-      
-      <div class="flex flex-wrap gap-2 justify-center">
-        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
-          <button type="button"
-                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
-                         hover:border-primary hover:bg-white rounded-2xl
-                         text-text-secondary font-semibold transition-all
-                         active:scale-90 cursor-pointer"
-                  data-action="click->timer#setTime"
-                  data-timer-minutes-param="<%= minutes %>">
-            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
-          </button>
-        <% end %>
-      </div>
-
-      <div class="space-y-4">
-        <button data-action="click->timer#start" 
-              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
-                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
-                     transition-all active:scale-[0.96] cursor-pointer">
-          スタート
-        </button>
-
-        <div class="flex gap-3">
-          <button data-action="click->timer#reset"
-                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
-                         bg-background-light text-text-secondary
-                         border border-border-light hover:bg-white hover:text-text-main
-                         transition-all active:scale-95 cursor-pointer">
-            リセット
-          </button>
-          
-          <button type="button" 
-                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
-                         bg-transparent text-text-secondary/40
-                         hover:text-text-main transition-all cursor-pointer" 
-                  data-action="click->timer#finish">
-            休憩する
-          </button>
-        </div>
-      </div>
-    </div>
-    
-  </div>
-  <div id="modal_container"></div>
-</div>
 </file>
 
 <file path="app/models/sitting_session.rb">
