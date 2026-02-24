@@ -40,4 +40,6 @@ class SittingSession < ApplicationRecord
   def cancel_active_sessions
     user.sitting_sessions.active.where.not(id: id).update_all(status: :cancelled)
   end
+
+  validates :start_at, presence: true
 end
