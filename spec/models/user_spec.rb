@@ -11,4 +11,5 @@ RSpec.describe User, type: :model do
       user = build(:user, username: nil)
       expect(user).not_to be_valid
     end
+  end
 end
