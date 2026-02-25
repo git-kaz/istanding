@@ -7,9 +7,9 @@ let!(:user) { create(:user) }
     it "新しいセッションの作成時に既存のセッションが終了すること" do
       old_session = create(:sitting_session, user: user, status: :active)
 
-      expect{
+      expect {
         create(:sitting_session, user: user, status: :active)
-    }.to change{ old_session.reload.status }.from("active").to("cancelled")
+    }.to change { old_session.reload.status }.from("active").to("cancelled")
     end
   end
 

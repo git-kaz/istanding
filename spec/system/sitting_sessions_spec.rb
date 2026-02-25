@@ -5,7 +5,7 @@ RSpec.describe "SittingSessions", type: :system do
   let!(:exercise) { create(:exercise, name: "肩甲骨ストレッチ") }
 
   before do
-     driven_by(:rack_test) #JSなしで動かす
+     driven_by(:rack_test) # JSなしで動かす
 
     # ログイン済みの状態にする（共通化している場合はそのメソッドを呼ぶ）
     visit new_user_session_path
@@ -15,8 +15,6 @@ RSpec.describe "SittingSessions", type: :system do
   end
 
   it "タイマーを開始し、休憩ボタンから運動を選択できること" do
-   
-
     visit root_path
 
     # 1. タイマー時間の選択（例: 30分）
