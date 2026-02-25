@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe SendNotificationJob, type: :job do
-  let(:user){ create(:user) }
+  let(:user) { create(:user) }
 
   describe "#perform_later" do
     it "ジョブが正しくキューに追加されること" do
@@ -15,8 +15,9 @@ RSpec.describe SendNotificationJob, type: :job do
       sitting_session = create(:sitting_session, user: user, start_at: Time.current, duration: 30)
       expect {
         SendNotificationJob.set(wait_until: sitting_session.end_time).perform_later(sitting_session.id)
-      }.to have_enqueued_job(sitting_session)
+      }.to have_enqueued_job(SendNotificationJob)
+      .with(sitting_session.id)
+      .at(sitting_session.end_time)
     end
   end
-
 end

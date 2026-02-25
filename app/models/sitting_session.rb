@@ -24,7 +24,7 @@ class SittingSession < ApplicationRecord
   # 終了時刻の計算
   def end_time
     # デバッグ時に使用
-    #created_at + duration.seconds
+    # created_at + duration.seconds
     created_at + duration.minutes
   end
 
