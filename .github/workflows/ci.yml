@@ -82,5 +82,6 @@ jobs:
           # localhost:5432 は service で定義した postgres に繋がります
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/rails_test
         run: |
+          bin/rails assets:precompile
           bin/rails db:test:prepare
           bundle exec rspec
