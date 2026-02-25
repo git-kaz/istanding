@@ -236,10 +236,15 @@ sitting-timer/
   README.md
 spec/
   factories/
+    exercises.rb
     sitting_sessions.rb
     users.rb
+  jobs/
+    notify_job_spec.rb
   models/
+    exercise_spec.rb
     sitting_session_spec.rb
+    user_spec.rb
   system/
     logins_spec.rb
     sitting_sessions_spec.rb
@@ -1379,6 +1384,12 @@ end
 //     })
 //   )
 // })
+</file>
+
+<file path="app/views/sitting_sessions/create.turbo_stream.erb">
+<%= turbo_stream.update "modal_container" do%>
+    <%= render partial: "shared/modal", locals: { exercise: @recommended_exercise} %>
+<% end %>
 </file>
 
 <file path="app/views/sitting_sessions/show.html.erb">
@@ -2603,6 +2614,14 @@ class CreateSuggestedActions < ActiveRecord::Migration[8.1]
 end
 </file>
 
+<file path="db/migrate/20260205214818_add_duration_to_sitting_sessions.rb">
+class AddDurationToSittingSessions < ActiveRecord::Migration[8.1]
+  def change
+    add_column :sitting_sessions, :duration, :integer
+  end
+end
+</file>
+
 <file path="lib/tasks/.keep">
 
 </file>
@@ -3537,39 +3556,6 @@ YMYL, E-E-A-T への留意が必要になる
 ## **ER 図**
 
 [![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
-</file>
-
-<file path="spec/factories/sitting_sessions.rb">
-FactoryBot.define do
-  factory :sitting_session do
-    association :user 
-    start_at { Time.current }
-  end
-end
-</file>
-
-<file path="spec/models/sitting_session_spec.rb">
-require 'rails_helper'
-
-RSpec.describe SittingSession, type: :model do
-  it "有効なファクトリを持つこと" do
-    expect(build(:sitting_session)).to be_valid
-  end
-
-  describe "バリデーション" do
-    it "開始時間がなければ無効であること" do
-      session = build(:sitting_session, start_at: nil)
-      expect(session).not_to be_valid
-    end
-  end
-
-  describe "アソシエーション" do
-    it "Userモデルに属していること" do
-      t = SittingSession.reflect_on_association(:user)
-      expect(t.macro).to eq :belongs_to
-    end
-  end
-end
 </file>
 
 <file path="storage/.keep">
@@ -4610,22 +4596,8 @@ end
 <% end %>
 </file>
 
-<file path="app/views/sitting_sessions/create.turbo_stream.erb">
-<%= turbo_stream.update "modal_container" do%>
-    <%= render partial: "shared/modal", locals: { exercise: @recommended_exercise} %>
-<% end %>
-</file>
-
 <file path="config/credentials.yml.enc">
 f4S18dfTWp7a6mtH+xGACjkoZ4DKjKnpbMu7PNdC8aFHScuHCo9u30BE9/uozU1TTdf+DnNqaMcSUTnm8dmuTVp2eT9cwCgUlP4swbYCo5mqXUwIJJVf3KWuynlR0+22qBZUunvYjOvt6iMkW/gHZSRfDpbQGrtw4gNxVwuJ4Czgadh27kteYZqzAaMEJ2lXcXQa2vBKBlef9ank2likhS4VsHDHmEPgRhmB0FjgR9+08A+dRVFQUVC+Bm6IFrg4DvUP8PaOrm6verHJH24Ara5cJSWgf6D0n/yDZgN9yMCTxTh5Z+D5TlQ9iNsDaUFbqrVQWQL1JOqUpqAw+lwTvFrKUIByWwjN2uw+bSP6elQt3dCn9yz5xbRi6LSAUTi7FJEdd4jihZpaUsDY5SwG9DqfwESLA5Oux6gG+zDEbq12vy56zYNNBPxc/dI3Dbgmnm8jvTAeLGOMtTIO3FDi8WDu0I7Qr3k3cJvtFI/V6Cw+gTq74eWl7iavDDWE8lq6QLZJLl/XwwIiYVJH7pIVb+iAKd61jzgk3HqE/4tGzqQ/0oJuzAxgElS5T1AxhdHjTF7d1CL6filrGGBbln4qHLwJOmljQj0ZjhkygBkJAKpP2DsUhb5hkf1uKXLje2MdYR7olwUTKDWtIzTMRd8IB0ek79qkcLPih0ueWi7xpXNZCPtQmKFZP09wBs5Z/Ao8vHce/Rdx0gRj4dZnPlQP9QWl6aLe+t8ahEidRvJ+aMSE4B8ZvAuwEbrMut1Uj/c8e+e6syqsj+CuHTS/CAYuOCezh8ejO0epZBtvVs3HG8LZ8Ghw79HIIEA/sFtZXYAdMpxq2GNTzqcHVDrbx6ji1wWtLfDVKRRF78mg8nxCERyOg+uzMw2S+GqUwIVgWcnjl0g=--2uhRJWZLgp1aeyCZ--dRD1EbiGIiSuHTVaUTi+pg==
-</file>
-
-<file path="db/migrate/20260205214818_add_duration_to_sitting_sessions.rb">
-class AddDurationToSittingSessions < ActiveRecord::Migration[8.1]
-  def change
-    add_column :sitting_sessions, :duration, :integer
-  end
-end
 </file>
 
 <file path="db/migrate/20260209222639_add_webpush_columns_to_users.rb">
@@ -4648,130 +4620,21 @@ class RemoveWebpushColumnsFromSittingSessions < ActiveRecord::Migration[8.1]
 end
 </file>
 
-<file path="spec/factories/users.rb">
-FactoryBot.define do
-  factory :user do
-    username { "テストユーザー" }
-    #毎回違うアドレスを生成
-    sequence (:email) { |n| "test#{n}@example.com" }
-    password { "password" }
-    password_confirmation { "password" }
-  end
-end
-</file>
-
-<file path="spec/system/logins_spec.rb">
+<file path="spec/jobs/notify_job_spec.rb">
 require 'rails_helper'
 
-RSpec.describe "ログイン機能", type: :system do
-  before do
-    driven_by(:rack_test)
+RSpec.describe SendNotificationJob, type: :job do
+  let(:user){ create(:user) }
+
+  describe "#perform_later" do
+    it "ジョブが正しくキューに追加されること" do
+      ActiveJob::Base.queue_adapter = :test
+      expect {
+        SendNotificationJob.perform_later(user.id)
+      }.to have_enqueued_job(SendNotificationJob).with(user.id).on_queue("default")
+    end
   end
 
-  let!(:user) { create(:user) }
-
-  it "ユーザーがログインできること" do
-    visit new_user_session_path
-    fill_in "メールアドレス", with: user.email
-    fill_in "パスワード", with: user.password
-    click_button "ログインする"
-    expect(page).to have_current_path root_path
-  end
-  
-end
-</file>
-
-<file path="spec/system/sitting_sessions_spec.rb">
-require 'rails_helper'
-
-RSpec.describe "SittingSessions", type: :system do
-  before do
-    driven_by(:rack_test)
-  end
-
-  it "トップページにアクセスできること" do
-    visit root_path
-    expect(page).to have_content "座りすぎは喫煙と同等に身体に悪影響を及ぼすとされています"
-  end
-
-  
-end
-</file>
-
-<file path="spec/rails_helper.rb">
-# This file is copied to spec/ when you run 'rails generate rspec:install'
-require 'spec_helper'
-ENV['RAILS_ENV'] ||= 'test'
-require_relative '../config/environment'
-# Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
-# Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
-# that will avoid rails generators crashing because migrations haven't been run yet
-# return unless Rails.env.test?
-require 'rspec/rails'
-# Add additional requires below this line. Rails is not loaded until this point!
-
-# Requires supporting ruby files with custom matchers and macros, etc, in
-# spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
-# run as spec files by default. This means that files in spec/support that end
-# in _spec.rb will both be required and run as specs, causing the specs to be
-# run twice. It is recommended that you do not name files matching this glob to
-# end with _spec.rb. You can configure this pattern with the --pattern
-# option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
-#
-# The following line is provided for convenience purposes. It has the downside
-# of increasing the boot-up time by auto-requiring all files in the support
-# directory. Alternatively, in the individual `*_spec.rb` files, manually
-# require only the support files necessary.
-#
-# Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
-
-# Ensures that the test database schema matches the current schema file.
-# If there are pending migrations it will invoke `db:test:prepare` to
-# recreate the test database by loading the schema.
-# If you are not using ActiveRecord, you can remove these lines.
-begin
-  ActiveRecord::Migration.maintain_test_schema!
-rescue ActiveRecord::PendingMigrationError => e
-  abort e.to_s.strip
-end
-RSpec.configure do |config|
-  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_paths = [
-    Rails.root.join('spec/fixtures')
-  ]
-  #FactoryBot.createをcreateと書くため
-  config.include FactoryBot::Syntax::Methods
-
-  # If you're not using ActiveRecord, or you'd prefer not to run each of your
-  # examples within a transaction, remove the following line or assign false
-  # instead of true.
-  config.use_transactional_fixtures = true
-
-  # You can uncomment this line to turn off ActiveRecord support entirely.
-  # config.use_active_record = false
-
-  # RSpec Rails uses metadata to mix in different behaviours to your tests,
-  # for example enabling you to call `get` and `post` in request specs. e.g.:
-  #
-  #     RSpec.describe UsersController, type: :request do
-  #       # ...
-  #     end
-  #
-  # The different available types are documented in the features, such as in
-  # https://rspec.info/features/8-0/rspec-rails
-  #
-  # You can also infer these behaviours automatically by location, e.g.
-  # /spec/models would pull in the same behaviour as `type: :model` but this
-  # behaviour is considered legacy and will be removed in a future version.
-  #
-  # To enable this behaviour uncomment the line below.
-  # config.infer_spec_type_from_file_location!
-
-  # Filter lines from Rails gems in backtraces.
-  config.filter_rails_from_backtrace!
-  # arbitrary gems may also be filtered via:
-  # config.filter_gems_from_backtrace("gem name")
 end
 </file>
 
@@ -5147,764 +5010,6 @@ class CreateActivityLogs < ActiveRecord::Migration[8.1]
 end
 </file>
 
-<file path="Gemfile">
-source "https://rubygems.org"
-
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.2"
-# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem "propshaft"
-# Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
-# Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
-# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
-gem "jsbundling-rails"
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
-# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
-gem "cssbundling-rails"
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
-
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem "solid_cache"
-gem "solid_queue"
-gem "solid_cable"
-
-# Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
-
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
-
-# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
-gem "thruster", require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
-
-# ユーザー認証
-gem "devise"
-
-# 画像CDN
-gem "cloudinary"
-
-gem "web-push"
-
-
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
-
-  #テスト用
-  gem "rspec-rails"
-  gem "factory_bot_rails"
-end
-
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-end
-</file>
-
-<file path="app/jobs/send_notification_job.rb">
-require "web-push"
-
-class SendNotificationJob < ApplicationJob
-  queue_as :default
-
-  def perform(sitting_session_id)
-    session = SittingSession.find_by(id: sitting_session_id)
-
-    return if session.nil?
-
-    return unless session.in_progress?
-
-    user = session.user
-    return if user.endpoint.blank?
-
-    begin
-      WebPush.payload_send(
-        message: "休憩しましょう！",
-        endpoint: user.endpoint,
-        p256dh: user.p256dh,
-        auth: user.auth,
-        vapid: {
-          public_key: Rails.application.credentials.dig(:webpush, :public_key),
-          private_key: Rails.application.credentials.dig(:webpush, :private_key),
-          subject: "mailto:okw.kzk@gmail.com"
-        }
-      )
-      session.update!(notified: true)
-    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
-
-      user.update(endpoint: nil, p256dh: nil, auth: nil)
-
-    rescue => e
-      Rails.logger.error "通信エラー: #{e.message}"
-
-    end
-  end
-end
-</file>
-
-<file path="app/models/user.rb">
-class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
-
-  has_many :sitting_sessions, dependent: :destroy
-  has_many :activity_logs, dependent: :destroy
-  has_many :exercises, through: :activity_logs
-
-  # 　一日の座位時間合計
-  def today_total_sitting_seconds
-    sitting_sessions.today.sum(:duration)
-  end
-
-  # 座位時間の上限を超えているか？
-  def sitting_progress_percentage
-    limit = SittingSession::SITTING_TIME_LIMIT
-    [ ((today_total_sitting_seconds.to_f / limit) * 100).round, 100 ].min
-  end
-
-  # 今日の運動回数
-  def today_exercise_count
-    activity_logs.today.count
-  end
-
-  # ゲストログインの実装
-  def self.guest
-    find_or_create_by!(email: "guest@example.com") do |user|
-      user.password = SecureRandom.urlsafe_base64
-      user.username = "ゲストユーザー"
-    end
-  end
-end
-</file>
-
-<file path="app/views/top/index.html.erb">
-<div class="min-h-screen bg-background-dark p-4 md:p-8 overflow-x-hidden"
-    data-controller="notification timer"
-    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
-
-  <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-center justify-center gap-10 lg:gap-20 transition-all duration-500">
-    
-    <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
-                bg-input-bg-light/80 backdrop-blur-3xl 
-                border border-white/40
-                shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
-                w-full max-w-md shrink-0">
-
-      <div class="relative flex items-center justify-center w-64 h-64 md:w-72 md:h-72">
-        <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
-          <circle cx="150" cy="150" r="135"
-                  stroke="currentColor" stroke-width="2" fill="transparent"
-                  class="text-border-light opacity-50" />
-          <circle cx="150" cy="150" r="135"
-                  stroke="currentColor" stroke-width="6" fill="transparent"
-                  data-timer-target="circle"
-                  class="text-primary transition-all duration-1000 ease-linear"
-                  style="stroke-linecap: round;" />
-        </svg>
-
-        <div class="absolute flex flex-col items-center justify-center">
-          <div class="text-6xl font-extralight tracking-tighter text-text-main" data-timer-target="display">
-            00:00
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-8 w-full space-y-6">
-        <div class="flex flex-wrap gap-2 justify-center">
-          <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
-            <button type="button" class="flex-1 min-w-[60px] py-2.5 bg-white/40 border border-border-light hover:border-primary rounded-xl text-text-secondary font-semibold transition-all active:scale-90"
-                    data-action="click->timer#setTime" data-timer-minutes-param="<%= minutes %>">
-              <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
-            </button>
-          <% end %>
-        </div>
-
-        <div class="space-y-4">
-          <button data-action="click->timer#start" class="bg-primary text-text-main py-4 w-full rounded-[1.5rem] font-bold tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer">
-            スタート
-          </button>
-
-          <%= form_with model: @sitting_session do |f| %>
-            <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
-            <button type="button" data-action="click->timer#finish" class="w-full py-4 rounded-xl font-bold text-xs tracking-widest bg-background-light text-text-secondary border border-border-light hover:bg-white transition-all active:scale-95 cursor-pointer">
-              休憩する
-            </button>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full max-w-md lg:max-w-lg space-y-8">
-      
-      <div class="bg-white/60 backdrop-blur-xl p-8 rounded-[3rem] border border-white shadow-sm transition-transform hover:scale-[1.02]">
-        <div class="flex justify-between items-end mb-6">
-          <div>
-            <h3 class="text-[11px] font-black text-text-secondary uppercase tracking-[0.2em] mb-2">本日の座位時間</h3>
-            <p class="text-4xl font-black text-text-main tracking-tight italic">
-              <%= (@total_seconds / 3600.0).round(1) %><span class="text-lg font-bold text-text-secondary not-italic ml-1">/ 11時間</span>
-            </p>
-          </div>
-          <div class="bg-primary/20 px-4 py-1 rounded-full border border-primary/30">
-            <span class="text-lg font-black text-primary"><%= @percentage %>%</span>
-          </div>
-        </div>
-        
-        <div class="h-6 w-full bg-border-light/40 rounded-full overflow-hidden p-1.5 border border-white/50">
-          <div class="h-full bg-primary rounded-full transition-all duration-[1500ms] ease-out shadow-[0_0_15px_rgba(175,195,177,0.6)]"
-               style="width: <%= @percentage %>%">
-          </div>
-        </div>
-        
-        <div class="mt-6 flex items-start gap-3 bg-white/40 p-4 rounded-2xl border border-white/60">
-          <span class="material-symbols-outlined text-primary font-bold">warning</span>
-          <p class="text-[11px] text-text-secondary leading-relaxed font-medium">
-            11時間を超えると健康リスクが大幅に上昇します。<br>こまめな運動で血流を改善しましょう。
-          </p>
-        </div>
-      </div>
-
-      <div class="bg-white/60 backdrop-blur-xl p-8 rounded-[3rem] border border-white shadow-sm flex items-center justify-between group overflow-hidden relative">
-        <div class="relative z-10 text-left">
-          <h3 class="text-[11px] font-black text-text-secondary uppercase tracking-[0.2em] mb-1">運動した回数</h3>
-          <p class="text-4xl font-black text-text-main tracking-tight">
-            <%= @exercise_count %><span class="text-lg font-bold text-text-secondary ml-1 italic">Sets</span>
-          </p>
-        </div>
-        
-        <div class="relative z-10 w-16 h-16 bg-primary text-white rounded-[1.8rem] flex items-center justify-center shadow-lg shadow-primary/30 group-hover:rotate-12 transition-transform duration-500">
-          <span class="material-symbols-outlined text-3xl font-bold">fitness_center</span>
-        </div>
-        
-        <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl text-primary/5 -rotate-12 select-none">
-          sprint
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-  <div id="modal_container"></div>
-</div>
-</file>
-
-<file path="config/environments/production.rb">
-require "active_support/core_ext/integer/time"
-
-Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
-  # Code is not reloaded between requests.
-  config.enable_reloading = false
-
-  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
-  config.eager_load = true
-
-  # Full error reports are disabled.
-  config.consider_all_requests_local = false
-
-  # Turn on fragment caching in view templates.
-  config.action_controller.perform_caching = true
-
-  # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
-
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
-
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
-
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-
-  # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
-
-  # Change to "debug" to log everything (including potentially personally-identifiable information!).
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
-
-  # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
-
-  # Don't log any deprecations.
-  config.active_support.report_deprecations = false
-
-  # キャッシュ管理をメモリストアに変更
-  config.cache_store = :memory_store, { size: 64.megabytes }
-
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
-
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
-
-  # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
-
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
-  config.i18n.fallbacks = true
-
-  # Do not dump schema after migrations.
-  config.active_record.dump_schema_after_migration = false
-
-  # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
-
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-end
-</file>
-
-<file path="config/puma.rb">
-# This configuration file will be evaluated by Puma. The top-level methods that
-# are invoked here are part of Puma's configuration DSL. For more information
-# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
-#
-# Puma starts a configurable number of processes (workers) and each process
-# serves each request in a thread from an internal thread pool.
-#
-# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
-# should only set this value when you want to run 2 or more workers. The
-# default is already 1. You can set it to `auto` to automatically start a worker
-# for each available processor.
-#
-# The ideal number of threads per worker depends both on how much time the
-# application spends waiting for IO operations and on how much you wish to
-# prioritize throughput over latency.
-#
-# As a rule of thumb, increasing the number of threads will increase how much
-# traffic a given process can handle (throughput), but due to CRuby's
-# Global VM Lock (GVL) it has diminishing returns and will degrade the
-# response time (latency) of the application.
-#
-# The default is set to 3 threads as it's deemed a decent compromise between
-# throughput and latency for the average Rails application.
-#
-# Any libraries that use a connection pool or another resource pool should
-# be configured to provide at least as many connections as the number of
-# threads. This includes Active Record's `pool` parameter in `database.yml`.
-
-#スレッド数を2つにしてメモリを制限
-threads_count = ENV.fetch("RAILS_MAX_THREADS", 2)
-threads threads_count, threads_count
-
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch("PORT", 3000)
-
-# Allow puma to be restarted by `bin/rails restart` command.
-plugin :tmp_restart
-
-# Run the Solid Queue supervisor inside of Puma for single-server deployments.
-plugin :solid_queue # if ENV["SOLID_QUEUE_IN_PUMA"]
-
-# Specify the PID file. Defaults to tmp/pids/server.pid in development.
-# In other environments, only set the PID file if requested.
-pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
-
-#シングルスレッドで動かす
-workers 0
-</file>
-
-<file path="app/controllers/activity_logs_controller.rb">
-class ActivityLogsController < ApplicationController
-  def create
-    @activity_log = current_user.activity_logs.build(activity_log_params)
-
-    if @activity_log.save
-      redirect_to root_path, notice: "運動が記録されました！"
-    else
-      head :unprocessable_entity
-    end
-  end
-
-  private
-
-  def activity_log_params
-    params.require(:activity_log).permit(:exercise_id, :sitting_session_id)
-  end
-end
-</file>
-
-<file path="app/controllers/top_controller.rb">
-class TopController < ApplicationController
-  before_action :authenticate_user!
-
-  def index
-    @total_seconds = 7200 # current_user.today_total_sitting_seconds
-    @percentage = 25 # current_user.sitting_progress_percentage
-    @exercise_count = current_user.today_exercise_count
-
-    @sitting_session = current_user.sitting_sessions.new
-  end
-end
-</file>
-
-<file path="app/javascript/controllers/index.js">
-// This file is auto-generated by ./bin/rails stimulus:manifest:update
-// Run that command whenever you add a new controller or create them with
-// ./bin/rails generate stimulus controllerName
-
-import { application } from "./application"
-
-import DropdownController from "./dropdown_controller"
-application.register("dropdown", DropdownController)
-
-import ExerciseTimerController from "./exercise_timer_controller"
-application.register("exercise-timer", ExerciseTimerController)
-
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
-
-import MobileMenuController from "./mobile_menu_controller"
-application.register("mobile-menu", MobileMenuController)
-
-import NotificationController from "./notification_controller"
-application.register("notification", NotificationController)
-
-import TimerController from "./timer_controller"
-application.register("timer", TimerController)
-</file>
-
-<file path="app/views/layouts/application.html.erb">
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for(:title) || "Myapp" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Myapp">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-    <%# google material読み込み%>
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-
-  </head>
-
-  <body>
-  <% unless devise_controller? %>
-  <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
-    <nav class="container mx-auto px-6 py-4" data-controller="mobile-menu" data-action="click@window->mobile-menu#hide">
-      <div class="flex items-center justify-between">
-        
-        <div class="flex items-center">
-          <%= link_to root_path, class: "flex items-center group" do %>
-            <%= image_tag "header_logo.png",
-                class: "max-h-10 md:max-h-12 w-auto transition-transform group-hover:scale-105" %>
-          <% end %>
-        </div>
-
-        <button
-          data-action="click->mobile-menu#toggle"
-          class="lg:hidden p-2 rounded-xl hover:bg-primary/10 transition-colors text-primary"
-          type="button"
-          aria-label="メニューを開く"
-        >
-          <span class="material-symbols-outlined text-3xl">menu</span>
-        </button>
-
-        <div class="hidden lg:flex items-center gap-6">
-          <% if user_signed_in? %>
-            <%# ログイン後：ユーザーメニュー %>
-            <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
-              <button
-                data-action="click->dropdown#toggle"
-                type="button"
-                class="flex items-center gap-3 px-4 py-2 rounded-full hover:bg-primary/5 transition-all font-bold text-text-main cursor-pointer group"
-              >
-                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <span class="material-symbols-outlined text-xl">person</span>
-                </div>
-                <span class="text-sm"><%= current_user.username %></span>
-                <span class="material-symbols-outlined text-primary text-xl">expand_more</span>
-              </button>
-              
-              <div
-                data-dropdown-target="menu"
-                class="hidden absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl py-4 z-50 animate-in fade-in zoom-in-95 duration-200"
-              >
-                <div class="px-6 py-2 mb-2 border-b border-gray-100 pb-3">
-                  <p class="text-[10px] font-black text-primary uppercase tracking-widest">Signed in as</p>
-                  <p class="text-sm font-bold text-text-main truncate"><%= current_user.email %></p>
-                </div>
-
-                <%= link_to edit_user_registration_path, 
-                  class: "flex items-center gap-3 px-6 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm" do %>
-                  <span class="material-symbols-outlined text-xl">settings</span>
-                  マイページ設定
-                <% end %>
-
-                <%= button_to destroy_user_session_path, 
-                  method: :delete, 
-                  class: "w-full flex items-center gap-3 px-6 py-3 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-sm text-left cursor-pointer" do %>
-                  <span class="material-symbols-outlined text-xl">logout</span>
-                  ログアウト
-                <% end %>
-              </div>
-            </div>
-          <% else %>
-            <%# 未ログイン：ログイン・新規登録ボタン %>
-            <%= link_to "新規登録", new_user_registration_path, 
-              class: "text-sm font-bold text-text-secondary hover:text-primary transition-colors" 
-            %>
-            <%= link_to "ログイン", new_user_session_path, 
-              class: "px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95" 
-            %>
-          <% end %>
-        </div>
-      </div>
-
-      <div
-        data-mobile-menu-target="menu"
-        class="hidden lg:hidden mt-4 p-4 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl animate-in slide-in-from-top duration-300"
-      >
-        <ul class="flex flex-col gap-2">
-          <% if user_signed_in? %>
-            <li class="flex items-center gap-3 px-4 py-4 bg-primary/10 rounded-2xl mb-2">
-              <span class="material-symbols-outlined text-primary">account_circle</span>
-              <span class="font-bold text-text-main"><%= current_user.username %></span>
-            </li>
-            
-            <li>
-              <%= link_to edit_user_registration_path, 
-                class: "flex items-center gap-3 px-4 py-4 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
-                <span class="material-symbols-outlined text-primary">person</span>
-                マイページ
-              <% end %>
-            </li>
-            
-            <li>
-              <%= button_to destroy_user_session_path, 
-                method: :delete, 
-                class: "w-full flex items-center gap-3 px-4 py-4 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold rounded-2xl text-left" do %>
-                <span class="material-symbols-outlined text-primary">logout</span>
-                ログアウト
-              <% end %>
-            </li>
-          <% else %>
-            <li>
-              <%= link_to new_user_registration_path, 
-                class: "flex items-center justify-center gap-2 px-4 py-4 text-text-main font-bold rounded-2xl border border-gray-100" do %>
-                新規登録
-              <% end %>
-            </li>
-            <li>
-              <%= link_to new_user_session_path, 
-                class: "flex items-center justify-center gap-2 px-4 py-4 text-white bg-primary font-bold rounded-2xl shadow-lg shadow-primary/20" do %>
-                ログイン
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    </nav>
-  </header>
-  
-  <%# ヘッダーが固定(fixed)なので、コンテンツが隠れないように余白を確保 %>
-  <div class="h-20 md:h-20"></div>
-<% end %>
-    <%= yield %>
-    <%# どのページにいてもモーダルを表示するため %>
-    <div id="modal_container"></div>
-    <%# 動作確認用 %>
-    <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
-  </body>
-</html>
-</file>
-
-<file path="app/views/exercises/show.html.erb">
-<%# 全体の背景設定と装飾用のBlob要素 %>
-<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
-  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
-</div>
-
-<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
-  
-  <%# ヘッダーラベルとタイトル %>
-  <div class="text-center mb-10 mt-8">
-    <div class="inline-flex items-center gap-2 mb-3 text-primary">
-      <span class="material-symbols-outlined text-xl">spa</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
-    </div>
-    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
-      <%= @exercise.name %>
-    </h1>
-  </div>
-
-  <%# メインビジュアル（画像部分） %>
-  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
-    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
-      <% if @exercise.cloudinary_public_id.present? %>
-        <%= cl_image_tag(@exercise.cloudinary_public_id, 
-            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
-      <% end %>
-      
-      <%# 再生ガイド用バッジ %>
-      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
-        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
-      </div>
-    </div>
-  </div>
-
-  <%# コンテンツエリア %>
-  <div class="w-full grid md:grid-cols-3 gap-10">
-    <%# やり方の解説（左側 2/3） %>
-    <div class="md:col-span-2 space-y-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-          <span class="material-symbols-outlined">description</span>
-        </div>
-        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
-      </div>
-
-      <div class="space-y-4">
-        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
-        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
-          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
-              <%= index + 1 %>
-            </div>
-            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
-              <%= step %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-
-    <%# 注意ポイント（右側 1/3） %>
-    <div class="space-y-6">
-      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
-        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-xl">info</span>
-          注意ポイント
-        </h3>
-        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</main>
-
-<%# 下部に固定されたアクションバー %>
-<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
-  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
-    <div class="flex flex-col md:flex-row items-center gap-6">
-      
-      <%# 進捗バー（演出用） %>
-      <div class="flex-1 w-full px-2"
-           data-controller="exercise-timer"
-           data-exercise-timer-duration-value="300">
-        <div class="flex justify-between items-end mb-2">
-          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
-          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
-        </div>
-        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
-        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
-             data-exercise-timer-target="bar"
-             style="width: 100%;">
-  
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
-        </div>
-        </div>
-        </div>
-
-      <%# アクションボタン %>
-      <div class="flex items-center gap-4 w-full md:w-auto">
-        <%= link_to new_sitting_session_path(reopen_modal: true),
-            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
-          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
-          <span>他の運動</span>
-        <% end %>
-
-        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
-            method: :post,
-            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
-          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
-          <span>完了して戻る</span>
-        <% end %>
-      </div>
-
-    </div>
-  </div>
-</div>
-</file>
-
 <file path="db/seeds.rb">
 puts "シードデータを投入中"
 
@@ -6085,6 +5190,991 @@ exercises_data.each do |data|
 end
 
 puts "完了！"
+</file>
+
+<file path="spec/factories/users.rb">
+FactoryBot.define do
+  factory :user do
+    username { "テストユーザー" }
+    # 毎回違うアドレスを生成
+    sequence (:email) { |n| "test#{n}@example.com" }
+    password { "password" }
+    password_confirmation { "password" }
+  end
+end
+</file>
+
+<file path="spec/models/exercise_spec.rb">
+require 'rails_helper'
+
+RSpec.describe Exercise, type: :model do
+  describe "バリデーション" do
+    it "nameとcategoryがあれば有効であること" do
+      exercise = build(:exercise)
+      expect(exercise).to be_valid
+    end
+
+    it "nameがなければ無効であること" do
+      exercise = build(:exercise, name: nil)
+      expect(exercise).not_to be_valid
+    end
+  end
+end
+</file>
+
+<file path="spec/models/user_spec.rb">
+require 'rails_helper'
+
+RSpec.describe User, type: :model do
+  describe "バリデーション" do
+    it "username, email, passwordがあれば有効であること" do
+      user = build(:user)
+      expect(user).to be_valid
+    end
+
+    it "usernameがなければ無効であること" do
+      user = build(:user, username: nil)
+      expect(user).not_to be_valid
+    end
+  end
+end
+</file>
+
+<file path="spec/rails_helper.rb">
+# This file is copied to spec/ when you run 'rails generate rspec:install'
+require 'spec_helper'
+ENV['RAILS_ENV'] ||= 'test'
+require_relative '../config/environment'
+# Prevent database truncation if the environment is production
+abort("The Rails environment is running in production mode!") if Rails.env.production?
+# Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
+# that will avoid rails generators crashing because migrations haven't been run yet
+# return unless Rails.env.test?
+require 'rspec/rails'
+# Add additional requires below this line. Rails is not loaded until this point!
+
+# Requires supporting ruby files with custom matchers and macros, etc, in
+# spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
+# run as spec files by default. This means that files in spec/support that end
+# in _spec.rb will both be required and run as specs, causing the specs to be
+# run twice. It is recommended that you do not name files matching this glob to
+# end with _spec.rb. You can configure this pattern with the --pattern
+# option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
+#
+# The following line is provided for convenience purposes. It has the downside
+# of increasing the boot-up time by auto-requiring all files in the support
+# directory. Alternatively, in the individual `*_spec.rb` files, manually
+# require only the support files necessary.
+#
+# Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
+
+# Ensures that the test database schema matches the current schema file.
+# If there are pending migrations it will invoke `db:test:prepare` to
+# recreate the test database by loading the schema.
+# If you are not using ActiveRecord, you can remove these lines.
+begin
+  ActiveRecord::Migration.maintain_test_schema!
+rescue ActiveRecord::PendingMigrationError => e
+  abort e.to_s.strip
+end
+RSpec.configure do |config|
+  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
+  config.fixture_paths = [
+    Rails.root.join('spec/fixtures')
+  ]
+  # FactoryBot.createをcreateと書くため
+  config.include FactoryBot::Syntax::Methods
+
+  # If you're not using ActiveRecord, or you'd prefer not to run each of your
+  # examples within a transaction, remove the following line or assign false
+  # instead of true.
+  config.use_transactional_fixtures = true
+
+  # You can uncomment this line to turn off ActiveRecord support entirely.
+  # config.use_active_record = false
+
+  # RSpec Rails uses metadata to mix in different behaviours to your tests,
+  # for example enabling you to call `get` and `post` in request specs. e.g.:
+  #
+  #     RSpec.describe UsersController, type: :request do
+  #       # ...
+  #     end
+  #
+  # The different available types are documented in the features, such as in
+  # https://rspec.info/features/8-0/rspec-rails
+  #
+  # You can also infer these behaviours automatically by location, e.g.
+  # /spec/models would pull in the same behaviour as `type: :model` but this
+  # behaviour is considered legacy and will be removed in a future version.
+  #
+  # To enable this behaviour uncomment the line below.
+  # config.infer_spec_type_from_file_location!
+
+  # Filter lines from Rails gems in backtraces.
+  config.filter_rails_from_backtrace!
+  # arbitrary gems may also be filtered via:
+  # config.filter_gems_from_backtrace("gem name")
+end
+</file>
+
+<file path="app/javascript/controllers/index.js">
+// This file is auto-generated by ./bin/rails stimulus:manifest:update
+// Run that command whenever you add a new controller or create them with
+// ./bin/rails generate stimulus controllerName
+
+import { application } from "./application"
+
+import DropdownController from "./dropdown_controller"
+application.register("dropdown", DropdownController)
+
+import ExerciseTimerController from "./exercise_timer_controller"
+application.register("exercise-timer", ExerciseTimerController)
+
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
+
+import MobileMenuController from "./mobile_menu_controller"
+application.register("mobile-menu", MobileMenuController)
+
+import NotificationController from "./notification_controller"
+application.register("notification", NotificationController)
+
+import TimerController from "./timer_controller"
+application.register("timer", TimerController)
+</file>
+
+<file path="app/jobs/send_notification_job.rb">
+require "web-push"
+
+class SendNotificationJob < ApplicationJob
+  queue_as :default
+
+  def perform(sitting_session_id)
+    session = SittingSession.find_by(id: sitting_session_id)
+
+    return if session.nil?
+
+    return unless session.in_progress?
+
+    user = session.user
+    return if user.endpoint.blank?
+
+    begin
+      WebPush.payload_send(
+        message: "休憩しましょう！",
+        endpoint: user.endpoint,
+        p256dh: user.p256dh,
+        auth: user.auth,
+        vapid: {
+          public_key: Rails.application.credentials.dig(:webpush, :public_key),
+          private_key: Rails.application.credentials.dig(:webpush, :private_key),
+          subject: "mailto:okw.kzk@gmail.com"
+        }
+      )
+      session.update!(notified: true)
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
+
+      user.update(endpoint: nil, p256dh: nil, auth: nil)
+
+    rescue => e
+      Rails.logger.error "通信エラー: #{e.message}"
+
+    end
+  end
+end
+</file>
+
+<file path="app/views/layouts/application.html.erb">
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Myapp" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Myapp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <%# google material読み込み%>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+  </head>
+
+  <body>
+  <% unless devise_controller? %>
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
+    <nav class="container mx-auto px-6 py-4" data-controller="mobile-menu" data-action="click@window->mobile-menu#hide">
+      <div class="flex items-center justify-between">
+        
+        <div class="flex items-center">
+          <%= link_to root_path, class: "flex items-center group" do %>
+            <%= image_tag "header_logo.png",
+                class: "max-h-10 md:max-h-12 w-auto transition-transform group-hover:scale-105" %>
+          <% end %>
+        </div>
+
+        <button
+          data-action="click->mobile-menu#toggle"
+          class="lg:hidden p-2 rounded-xl hover:bg-primary/10 transition-colors text-primary"
+          type="button"
+          aria-label="メニューを開く"
+        >
+          <span class="material-symbols-outlined text-3xl">menu</span>
+        </button>
+
+        <div class="hidden lg:flex items-center gap-6">
+          <% if user_signed_in? %>
+            <%# ログイン後：ユーザーメニュー %>
+            <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
+              <button
+                data-action="click->dropdown#toggle"
+                type="button"
+                class="flex items-center gap-3 px-4 py-2 rounded-full hover:bg-primary/5 transition-all font-bold text-text-main cursor-pointer group"
+              >
+                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <span class="material-symbols-outlined text-xl">person</span>
+                </div>
+                <span class="text-sm"><%= current_user.username %></span>
+                <span class="material-symbols-outlined text-primary text-xl">expand_more</span>
+              </button>
+              
+              <div
+                data-dropdown-target="menu"
+                class="hidden absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl py-4 z-50 animate-in fade-in zoom-in-95 duration-200"
+              >
+                <div class="px-6 py-2 mb-2 border-b border-gray-100 pb-3">
+                  <p class="text-[10px] font-black text-primary uppercase tracking-widest">Signed in as</p>
+                  <p class="text-sm font-bold text-text-main truncate"><%= current_user.email %></p>
+                </div>
+
+                <%= link_to edit_user_registration_path, 
+                  class: "flex items-center gap-3 px-6 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm" do %>
+                  <span class="material-symbols-outlined text-xl">settings</span>
+                  マイページ設定
+                <% end %>
+
+                <%= button_to destroy_user_session_path, 
+                  method: :delete, 
+                  class: "w-full flex items-center gap-3 px-6 py-3 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-sm text-left cursor-pointer" do %>
+                  <span class="material-symbols-outlined text-xl">logout</span>
+                  ログアウト
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <%# 未ログイン：ログイン・新規登録ボタン %>
+            <%= link_to "新規登録", new_user_registration_path, 
+              class: "text-sm font-bold text-text-secondary hover:text-primary transition-colors" 
+            %>
+            <%= link_to "ログイン", new_user_session_path, 
+              class: "px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95" 
+            %>
+          <% end %>
+        </div>
+      </div>
+
+      <div
+        data-mobile-menu-target="menu"
+        class="hidden lg:hidden mt-4 p-4 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl animate-in slide-in-from-top duration-300"
+      >
+        <ul class="flex flex-col gap-2">
+          <% if user_signed_in? %>
+            <li class="flex items-center gap-3 px-4 py-4 bg-primary/10 rounded-2xl mb-2">
+              <span class="material-symbols-outlined text-primary">account_circle</span>
+              <span class="font-bold text-text-main"><%= current_user.username %></span>
+            </li>
+            
+            <li>
+              <%= link_to edit_user_registration_path, 
+                class: "flex items-center gap-3 px-4 py-4 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
+                <span class="material-symbols-outlined text-primary">person</span>
+                マイページ
+              <% end %>
+            </li>
+            
+            <li>
+              <%= button_to destroy_user_session_path, 
+                method: :delete, 
+                class: "w-full flex items-center gap-3 px-4 py-4 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold rounded-2xl text-left" do %>
+                <span class="material-symbols-outlined text-primary">logout</span>
+                ログアウト
+              <% end %>
+            </li>
+          <% else %>
+            <li>
+              <%= link_to new_user_registration_path, 
+                class: "flex items-center justify-center gap-2 px-4 py-4 text-text-main font-bold rounded-2xl border border-gray-100" do %>
+                新規登録
+              <% end %>
+            </li>
+            <li>
+              <%= link_to new_user_session_path, 
+                class: "flex items-center justify-center gap-2 px-4 py-4 text-white bg-primary font-bold rounded-2xl shadow-lg shadow-primary/20" do %>
+                ログイン
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  
+  <%# ヘッダーが固定(fixed)なので、コンテンツが隠れないように余白を確保 %>
+  <div class="h-20 md:h-20"></div>
+<% end %>
+    <%= yield %>
+    <%# どのページにいてもモーダルを表示するため %>
+    <div id="modal_container"></div>
+    <%# 動作確認用 %>
+    <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
+  </body>
+</html>
+</file>
+
+<file path="config/environments/production.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
+
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
+
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
+  config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # config.assume_ssl = true
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+  # キャッシュ管理をメモリストアに変更
+  config.cache_store = :memory_store, { size: 64.megabytes }
+
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Ignore bad email addresses and do not raise email delivery errors.
+  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # config.action_mailer.smtp_settings = {
+  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
+  #   password: Rails.application.credentials.dig(:smtp, :password),
+  #   address: "smtp.example.com",
+  #   port: 587,
+  #   authentication: :plain
+  # }
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  config.active_record.attributes_for_inspect = [ :id ]
+
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  # config.hosts = [
+  #   "example.com",     # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
+  #
+  # Skip DNS rebinding protection for the default health check endpoint.
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+end
+</file>
+
+<file path="spec/factories/exercises.rb">
+FactoryBot.define do
+  factory :exercise do
+    name { "ストレッチ" }
+    category { :stretch }
+  end
+end
+</file>
+
+<file path="spec/factories/sitting_sessions.rb">
+FactoryBot.define do
+  factory :sitting_session do
+    association :user
+    status { :active }
+    start_at { Time.current }
+  end
+end
+</file>
+
+<file path="spec/models/sitting_session_spec.rb">
+require 'rails_helper'
+
+RSpec.describe SittingSession, type: :model do
+let!(:user) { create(:user) }
+
+  describe "コールバック" do
+    it "新しいセッションの作成時に既存のセッションが終了すること" do
+      old_session = create(:sitting_session, user: user, status: :active)
+
+      expect {
+        create(:sitting_session, user: user, status: :active)
+    }.to change { old_session.reload.status }.from("active").to("cancelled")
+    end
+  end
+
+  describe "バリデーション" do
+    it "start_atがなければ無効であること" do
+      sitting_session = build(:sitting_session, user: user, start_at: nil)
+      expect(sitting_session).not_to be_valid
+    end
+
+    it "デフォルトのstatusはactiveであること" do
+      sitting_session = create(:sitting_session, user: user)
+      expect(sitting_session.status).to eq("active")
+    end
+  end
+end
+</file>
+
+<file path="spec/system/logins_spec.rb">
+require 'rails_helper'
+
+RSpec.describe "ログイン機能", type: :system do
+  before do
+    driven_by(:rack_test)
+  end
+
+  let!(:user) { create(:user) }
+
+  it "ユーザーがログインできること" do
+    visit new_user_session_path
+    fill_in "メールアドレス", with: user.email
+    fill_in "パスワード", with: user.password
+    click_button "ログイン"
+    expect(page).to have_current_path root_path
+  end
+end
+</file>
+
+<file path="spec/system/sitting_sessions_spec.rb">
+require 'rails_helper'
+
+RSpec.describe "SittingSessions", type: :system do
+  let!(:user) { create(:user) }
+  let!(:exercise) { create(:exercise, name: "肩甲骨ストレッチ") }
+
+  before do
+     driven_by(:rack_test) # JSなしで動かす
+
+    # ログイン済みの状態にする（共通化している場合はそのメソッドを呼ぶ）
+    visit new_user_session_path
+    fill_in "メールアドレス", with: user.email
+    fill_in "パスワード", with: user.password
+    click_button "ログイン"
+  end
+
+  it "タイマーを開始し、休憩ボタンから運動を選択できること" do
+    visit root_path
+
+    # 1. タイマー時間の選択（例: 30分）
+    click_on "30min"
+    click_on "スタート"
+
+    # 2. 画面上に「休憩する」ボタンが出現することを確認
+    expect(page).to have_content "休憩する"
+  end
+end
+</file>
+
+<file path="Gemfile">
+source "https://rubygems.org"
+
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 8.1.2"
+# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
+gem "propshaft"
+# Use postgresql as the database for Active Record
+gem "pg", "~> 1.1"
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", ">= 5.0"
+# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
+gem "jsbundling-rails"
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem "stimulus-rails"
+# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
+gem "cssbundling-rails"
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem "jbuilder"
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem "solid_cache"
+gem "solid_queue"
+gem "solid_cable"
+
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
+
+# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
+gem "kamal", require: false
+
+# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+gem "thruster", require: false
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "image_processing", "~> 1.2"
+
+# ユーザー認証
+gem "devise"
+
+# 画像CDN
+gem "cloudinary"
+
+gem "web-push"
+
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
+  gem "bundler-audit", require: false
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+
+  # テスト用
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+end
+
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+</file>
+
+<file path="app/controllers/activity_logs_controller.rb">
+class ActivityLogsController < ApplicationController
+  def create
+    @activity_log = current_user.activity_logs.build(activity_log_params)
+
+    if @activity_log.save
+      redirect_to root_path, notice: "運動が記録されました！"
+    else
+      head :unprocessable_entity
+    end
+  end
+
+  private
+
+  def activity_log_params
+    params.require(:activity_log).permit(:exercise_id, :sitting_session_id)
+  end
+end
+</file>
+
+<file path="app/controllers/top_controller.rb">
+class TopController < ApplicationController
+  before_action :authenticate_user!
+
+  def index
+    @total_seconds = 7200 # current_user.today_total_sitting_seconds
+    @percentage = 25 # current_user.sitting_progress_percentage
+    @exercise_count = current_user.today_exercise_count
+
+    @sitting_session = current_user.sitting_sessions.new
+  end
+end
+</file>
+
+<file path="app/models/user.rb">
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  has_many :sitting_sessions, dependent: :destroy
+  has_many :activity_logs, dependent: :destroy
+  has_many :exercises, through: :activity_logs
+
+  # 　一日の座位時間合計
+  def today_total_sitting_seconds
+    sitting_sessions.today.sum(:duration)
+  end
+
+  # 座位時間の上限を超えているか？
+  def sitting_progress_percentage
+    limit = SittingSession::SITTING_TIME_LIMIT
+    [ ((today_total_sitting_seconds.to_f / limit) * 100).round, 100 ].min
+  end
+
+  # 今日の運動回数
+  def today_exercise_count
+    activity_logs.today.count
+  end
+
+  # ゲストログインの実装
+  def self.guest
+    find_or_create_by!(email: "guest@example.com") do |user|
+      user.password = SecureRandom.urlsafe_base64
+      user.username = "ゲストユーザー"
+    end
+  end
+
+  validates :username, presence: true
+  validates :email, presence: true, uniqueness: true
+  validates :password, presence: true, length: { minimum: 6 }, if: :password_required?
+end
+</file>
+
+<file path="app/views/top/index.html.erb">
+<div class="min-h-screen bg-background-dark p-4 md:p-8 overflow-x-hidden"
+    data-controller="notification timer"
+    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
+
+  <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-center justify-center gap-10 lg:gap-20 transition-all duration-500">
+    
+    <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
+                bg-input-bg-light/80 backdrop-blur-3xl 
+                border border-white/40
+                shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
+                w-full max-w-md shrink-0">
+
+      <div class="relative flex items-center justify-center w-64 h-64 md:w-72 md:h-72">
+        <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
+          <circle cx="150" cy="150" r="135"
+                  stroke="currentColor" stroke-width="2" fill="transparent"
+                  class="text-border-light opacity-50" />
+          <circle cx="150" cy="150" r="135"
+                  stroke="currentColor" stroke-width="6" fill="transparent"
+                  data-timer-target="circle"
+                  class="text-primary transition-all duration-1000 ease-linear"
+                  style="stroke-linecap: round;" />
+        </svg>
+
+        <div class="absolute flex flex-col items-center justify-center">
+          <div class="text-6xl font-extralight tracking-tighter text-text-main" data-timer-target="display">
+            00:00
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 w-full space-y-6">
+        <div class="flex flex-wrap gap-2 justify-center">
+          <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+            <button type="button" class="flex-1 min-w-[60px] py-2.5 bg-white/40 border border-border-light hover:border-primary rounded-xl text-text-secondary font-semibold transition-all active:scale-90"
+                    data-action="click->timer#setTime" data-timer-minutes-param="<%= minutes %>">
+              <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
+            </button>
+          <% end %>
+        </div>
+
+        <div class="space-y-4">
+          <button data-action="click->timer#start" class="bg-primary text-text-main py-4 w-full rounded-[1.5rem] font-bold tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer">
+            スタート
+          </button>
+
+          <%= form_with model: @sitting_session do |f| %>
+            <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
+            <button type="button" data-action="click->timer#finish" class="w-full py-4 rounded-xl font-bold text-xs tracking-widest bg-background-light text-text-secondary border border-border-light hover:bg-white transition-all active:scale-95 cursor-pointer">
+              休憩する
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full max-w-md lg:max-w-lg space-y-8">
+      
+      <div class="bg-white/60 backdrop-blur-xl p-8 rounded-[3rem] border border-white shadow-sm transition-transform hover:scale-[1.02]">
+        <div class="flex justify-between items-end mb-6">
+          <div>
+            <h3 class="text-[11px] font-black text-text-secondary uppercase tracking-[0.2em] mb-2">本日の座位時間</h3>
+            <p class="text-4xl font-black text-text-main tracking-tight italic">
+              <%= (@total_seconds / 3600.0).round(1) %><span class="text-lg font-bold text-text-secondary not-italic ml-1">/ 11時間</span>
+            </p>
+          </div>
+          <div class="bg-primary/20 px-4 py-1 rounded-full border border-primary/30">
+            <span class="text-lg font-black text-primary"><%= @percentage %>%</span>
+          </div>
+        </div>
+        
+        <div class="h-6 w-full bg-border-light/40 rounded-full overflow-hidden p-1.5 border border-white/50">
+          <div class="h-full bg-primary rounded-full transition-all duration-[1500ms] ease-out shadow-[0_0_15px_rgba(175,195,177,0.6)]"
+               style="width: <%= @percentage %>%">
+          </div>
+        </div>
+        
+        <div class="mt-6 flex items-start gap-3 bg-white/40 p-4 rounded-2xl border border-white/60">
+          <span class="material-symbols-outlined text-primary font-bold">warning</span>
+          <p class="text-[11px] text-text-secondary leading-relaxed font-medium">
+            11時間を超えると健康リスクが大幅に上昇します。<br>こまめな運動で血流を改善しましょう。
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-white/60 backdrop-blur-xl p-8 rounded-[3rem] border border-white shadow-sm flex items-center justify-between group overflow-hidden relative">
+        <div class="relative z-10 text-left">
+          <h3 class="text-[11px] font-black text-text-secondary uppercase tracking-[0.2em] mb-1">運動した回数</h3>
+          <p class="text-4xl font-black text-text-main tracking-tight">
+            <%= @exercise_count %><span class="text-lg font-bold text-text-secondary ml-1 italic">Sets</span>
+          </p>
+        </div>
+        
+        <div class="relative z-10 w-16 h-16 bg-primary text-white rounded-[1.8rem] flex items-center justify-center shadow-lg shadow-primary/30 group-hover:rotate-12 transition-transform duration-500">
+          <span class="material-symbols-outlined text-3xl font-bold">fitness_center</span>
+        </div>
+        
+        <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl text-primary/5 -rotate-12 select-none">
+          sprint
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</file>
+
+<file path="config/puma.rb">
+# This configuration file will be evaluated by Puma. The top-level methods that
+# are invoked here are part of Puma's configuration DSL. For more information
+# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
+#
+# Puma starts a configurable number of processes (workers) and each process
+# serves each request in a thread from an internal thread pool.
+#
+# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
+# should only set this value when you want to run 2 or more workers. The
+# default is already 1. You can set it to `auto` to automatically start a worker
+# for each available processor.
+#
+# The ideal number of threads per worker depends both on how much time the
+# application spends waiting for IO operations and on how much you wish to
+# prioritize throughput over latency.
+#
+# As a rule of thumb, increasing the number of threads will increase how much
+# traffic a given process can handle (throughput), but due to CRuby's
+# Global VM Lock (GVL) it has diminishing returns and will degrade the
+# response time (latency) of the application.
+#
+# The default is set to 3 threads as it's deemed a decent compromise between
+# throughput and latency for the average Rails application.
+#
+# Any libraries that use a connection pool or another resource pool should
+# be configured to provide at least as many connections as the number of
+# threads. This includes Active Record's `pool` parameter in `database.yml`.
+
+# スレッド数を2つにしてメモリを制限
+threads_count = ENV.fetch("RAILS_MAX_THREADS", 2)
+threads threads_count, threads_count
+
+# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+port ENV.fetch("PORT", 3000)
+
+# Allow puma to be restarted by `bin/rails restart` command.
+plugin :tmp_restart
+
+# Run the Solid Queue supervisor inside of Puma for single-server deployments.
+plugin :solid_queue # if ENV["SOLID_QUEUE_IN_PUMA"]
+
+# Specify the PID file. Defaults to tmp/pids/server.pid in development.
+# In other environments, only set the PID file if requested.
+pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+# シングルスレッドで動かす
+workers 0
+</file>
+
+<file path="app/views/exercises/show.html.erb">
+<%# 全体の背景設定と装飾用のBlob要素 %>
+<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
+  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
+</div>
+
+<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
+  
+  <%# ヘッダーラベルとタイトル %>
+  <div class="text-center mb-10 mt-8">
+    <div class="inline-flex items-center gap-2 mb-3 text-primary">
+      <span class="material-symbols-outlined text-xl">spa</span>
+      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
+      <%= @exercise.name %>
+    </h1>
+  </div>
+
+  <%# メインビジュアル（画像部分） %>
+  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
+    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
+      <% if @exercise.cloudinary_public_id.present? %>
+        <%= cl_image_tag(@exercise.cloudinary_public_id, 
+            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
+      <% end %>
+      
+      <%# 再生ガイド用バッジ %>
+      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
+        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
+      </div>
+    </div>
+  </div>
+
+  <%# コンテンツエリア %>
+  <div class="w-full grid md:grid-cols-3 gap-10">
+    <%# やり方の解説（左側 2/3） %>
+    <div class="md:col-span-2 space-y-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
+      </div>
+
+      <div class="space-y-4">
+        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
+        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
+          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
+              <%= index + 1 %>
+            </div>
+            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
+              <%= step %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 注意ポイント（右側 1/3） %>
+    <div class="space-y-6">
+      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
+        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-xl">info</span>
+          注意ポイント
+        </h3>
+        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%# 下部に固定されたアクションバー %>
+<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
+  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      
+      <%# 進捗バー（演出用） %>
+      <div class="flex-1 w-full px-2"
+           data-controller="exercise-timer"
+           data-exercise-timer-duration-value="300">
+        <div class="flex justify-between items-end mb-2">
+          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
+          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
+        </div>
+        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
+        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
+             data-exercise-timer-target="bar"
+             style="width: 100%;">
+  
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+        </div>
+        </div>
+        </div>
+
+      <%# アクションボタン %>
+      <div class="flex items-center gap-4 w-full md:w-auto">
+        <%= link_to new_sitting_session_path(reopen_modal: true),
+            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
+          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
+          <span>他の運動</span>
+        <% end %>
+
+        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
+            method: :post,
+            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
+          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
+          <span>完了して戻る</span>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
 </file>
 
 <file path="app/views/shared/_modal.html.erb">
@@ -6492,87 +6582,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
 end
 </file>
 
-<file path="app/views/sitting_sessions/new.html.erb">
-<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
-    data-controller="notification timer"
-    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
-
-  <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
-              bg-input-bg-light/80 backdrop-blur-3xl 
-              border border-white/40
-              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
-              w-full max-w-md transition-all duration-500">
-
-    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
-      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
-        <circle cx="150" cy="150" r="135"
-                stroke="currentColor" stroke-width="2" fill="transparent"
-                class="text-border-light opacity-50" />
-
-        <circle cx="150" cy="150" r="135"
-                stroke="currentColor" stroke-width="6" fill="transparent"
-                data-timer-target="circle"
-                class="text-primary transition-all duration-1000 ease-linear drop-shadow-[0_0_8px_rgba(107,144,128,0.5)]"
-                style="stroke-linecap: round;" />
-      </svg>
-
-      <div class="absolute flex flex-col items-center justify-center">
-        <div class="text-7xl font-extralight tracking-tighter text-text-main"
-             data-timer-target="display">
-          00:00
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-12 w-full space-y-8">
-      
-      <div class="flex flex-wrap gap-2 justify-center">
-        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
-          <button type="button"
-                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
-                         hover:border-primary hover:bg-white rounded-2xl
-                         text-text-secondary font-semibold transition-all
-                         active:scale-90 cursor-pointer"
-                  data-action="click->timer#setTime"
-                  data-timer-minutes-param="<%= minutes %>">
-            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
-          </button>
-        <% end %>
-      </div>
-
-      <div class="space-y-4">
-        <button data-action="click->timer#start" 
-              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
-                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
-                     transition-all active:scale-[0.96] cursor-pointer">
-          スタート
-        </button>
-
-        <div class="flex gap-3">
-          <button data-action="click->timer#reset"
-                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
-                         bg-background-light text-text-secondary
-                         border border-border-light hover:bg-white hover:text-text-main
-                         transition-all active:scale-95 cursor-pointer">
-            リセット
-          </button>
-          
-          <button type="button" 
-                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
-                         bg-transparent text-text-secondary/40
-                         hover:text-text-main transition-all cursor-pointer" 
-                  data-action="click->timer#finish">
-            休憩する
-          </button>
-        </div>
-      </div>
-    </div>
-    
-  </div>
-  <div id="modal_container"></div>
-</div>
-</file>
-
 <file path="app/javascript/controllers/timer_controller.js">
 import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
@@ -6749,6 +6758,85 @@ export default class extends Controller {
 }
 </file>
 
+<file path="app/views/sitting_sessions/new.html.erb">
+<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
+    data-controller="notification timer"
+    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
+
+  <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
+              bg-input-bg-light/80 backdrop-blur-3xl 
+              border border-white/40
+              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
+              w-full max-w-md transition-all duration-500">
+
+    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
+      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="2" fill="transparent"
+                class="text-border-light opacity-50" />
+
+        <circle cx="150" cy="150" r="135"
+                stroke="currentColor" stroke-width="6" fill="transparent"
+                data-timer-target="circle"
+                class="text-primary transition-all duration-1000 ease-linear drop-shadow-[0_0_8px_rgba(107,144,128,0.5)]"
+                style="stroke-linecap: round;" />
+      </svg>
+
+      <div class="absolute flex flex-col items-center justify-center">
+        <div class="text-7xl font-extralight tracking-tighter text-text-main"
+             data-timer-target="display">
+          00:00
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 w-full space-y-8">
+      
+      <div class="flex flex-wrap gap-2 justify-center">
+        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+          <button type="button"
+                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
+                         hover:border-primary hover:bg-white rounded-2xl
+                         text-text-secondary font-semibold transition-all
+                         active:scale-90 cursor-pointer"
+                  data-action="click->timer#setTime"
+                  data-timer-minutes-param="<%= minutes %>">
+            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
+          </button>
+        <% end %>
+      </div>
+
+      <div class="space-y-4">
+        <button data-action="click->timer#start" 
+              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
+                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
+                     transition-all active:scale-[0.96] cursor-pointer">
+          スタート
+        </button>
+
+        <div class="flex gap-3">
+          <button data-action="click->timer#reset"
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-background-light text-text-secondary
+                         border border-border-light hover:bg-white hover:text-text-main
+                         transition-all active:scale-95 cursor-pointer">
+            リセット
+          </button>
+          
+          <button type="button" 
+                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
+                         bg-transparent text-text-secondary/40
+                         hover:text-text-main transition-all cursor-pointer" 
+                  data-action="click->timer#finish">
+            休憩する
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</file>
+
 <file path="app/models/sitting_session.rb">
 class SittingSession < ApplicationRecord
   # タイマーの時間選択肢
@@ -6792,6 +6880,8 @@ class SittingSession < ApplicationRecord
   def cancel_active_sessions
     user.sitting_sessions.active.where.not(id: id).update_all(status: :cancelled)
   end
+
+  validates :start_at, presence: true
 end
 </file>
 
