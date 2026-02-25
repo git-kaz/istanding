@@ -44,6 +44,7 @@ gem "image_processing", "~> 1.2"
 
 # ユーザー認証
 gem "devise"
+gem "devise-i18n"
 
 # 画像CDN
 gem "cloudinary"
