@@ -14,5 +14,4 @@ RSpec.describe "ログイン機能", type: :system do
     click_button "ログイン"
     expect(page).to have_current_path root_path
   end
-  
 end
