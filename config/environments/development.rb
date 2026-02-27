@@ -25,6 +25,8 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
   # Change to :null_store to avoid any caching.
   config.cache_store = :solid_cache_store
 

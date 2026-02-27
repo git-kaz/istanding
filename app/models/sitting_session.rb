@@ -24,14 +24,15 @@ class SittingSession < ApplicationRecord
   # 終了時刻の計算
   def end_time
     # デバッグ時に使用
-    created_at + duration.seconds
-    #created_at + duration.minutes
+    #created_at + duration.seconds
+    created_at + duration.minutes
   end
 
   # 現在時刻が終了時刻より前ではないか？
   def in_progress?
-    Time.current < end_time && !notified?
-  end
+    !notified?
+ 
+ end
 
   private
 
