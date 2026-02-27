@@ -60,15 +60,15 @@ Rails.application.configure do
   # renderでパスワードリセットをgmailで送る
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.default_url_options = { host: 'https://istanding-bi2i.onrender.com' }
+  config.action_mailer.default_url_options = { host: "https://istanding-bi2i.onrender.com" }
 
   config.action_mailer.smtp_settings = {
-    address:              'smtp.gmail.com',
+    address:              "smtp.gmail.com",
     port:                 465,
-    domain:               'gmail.com',
-    user_name:            ENV['GMAIL_USER'],
-    password:             ENV['GMAIL_PASSWORD'],
-    authentication:       'plain',
+    domain:               "gmail.com",
+    user_name:            ENV["GMAIL_USER"],
+    password:             ENV["GMAIL_PASSWORD"],
+    authentication:       "plain",
     tls:                  true,
     enable_starttls_auto: false
   }
