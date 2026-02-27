@@ -30,8 +30,8 @@ class SittingSession < ApplicationRecord
 
   # 現在時刻が終了時刻より前ではないか？
   def in_progress?
-    Time.current < end_time && !notified?
-  end
+    !notified?
+ end
 
   private
 

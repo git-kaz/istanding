@@ -25,8 +25,10 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
   # Change to :null_store to avoid any caching.
-  config.cache_store = :memory_store
+  config.cache_store = :solid_cache_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
@@ -55,6 +57,7 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 
+  config.active_job.queue_adapter = :solid_queue
   # Highlight code that triggered redirect in logs.
   config.action_dispatch.verbose_redirect_logs = true
 
