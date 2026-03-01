@@ -8,7 +8,7 @@ class SendNotificationJob < ApplicationJob
 
     return if session.nil?
 
-    return unless session.in_progress?
+    return unless session&.active?
 
     user = session.user
     return if user.endpoint.blank?
