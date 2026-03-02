@@ -5,29 +5,43 @@ class SittingSessionsController < ApplicationController
   end
 
   def create
-    @sitting_session = current_user.sitting_sessions.build(session_params)
+    minutes = params.dig(:sitting_session, :duration).to_i
+    @sitting_session = current_user.sitting_sessions.build(
+      duration: minutes * 60, #秒に変換
+      status: :active
+    )
 
     if @sitting_session.save
-      # 座位時間が保存されたら運動をランダムに提案
-      @exercises = Exercise.order("RANDOM()").limit(3)
+      
       # デバッグ用
       #SendNotificationJob.set(wait_until: Time.current + 5.seconds)
       # .perform_later(@sitting_session.id)
 
       # タイマー終了時に通知jobを予約する
-      SendNotificationJob.set(wait_until: @sitting_session.end_time)
+      SendNotificationJob.set(wait_until: @sitting_session.notify_at)
                           .perform_later(@sitting_session.id)
 
-      respond_to do |format|
-        # create.turbo_stream.erbを呼び出す
-        format.turbo_stream
-        # モーダル表示されない場合はshowへ
-        format.html { redirect_to sitting_session_path(@sitting_session) }
-      end
+      # テンプレートエラーが出るなら以下を追記
+      #head :no_content
     end
   end
 
-  def show
+  def finish_current
+    @sitting_session = current_user.sitting_sessions.active.last
+
+    if @sitting_session
+      #実績でupdate
+      actual_seconds = params[:duration].to_i
+      @sitting_session.update(status: :completed, duration: actual_seconds)
+      # 座位時間が保存されたら運動をランダムに提案
+      @exercises = Exercise.order("RANDOM()").limit(3)
+      
+      respond_to do |format|
+      format.turbo_stream # finish_current.turbo_stream.erb を探す
+      end
+    else
+      head :not_found
+    end
   end
 
   def subscribe

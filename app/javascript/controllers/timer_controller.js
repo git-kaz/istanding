@@ -5,7 +5,7 @@ const DEBUG_MODE = false; // デバッグ時に秒数を短縮するかどうか
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display", "circle"]
+    static targets = ["display", "circle", "durationInput"]
 
     connect() {
         this.remainingTime = 0
@@ -35,21 +35,28 @@ export default class extends Controller {
         const minutes = event.params.minutes
         this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
         this.remainingTime = this.selectedSeconds
+
+        if (this.hasDurationInputTarget) {
+            this.durationInputTarget.value = minutes
+            console.log("Set durationInput to:", this.durationInputTarget.value) // デバッグ用
+    } else {
+        console.error("durationInputTarget not found!") // 見つからない場合のエラー
+        }
         this.updateDisplay()
         this.updateCircle()
     }
 
     // 2. 実行：タイマー開始
     start() {
-        if (!this.selectedSeconds || this.selectedSeconds <= 0) return
 
         this.resetState() // 全てをクリアしてから開始
         this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
         this.updateDisplay()
         this.updateCircle()
-
         this.runTimer()
+
+
     }
 
     runTimer() {
@@ -120,30 +127,28 @@ export default class extends Controller {
     }
 
     async finish() {
-        const recordedStartTime = this.startTime || new Date()
-        const duration = Math.floor((new Date() - recordedStartTime) / 1000)
+        if (!this.startTime) return
+        
+        const actualDuration = Math.floor((new Date() - this.startTime) / 1000)
 
-        // 次の計測に備えて開始時刻をリセット
-        this.startTime = new Date()
-
-        const response = await fetch("/sitting_sessions", {
-            method: "POST",
+        const response = await fetch("/sitting_sessions/finish_current", {
+            method: "PATCH",
             headers: {
                 "Accept": "text/vnd.turbo-stream.html",
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
             },
-            body: JSON.stringify({
-                sitting_session: {
-                    duration: duration,
-                    start_at: recordedStartTime
-                }
-            })
+            body: JSON.stringify({ duration: actualDuration })
         })
 
         if (response.ok) {
             const streamMessage = await response.text()
             Turbo.renderStreamMessage(streamMessage)
+            this.stop()
+            this.resetState()
+
+            document.getElementById("timer-form")?.classList.remove("hidden")
+            document.getElementById("finish-button-area")?.classList.add("hidden")
         }
     }
 
