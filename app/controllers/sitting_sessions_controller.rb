@@ -27,6 +27,8 @@ class SittingSessionsController < ApplicationController
   end
 
   def finish_current
+    p "Current User ID: #{current_user.id}"
+  p "Active Sessions: #{current_user.sitting_sessions.active.count}"
     @sitting_session = current_user.sitting_sessions.active.last
 
     if @sitting_session
