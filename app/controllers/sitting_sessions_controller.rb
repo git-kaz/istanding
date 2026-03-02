@@ -22,21 +22,19 @@ class SittingSessionsController < ApplicationController
                           .perform_later(@sitting_session.id)
 
       # テンプレートエラーが出るなら以下を追記
-      #head :no_content
+      head :no_content
     end
   end
 
   def finish_current
-    p "Current User ID: #{current_user.id}"
-  p "Active Sessions: #{current_user.sitting_sessions.active.count}"
+   
     @sitting_session = current_user.sitting_sessions.active.last
 
     if @sitting_session
-      #実績でupdate
-      actual_seconds = params[:duration].to_i
-      @sitting_session.update(status: :completed, duration: actual_seconds)
-      # 座位時間が保存されたら運動をランダムに提案
-      @exercises = Exercise.order("RANDOM()").limit(3)
+
+    @sitting_session.update(duration: params[:duration])
+
+    @exercises = Exercise.order("RANDOM()").limit(3)
       
       respond_to do |format|
       format.turbo_stream # finish_current.turbo_stream.erb を探す

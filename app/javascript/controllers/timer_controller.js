@@ -118,39 +118,48 @@ export default class extends Controller {
         if (this.isModalOpen) return
         this.isModalOpen = true
 
-        this.finish() // サーバーに保存
-
+        
         // 放置対策：一定時間後に自動で閉じる
         this.autoCloseTimer = setTimeout(() => {
             if (this.isModalOpen) this.closeModal()
         }, AUTO_CLOSE_MS)
     }
 
-    async finish() {
-        if (!this.startTime) return
+   async finish() {
+    // 1. まずフロント側のタイマーを止めて表示をゼロにする
+    this.stop()
+    this.clearAutoCloseTimer()
+    this.remainingTime = 0
+    this.updateDisplay()
+    this.clearModalUI()
+    this.updateCircle()
+
+    if (!this.startTime) return
+
+    // 2. 実績時間を計算
+    this.actualDuration = Math.floor((new Date() - this.startTime) / 1000)
+
+    // 3. サーバーへ「実績時間」を送信（PATCH）
+    // Rails側では duration だけを更新し、completed にはしない
+    const response = await fetch("/sitting_sessions/finish_current", {
+        method: "PATCH",
+        headers: {
+            "Accept": "text/vnd.turbo-stream.html",
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ duration: this.actualDuration })
+    })
+
+    if (response.ok) {
+        // 4. Railsから返ってきた turbo_stream（モーダル表示）を実行
+        const streamMessage = await response.text()
+        Turbo.renderStreamMessage(streamMessage)
         
-        const actualDuration = Math.floor((new Date() - this.startTime) / 1000)
-
-        const response = await fetch("/sitting_sessions/finish_current", {
-            method: "PATCH",
-            headers: {
-                "Accept": "text/vnd.turbo-stream.html",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ duration: actualDuration })
-        })
-
-        if (response.ok) {
-            const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage)
-            this.stop()
-            this.resetState()
-
-            document.getElementById("timer-form")?.classList.remove("hidden")
-            document.getElementById("finish-button-area")?.classList.add("hidden")
-        }
+        // 5. 計測状態をリセット
+        this.resetState()
     }
+}
 
     // 5. UI操作
     closeModal() {

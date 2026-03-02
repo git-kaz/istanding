@@ -107,7 +107,7 @@
           <span>他の運動</span>
         <% end %>
 
-        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
+        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id }),
             method: :post,
             class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
           <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
