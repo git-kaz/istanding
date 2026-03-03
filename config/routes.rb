@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   resources :activity_logs, only: [ :create ]
 
   devise_for :users, controllers: {
-    registrations: 'users/registrations'
+    registrations: "users/registrations"
   }
 
   post "guest_login", to: "users/guest_sessions#create"

@@ -30,7 +30,6 @@ export default class extends Controller {
         }
     }
 
-    // 1. 設定：時間セット
     setTime(event) {
         const minutes = event.params.minutes
         this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
@@ -46,7 +45,6 @@ export default class extends Controller {
         this.updateCircle()
     }
 
-    // 2. 実行：タイマー開始
     start() {
 
         this.resetState() // 全てをクリアしてから開始
@@ -86,7 +84,6 @@ export default class extends Controller {
         this.circleTarget.style.strokeDashoffset = offset
     }
 
-    // 3. 制御：停止・リセット
     stop() {
         if (this.timer) {
             clearInterval(this.timer)
@@ -94,7 +91,6 @@ export default class extends Controller {
         }
     }
 
-    // 全てをクリアする（リセットボタン等で使用）
     reset() {
         this.stop()
         this.clearAutoCloseTimer()
@@ -105,7 +101,6 @@ export default class extends Controller {
         this.updateCircle()
     }
 
-    // 内部的な状態リセット（start時などに使用）
     resetState() {
         this.stop()
         this.clearAutoCloseTimer()
@@ -113,7 +108,6 @@ export default class extends Controller {
         this.clearModalUI()
     }
 
-    // 4. 通信：セッション終了と保存
     showSessionModal() {
         if (this.isModalOpen) return
         this.isModalOpen = true
@@ -126,7 +120,6 @@ export default class extends Controller {
     }
 
    async finish() {
-    // 1. まずフロント側のタイマーを止めて表示をゼロにする
     this.stop()
     this.clearAutoCloseTimer()
     this.remainingTime = 0
@@ -136,11 +129,8 @@ export default class extends Controller {
 
     if (!this.startTime) return
 
-    // 2. 実績時間を計算
     this.actualDuration = Math.floor((new Date() - this.startTime) / 1000)
 
-    // 3. サーバーへ「実績時間」を送信（PATCH）
-    // Rails側では duration だけを更新し、completed にはしない
     const response = await fetch("/sitting_sessions/finish_current", {
         method: "PATCH",
         headers: {
@@ -152,16 +142,14 @@ export default class extends Controller {
     })
 
     if (response.ok) {
-        // 4. Railsから返ってきた turbo_stream（モーダル表示）を実行
+        //Railsから返ってきた turbo_stream（モーダル表示）を実行
         const streamMessage = await response.text()
         Turbo.renderStreamMessage(streamMessage)
         
-        // 5. 計測状態をリセット
         this.resetState()
     }
 }
 
-    // 5. UI操作
     closeModal() {
         this.resetState()
         this.clearModalUI()
