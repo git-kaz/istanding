@@ -5,7 +5,7 @@ const DEBUG_MODE = false; // デバッグ時に秒数を短縮するかどうか
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display", "circle"]
+    static targets = ["display", "circle", "durationInput"]
 
     connect() {
         this.remainingTime = 0
@@ -35,21 +35,28 @@ export default class extends Controller {
         const minutes = event.params.minutes
         this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
         this.remainingTime = this.selectedSeconds
+
+        if (this.hasDurationInputTarget) {
+            this.durationInputTarget.value = minutes
+            console.log("Set durationInput to:", this.durationInputTarget.value) // デバッグ用
+    } else {
+        console.error("durationInputTarget not found!") // 見つからない場合のエラー
+        }
         this.updateDisplay()
         this.updateCircle()
     }
 
     // 2. 実行：タイマー開始
     start() {
-        if (!this.selectedSeconds || this.selectedSeconds <= 0) return
 
         this.resetState() // 全てをクリアしてから開始
         this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
         this.updateDisplay()
         this.updateCircle()
-
         this.runTimer()
+
+
     }
 
     runTimer() {
@@ -62,7 +69,7 @@ export default class extends Controller {
             
             if (this.remainingTime <= 0) {
                 this.stop()
-                this.showSessionModal()
+                this.finish()
             } 
         }, 1000)
     }
@@ -111,41 +118,48 @@ export default class extends Controller {
         if (this.isModalOpen) return
         this.isModalOpen = true
 
-        this.finish() // サーバーに保存
-
+        
         // 放置対策：一定時間後に自動で閉じる
         this.autoCloseTimer = setTimeout(() => {
             if (this.isModalOpen) this.closeModal()
         }, AUTO_CLOSE_MS)
     }
 
-    async finish() {
-        const recordedStartTime = this.startTime || new Date()
-        const duration = Math.floor((new Date() - recordedStartTime) / 1000)
+   async finish() {
+    // 1. まずフロント側のタイマーを止めて表示をゼロにする
+    this.stop()
+    this.clearAutoCloseTimer()
+    this.remainingTime = 0
+    this.updateDisplay()
+    this.clearModalUI()
+    this.updateCircle()
 
-        // 次の計測に備えて開始時刻をリセット
-        this.startTime = new Date()
+    if (!this.startTime) return
 
-        const response = await fetch("/sitting_sessions", {
-            method: "POST",
-            headers: {
-                "Accept": "text/vnd.turbo-stream.html",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                sitting_session: {
-                    duration: duration,
-                    start_at: recordedStartTime
-                }
-            })
-        })
+    // 2. 実績時間を計算
+    this.actualDuration = Math.floor((new Date() - this.startTime) / 1000)
 
-        if (response.ok) {
-            const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage)
-        }
+    // 3. サーバーへ「実績時間」を送信（PATCH）
+    // Rails側では duration だけを更新し、completed にはしない
+    const response = await fetch("/sitting_sessions/finish_current", {
+        method: "PATCH",
+        headers: {
+            "Accept": "text/vnd.turbo-stream.html",
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ duration: this.actualDuration })
+    })
+
+    if (response.ok) {
+        // 4. Railsから返ってきた turbo_stream（モーダル表示）を実行
+        const streamMessage = await response.text()
+        Turbo.renderStreamMessage(streamMessage)
+        
+        // 5. 計測状態をリセット
+        this.resetState()
     }
+}
 
     // 5. UI操作
     closeModal() {

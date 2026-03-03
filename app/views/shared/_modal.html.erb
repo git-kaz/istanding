@@ -12,8 +12,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <% @exercises.each do |exercise| %>
         <%= link_to exercise_path(exercise, reopen_modal: true), 
-            class: "group relative block overflow-hidden rounded-[2rem] border-2 border-transparent hover:border-primary hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 active:scale-95",
-            data: { action: "click->timer#resetModalFlag" } do %>
+            class: "group relative block overflow-hidden rounded-[2rem] border-2 border-transparent hover:border-primary hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 active:scale-95" do %>
           
           <%# 画像エリア %>
           <div class="aspect-[4/5] relative">

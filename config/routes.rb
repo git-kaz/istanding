@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :sitting_sessions, only: [ :new, :create, :show ] do
     collection do
       post :subscribe
+      patch :finish_current
     end
   end
 
