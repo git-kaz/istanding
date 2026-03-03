@@ -152,8 +152,7 @@ app/
     shared/
       _modal.html.erb
     sitting_sessions/
-      create.turbo_stream.erb
-      new.html.erb
+      finish_current.turbo_stream.erb
       show.html.erb
     static_pages/
       top.html.erb
@@ -1347,12 +1346,6 @@ end
 //     })
 //   )
 // })
-</file>
-
-<file path="app/views/sitting_sessions/create.turbo_stream.erb">
-<%= turbo_stream.update "modal_container" do%>
-    <%= render partial: "shared/modal", locals: { exercise: @recommended_exercise} %>
-<% end %>
 </file>
 
 <file path="app/views/sitting_sessions/show.html.erb">
@@ -4605,59 +4598,6 @@ end
 </div>
 </file>
 
-<file path="app/views/shared/_modal.html.erb">
-<%# app/views/shared/_modal.html.erb %>
-<div class="fixed inset-0 bg-background-dark/80 backdrop-blur-xs flex items-center justify-center z-50 p-6 animate-in fade-in duration-300">
-  <div class="bg-white/90 border border-white/20 shadow-2xl rounded-[3rem] max-w-4xl w-full p-8 md:p-12 transform animate-in zoom-in-95 duration-300">
-    
-    <div class="text-center mb-10">
-      <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold tracking-widest rounded-full mb-4">COMPLETE</span>
-      <h3 class="text-3xl md:text-4xl font-black text-text-main tracking-tight">お疲れさまです！</h3>
-      <p class="text-text-secondary mt-3 text-lg font-medium">少し体を動かして、リフレッシュしましょう</p>
-    </div>
-
-    <%# 3つ横並びのグリッド %>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <% @exercises.each do |exercise| %>
-        <%= link_to exercise_path(exercise, reopen_modal: true), 
-            class: "group relative block overflow-hidden rounded-[2rem] border-2 border-transparent hover:border-primary hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 active:scale-95",
-            data: { action: "click->timer#resetModalFlag" } do %>
-          
-          <%# 画像エリア %>
-          <div class="aspect-[4/5] relative">
-            <% if exercise.cloudinary_public_id.present? %>
-              <%= cl_image_tag(exercise.cloudinary_public_id, 
-                  class: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110") %>
-            <% else %>
-              <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">No Image</div>
-            <% end %>
-            
-            <%# オーバーレイ：画像の上に名前を表示 %>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-              <div class="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <div class="text-white font-black text-lg leading-tight"><%= exercise.name %></div>
-                <div class="mt-2 flex items-center text-primary-light text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  START NOW 
-                </div>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
-
-    <div class="text-center mt-10">
-      <button
-          type="button"
-          class="px-8 py-3 text-sm font-bold text-text-secondary/60 hover:text-primary transition-colors cursor-pointer tracking-widest"
-          data-action="click->timer#closeModal">
-        今はスキップして続ける →
-      </button>
-    </div>
-  </div>
-</div>
-</file>
-
 <file path="db/seeds.rb">
 puts "シードデータを投入中"
 
@@ -5180,6 +5120,12 @@ export default class extends Controller {
 </div>
 </file>
 
+<file path="app/views/sitting_sessions/finish_current.turbo_stream.erb">
+<%= turbo_stream.update "modal_container" do%>
+    <%= render partial: "shared/modal", locals: { exercise: @exercises} %>
+<% end %>
+</file>
+
 <file path="app/views/static_pages/top.html.erb">
 <div class="min-h-screen bg-background-light text-text-main pb-20">
 
@@ -5527,203 +5473,53 @@ RSpec.configure do |config|
 end
 </file>
 
-<file path="app/views/exercises/show.html.erb">
-<%# 全体の背景設定と装飾用のBlob要素 %>
-<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
-  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
-</div>
-
-<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
-  
-  <%# ヘッダーラベルとタイトル %>
-  <div class="text-center mb-10 mt-8">
-    <div class="inline-flex items-center gap-2 mb-3 text-primary">
-      <span class="material-symbols-outlined text-xl">spa</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
+<file path="app/views/shared/_modal.html.erb">
+<%# app/views/shared/_modal.html.erb %>
+<div class="fixed inset-0 bg-background-dark/80 backdrop-blur-xs flex items-center justify-center z-50 p-6 animate-in fade-in duration-300">
+  <div class="bg-white/90 border border-white/20 shadow-2xl rounded-[3rem] max-w-4xl w-full p-8 md:p-12 transform animate-in zoom-in-95 duration-300">
+    
+    <div class="text-center mb-10">
+      <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold tracking-widest rounded-full mb-4">COMPLETE</span>
+      <h3 class="text-3xl md:text-4xl font-black text-text-main tracking-tight">お疲れさまです！</h3>
+      <p class="text-text-secondary mt-3 text-lg font-medium">少し体を動かして、リフレッシュしましょう</p>
     </div>
-    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
-      <%= @exercise.name %>
-    </h1>
-  </div>
 
-  <%# メインビジュアル（画像部分） %>
-  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
-    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
-      <% if @exercise.cloudinary_public_id.present? %>
-        <%= cl_image_tag(@exercise.cloudinary_public_id, 
-            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
-      <% end %>
-      
-      <%# 再生ガイド用バッジ %>
-      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
-        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
-      </div>
-    </div>
-  </div>
-
-  <%# コンテンツエリア %>
-  <div class="w-full grid md:grid-cols-3 gap-10">
-    <%# やり方の解説（左側 2/3） %>
-    <div class="md:col-span-2 space-y-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-          <span class="material-symbols-outlined">description</span>
-        </div>
-        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
-      </div>
-
-      <div class="space-y-4">
-        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
-        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
-          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
-              <%= index + 1 %>
-            </div>
-            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
-              <%= step %>
+    <%# 3つ横並びのグリッド %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% @exercises.each do |exercise| %>
+        <%= link_to exercise_path(exercise, reopen_modal: true), 
+            class: "group relative block overflow-hidden rounded-[2rem] border-2 border-transparent hover:border-primary hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 active:scale-95" do %>
+          
+          <%# 画像エリア %>
+          <div class="aspect-[4/5] relative">
+            <% if exercise.cloudinary_public_id.present? %>
+              <%= cl_image_tag(exercise.cloudinary_public_id, 
+                  class: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110") %>
+            <% else %>
+              <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">No Image</div>
+            <% end %>
+            
+            <%# オーバーレイ：画像の上に名前を表示 %>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+              <div class="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <div class="text-white font-black text-lg leading-tight"><%= exercise.name %></div>
+                <div class="mt-2 flex items-center text-primary-light text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  START NOW 
+                </div>
+              </div>
             </div>
           </div>
         <% end %>
-      </div>
+      <% end %>
     </div>
 
-    <%# 注意ポイント（右側 1/3） %>
-    <div class="space-y-6">
-      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
-        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-xl">info</span>
-          注意ポイント
-        </h3>
-        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</main>
-
-<%# 下部に固定されたアクションバー %>
-<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
-  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
-    <div class="flex flex-col md:flex-row items-center gap-6">
-      
-      <%# 進捗バー（演出用） %>
-      <div class="flex-1 w-full px-2"
-           data-controller="exercise-timer"
-           data-exercise-timer-duration-value="300">
-        <div class="flex justify-between items-end mb-2">
-          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
-          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
-        </div>
-        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
-        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
-             data-exercise-timer-target="bar"
-             style="width: 100%;">
-  
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
-        </div>
-        </div>
-        </div>
-
-      <%# アクションボタン %>
-      <div class="flex items-center gap-4 w-full md:w-auto">
-        <%= link_to new_sitting_session_path(reopen_modal: true),
-            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
-          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
-          <span>他の運動</span>
-        <% end %>
-
-        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id, sitting_session_id: @sitting_session&.id }),
-            method: :post,
-            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
-          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
-          <span>完了して戻る</span>
-        <% end %>
-      </div>
-
-    </div>
-  </div>
-</div>
-</file>
-
-<file path="app/views/sitting_sessions/new.html.erb">
-<div class="relative flex flex-col items-center justify-center min-h-screen bg-background-dark p-6 overflow-hidden"
-    data-controller="notification timer"
-    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
-
-  <div class="flex flex-col items-center p-10 md:p-14 rounded-[4rem]
-              bg-input-bg-light/80 backdrop-blur-3xl 
-              border border-white/40
-              shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
-              w-full max-w-md transition-all duration-500">
-
-    <div class="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80">
-      <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
-        <circle cx="150" cy="150" r="135"
-                stroke="currentColor" stroke-width="2" fill="transparent"
-                class="text-border-light opacity-50" />
-
-        <circle cx="150" cy="150" r="135"
-                stroke="currentColor" stroke-width="6" fill="transparent"
-                data-timer-target="circle"
-                class="text-primary transition-all duration-1000 ease-linear drop-shadow-[0_0_8px_rgba(107,144,128,0.5)]"
-                style="stroke-linecap: round;" />
-      </svg>
-
-      <div class="absolute flex flex-col items-center justify-center">
-        <div class="text-7xl font-extralight tracking-tighter text-text-main"
-             data-timer-target="display">
-          00:00
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-12 w-full space-y-8">
-      
-      <div class="flex flex-wrap gap-2 justify-center">
-        <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
-          <button type="button"
-                  class="flex-1 min-w-[65px] py-3 bg-white/40 border border-border-light 
-                         hover:border-primary hover:bg-white rounded-2xl
-                         text-text-secondary font-semibold transition-all
-                         active:scale-90 cursor-pointer"
-                  data-action="click->timer#setTime"
-                  data-timer-minutes-param="<%= minutes %>">
-            <%= minutes %><span class="text-[9px] ml-0.5 opacity-60">min</span>
-          </button>
-        <% end %>
-      </div>
-
-      <div class="space-y-4">
-        <button data-action="click->timer#start" 
-              class="bg-primary text-text-main py-5 w-full rounded-[2rem] font-bold tracking-[0.2em]
-                     shadow-lg shadow-primary/20 hover:bg-primary-hover hover:shadow-primary/30
-                     transition-all active:scale-[0.96] cursor-pointer">
-          スタート
-        </button>
-
-        <div class="flex gap-3">
-          <button data-action="click->timer#reset"
-                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
-                         bg-background-light text-text-secondary
-                         border border-border-light hover:bg-white hover:text-text-main
-                         transition-all active:scale-95 cursor-pointer">
-            リセット
-          </button>
-          
-          <button type="button" 
-                  class="flex-1 py-4 rounded-2xl font-bold text-xs tracking-widest
-                         bg-transparent text-text-secondary/40
-                         hover:text-text-main transition-all cursor-pointer" 
-                  data-action="click->timer#finish">
-            休憩する
-          </button>
-        </div>
-      </div>
+    <div class="text-center mt-10">
+      <button
+          type="button"
+          class="px-8 py-3 text-sm font-bold text-text-secondary/60 hover:text-primary transition-colors cursor-pointer tracking-widest"
+          data-action="click->timer#closeModal">
+        今はスキップして続ける →
+      </button>
     </div>
   </div>
 </div>
@@ -6136,26 +5932,6 @@ group :test do
 end
 </file>
 
-<file path="app/controllers/activity_logs_controller.rb">
-class ActivityLogsController < ApplicationController
-  def create
-    @activity_log = current_user.activity_logs.build(activity_log_params)
-
-    if @activity_log.save
-      redirect_to root_path, notice: "運動が記録されました！"
-    else
-      head :unprocessable_entity
-    end
-  end
-
-  private
-
-  def activity_log_params
-    params.require(:activity_log).permit(:exercise_id, :sitting_session_id)
-  end
-end
-</file>
-
 <file path="config/puma.rb">
 # This configuration file will be evaluated by Puma. The top-level methods that
 # are invoked here are part of Puma's configuration DSL. For more information
@@ -6206,35 +5982,6 @@ pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
 workers 0
 </file>
 
-<file path="config/routes.rb">
-Rails.application.routes.draw do
-  # ログイン時のroot
-  authenticated :user do
-    root "top#index", as: :authenticated_root
-  end
-  # 未ログイン時のroot
-  unauthenticated do
-    root "static_pages#top"
-  end
-
-  resources :sitting_sessions, only: [ :new, :create, :show ] do
-    collection do
-      post :subscribe
-    end
-  end
-
-  resources :exercises, only: [ :index, :show ]
-
-  resources :activity_logs, only: [ :create ]
-
-  devise_for :users
-
-  post "guest_login", to: "users/guest_sessions#create"
-
-  get "up" => "rails/health#show", as: :rails_health_check
-end
-</file>
-
 <file path="spec/jobs/notify_job_spec.rb">
 require 'rails_helper'
 
@@ -6257,6 +6004,29 @@ RSpec.describe SendNotificationJob, type: :job do
       .with(sitting_session.id)
       .at(sitting_session.end_time)
     end
+  end
+end
+</file>
+
+<file path="app/controllers/activity_logs_controller.rb">
+class ActivityLogsController < ApplicationController
+  def create
+   @sitting_session = current_user.sitting_sessions.active.last
+   @active_log = ActivityLog.new(activity_log_params)
+
+    if @active_log.save
+
+      @sitting_session.completed!
+      redirect_to root_path, notice: "運動を記録しました！", status: :see_other
+    else
+      redirect_to root_path, alert: "運動の記録に失敗しました。", status: :see_other
+    end
+  end
+
+  private
+
+  def activity_log_params
+    params.require(:activity_log).permit(:exercise_id, :sitting_session_id)
   end
 end
 </file>
@@ -6313,6 +6083,130 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }, if: -> { password.present? }
 end
+</file>
+
+<file path="app/views/exercises/show.html.erb">
+<%# 全体の背景設定と装飾用のBlob要素 %>
+<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
+  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
+</div>
+
+<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
+  
+  <%# ヘッダーラベルとタイトル %>
+  <div class="text-center mb-10 mt-8">
+    <div class="inline-flex items-center gap-2 mb-3 text-primary">
+      <span class="material-symbols-outlined text-xl">spa</span>
+      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
+      <%= @exercise.name %>
+    </h1>
+  </div>
+
+  <%# メインビジュアル（画像部分） %>
+  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
+    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
+      <% if @exercise.cloudinary_public_id.present? %>
+        <%= cl_image_tag(@exercise.cloudinary_public_id, 
+            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
+      <% end %>
+      
+      <%# 再生ガイド用バッジ %>
+      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
+        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
+      </div>
+    </div>
+  </div>
+
+  <%# コンテンツエリア %>
+  <div class="w-full grid md:grid-cols-3 gap-10">
+    <%# やり方の解説（左側 2/3） %>
+    <div class="md:col-span-2 space-y-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
+      </div>
+
+      <div class="space-y-4">
+        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
+        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
+          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
+              <%= index + 1 %>
+            </div>
+            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
+              <%= step %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 注意ポイント（右側 1/3） %>
+    <div class="space-y-6">
+      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
+        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-xl">info</span>
+          注意ポイント
+        </h3>
+        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%# 下部に固定されたアクションバー %>
+<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
+  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      
+      <%# 進捗バー（演出用） %>
+      <div class="flex-1 w-full px-2"
+           data-controller="exercise-timer"
+           data-exercise-timer-duration-value="300">
+        <div class="flex justify-between items-end mb-2">
+          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
+          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
+        </div>
+        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
+        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
+             data-exercise-timer-target="bar"
+             style="width: 100%;">
+  
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+        </div>
+        </div>
+        </div>
+
+      <%# アクションボタン %>
+      <div class="flex items-center gap-4 w-full md:w-auto">
+        <%= link_to root_path(reopen_modal: true),
+            data: { turbo: false },
+            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
+          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
+          <span>他の運動</span>
+        <% end %>
+
+        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id }),
+            method: :post,
+            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
+          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
+          <span>完了して戻る</span>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
 </file>
 
 <file path="app/views/layouts/application.html.erb">
@@ -6475,6 +6369,36 @@ end
 </html>
 </file>
 
+<file path="config/routes.rb">
+Rails.application.routes.draw do
+  # ログイン時のroot
+  authenticated :user do
+    root "top#index", as: :authenticated_root
+  end
+  # 未ログイン時のroot
+  unauthenticated do
+    root "static_pages#top"
+  end
+
+  resources :sitting_sessions, only: [ :new, :create, :show ] do
+    collection do
+      post :subscribe
+      patch :finish_current
+    end
+  end
+
+  resources :exercises, only: [ :index, :show ]
+
+  resources :activity_logs, only: [ :create ]
+
+  devise_for :users
+
+  post "guest_login", to: "users/guest_sessions#create"
+
+  get "up" => "rails/health#show", as: :rails_health_check
+end
+</file>
+
 <file path="app/views/top/index.html.erb">
 <div class="min-h-screen bg-background-dark p-4 md:p-8 overflow-x-hidden"
     data-controller="notification timer"
@@ -6507,6 +6431,7 @@ end
         </div>
       </div>
 
+      <%= form_with model: SittingSession.new, id: "timer-form" do |f| %>
       <div class="mt-8 w-full space-y-6">
         <div class="flex flex-wrap gap-2 justify-center">
           <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
@@ -6517,19 +6442,19 @@ end
           <% end %>
         </div>
 
-        <div class="space-y-4">
-          <button data-action="click->timer#start" class="bg-primary text-text-main py-4 w-full rounded-[1.5rem] font-bold tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer">
-            スタート
-          </button>
+        <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
 
-          <%= form_with model: @sitting_session do |f| %>
-            <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
-            <button type="button" data-action="click->timer#finish" class="w-full py-4 rounded-xl font-bold text-xs tracking-widest bg-background-light text-text-secondary border border-border-light hover:bg-white transition-all active:scale-95 cursor-pointer">
-              休憩する
-            </button>
-          <% end %>
+        <div class="space-y-4">
+          <%= f.submit "スタート",class: "bg-primary text-text-main py-4 w-full rounded-[1.5rem] font-bold tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer",
+          data: { action: "click->timer#start" } %>
+      
+        <button type="button" data-action="click->timer#finish" class="w-full py-4 rounded-xl font-bold text-xs tracking-widest bg-background-light text-text-secondary border border-border-light hover:bg-white transition-all active:scale-95 cursor-pointer">
+          休憩する
+        </button>
+          
         </div>
       </div>
+      <% end %>
     </div>
 
     <div class="w-full max-w-md lg:max-w-lg space-y-8">
@@ -6582,61 +6507,6 @@ end
    <div id="modal_container"></div>
   </div>
 </div>
-</file>
-
-<file path="app/controllers/sitting_sessions_controller.rb">
-class SittingSessionsController < ApplicationController
-  before_action :authenticate_user!
-
-  def new
-  end
-
-  def create
-    @sitting_session = current_user.sitting_sessions.build(session_params)
-
-    if @sitting_session.save
-      # 座位時間が保存されたら運動をランダムに提案
-      @exercises = Exercise.order("RANDOM()").limit(3)
-      # デバッグ用
-      #SendNotificationJob.set(wait_until: Time.current + 5.seconds)
-      # .perform_later(@sitting_session.id)
-
-      # タイマー終了時に通知jobを予約する
-      SendNotificationJob.set(wait_until: @sitting_session.end_time)
-                          .perform_later(@sitting_session.id)
-
-      respond_to do |format|
-        # create.turbo_stream.erbを呼び出す
-        format.turbo_stream
-        # モーダル表示されない場合はshowへ
-        format.html { redirect_to sitting_session_path(@sitting_session) }
-      end
-    end
-  end
-
-  def show
-  end
-
-  def subscribe
-    auth_key = params[:subscription][:keys]
-
-    if current_user.update(
-      endpoint: params[:subscription][:endpoint],
-      p256dh: auth_key[:p256dh],
-      auth: auth_key[:auth]
-    )
-      head :ok
-    else
-      head :unprocessable_entity
-    end
-  end
-
-  private
-w
-  def session_params
-    params.require(:sitting_session).permit(:duration, :start_at)
-  end
-end
 </file>
 
 <file path="config/environments/production.rb">
@@ -6745,6 +6615,75 @@ Rails.application.configure do
 end
 </file>
 
+<file path="app/controllers/sitting_sessions_controller.rb">
+class SittingSessionsController < ApplicationController
+  before_action :authenticate_user!
+
+  def new
+  end
+
+  def create
+    minutes = params.dig(:sitting_session, :duration).to_i
+    @sitting_session = current_user.sitting_sessions.build(
+      duration: minutes * 60, #秒に変換
+      status: :active
+    )
+
+    if @sitting_session.save
+      
+      # デバッグ用
+      #SendNotificationJob.set(wait_until: Time.current + 5.seconds)
+      # .perform_later(@sitting_session.id)
+
+      # タイマー終了時に通知jobを予約する
+      SendNotificationJob.set(wait_until: @sitting_session.notify_at)
+                          .perform_later(@sitting_session.id)
+
+      # テンプレートエラーが出るなら以下を追記
+      head :no_content
+    end
+  end
+
+  def finish_current
+   
+    @sitting_session = current_user.sitting_sessions.active.last
+
+    if @sitting_session
+
+    @sitting_session.update(duration: params[:duration])
+
+    @exercises = Exercise.order("RANDOM()").limit(3)
+      
+      respond_to do |format|
+      format.turbo_stream # finish_current.turbo_stream.erb を探す
+      end
+    else
+      head :not_found
+    end
+  end
+
+  def subscribe
+    auth_key = params[:subscription][:keys]
+
+    if current_user.update(
+      endpoint: params[:subscription][:endpoint],
+      p256dh: auth_key[:p256dh],
+      auth: auth_key[:auth]
+    )
+      head :ok
+    else
+      head :unprocessable_entity
+    end
+  end
+
+  private
+
+  def session_params
+    params.require(:sitting_session).permit(:duration, :start_at)
+  end
+end
+</file>
+
 <file path="app/javascript/controllers/timer_controller.js">
 import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
@@ -6753,7 +6692,7 @@ const DEBUG_MODE = false; // デバッグ時に秒数を短縮するかどうか
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display", "circle"]
+    static targets = ["display", "circle", "durationInput"]
 
     connect() {
         this.remainingTime = 0
@@ -6783,21 +6722,28 @@ export default class extends Controller {
         const minutes = event.params.minutes
         this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
         this.remainingTime = this.selectedSeconds
+
+        if (this.hasDurationInputTarget) {
+            this.durationInputTarget.value = minutes
+            console.log("Set durationInput to:", this.durationInputTarget.value) // デバッグ用
+    } else {
+        console.error("durationInputTarget not found!") // 見つからない場合のエラー
+        }
         this.updateDisplay()
         this.updateCircle()
     }
 
     // 2. 実行：タイマー開始
     start() {
-        if (!this.selectedSeconds || this.selectedSeconds <= 0) return
 
         this.resetState() // 全てをクリアしてから開始
         this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
         this.updateDisplay()
         this.updateCircle()
-
         this.runTimer()
+
+
     }
 
     runTimer() {
@@ -6859,41 +6805,48 @@ export default class extends Controller {
         if (this.isModalOpen) return
         this.isModalOpen = true
 
-        this.finish() // サーバーに保存
-
+        
         // 放置対策：一定時間後に自動で閉じる
         this.autoCloseTimer = setTimeout(() => {
             if (this.isModalOpen) this.closeModal()
         }, AUTO_CLOSE_MS)
     }
 
-    async finish() {
-        const recordedStartTime = this.startTime || new Date()
-        const duration = Math.floor((new Date() - recordedStartTime) / 1000)
+   async finish() {
+    // 1. まずフロント側のタイマーを止めて表示をゼロにする
+    this.stop()
+    this.clearAutoCloseTimer()
+    this.remainingTime = 0
+    this.updateDisplay()
+    this.clearModalUI()
+    this.updateCircle()
 
-        // 次の計測に備えて開始時刻をリセット
-        this.startTime = new Date()
+    if (!this.startTime) return
 
-        const response = await fetch("/sitting_sessions", {
-            method: "POST",
-            headers: {
-                "Accept": "text/vnd.turbo-stream.html",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                sitting_session: {
-                    duration: duration,
-                    start_at: recordedStartTime
-                }
-            })
-        })
+    // 2. 実績時間を計算
+    this.actualDuration = Math.floor((new Date() - this.startTime) / 1000)
 
-        if (response.ok) {
-            const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage)
-        }
+    // 3. サーバーへ「実績時間」を送信（PATCH）
+    // Rails側では duration だけを更新し、completed にはしない
+    const response = await fetch("/sitting_sessions/finish_current", {
+        method: "PATCH",
+        headers: {
+            "Accept": "text/vnd.turbo-stream.html",
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ duration: this.actualDuration })
+    })
+
+    if (response.ok) {
+        // 4. Railsから返ってきた turbo_stream（モーダル表示）を実行
+        const streamMessage = await response.text()
+        Turbo.renderStreamMessage(streamMessage)
+        
+        // 5. 計測状態をリセット
+        this.resetState()
     }
+}
 
     // 5. UI操作
     closeModal() {
@@ -6939,8 +6892,18 @@ class SittingSession < ApplicationRecord
   # Enums (列挙型)
   enum :status, { active: 0, completed: 1, cancelled: 2 }
 
-  # Callbacks (コールバック)
   before_create :cancel_active_sessions
+  before_validation :set_notification_time, if: :duration_changed?
+
+  # 座位時間の終了予定時刻を計算して保存
+  def set_notification_time
+    return if duration.blank?
+
+    self.start_at ||= Time.current
+
+    self.notify_at = self.start_at + duration.seconds
+    self.notified = false
+  end
 
   # 今日のセッションを取得
   scope :today, -> { where(created_at: Time.zone.now.all_day) }

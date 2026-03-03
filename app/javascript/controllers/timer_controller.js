@@ -69,7 +69,7 @@ export default class extends Controller {
             
             if (this.remainingTime <= 0) {
                 this.stop()
-                this.showSessionModal()
+                this.finish()
             } 
         }, 1000)
     }

@@ -102,6 +102,10 @@
       </div>
 
     </div>
-   <div id="modal_container"></div>
+   <div id="modal_container">
+    <% if params[:reopen_modal] == "true" && @exercises.present? %>
+      <%= render partial: "shared/modal", locals: { exercise: @exercises } %>
+    <% end %>
+   </div>
   </div>
 </div>
