@@ -79,7 +79,6 @@ jobs:
       - name: Run RSpec (Models & Systems)
         env:
           RAILS_ENV: test
-          # localhost:5432 は service で定義した postgres に繋がります
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/rails_test
         run: |
           bin/rails assets:precompile

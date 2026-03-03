@@ -7,12 +7,11 @@ class SittingSession < ApplicationRecord
   belongs_to :user
 
   has_many :suggested_actions, dependent: :destroy
-  # 中間テーブルを介してexerciseへ
+
   has_many :exercises, through: :suggested_actions
 
   has_many :activity_logs, dependent: :nullify
 
-  # Enums (列挙型)
   enum :status, { active: 0, completed: 1, cancelled: 2 }
 
   before_create :cancel_active_sessions
@@ -28,13 +27,10 @@ class SittingSession < ApplicationRecord
     self.notified = false
   end
 
-  # 今日のセッションを取得
   scope :today, -> { where(created_at: Time.zone.now.all_day) }
 
-  # 終了時刻の計算
+
   def end_time
-    # デバッグ時に使用
-    #created_at + duration.seconds
     created_at + duration.minutes
   end
 

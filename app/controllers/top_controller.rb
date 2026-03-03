@@ -10,6 +10,5 @@ class TopController < ApplicationController
     if params[:reopen_modal] == "true"
       @exercises = Exercise.order("RANDOM()").limit(3)
     end
-
   end
 end

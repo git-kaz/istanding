@@ -7,14 +7,14 @@ class SittingSessionsController < ApplicationController
   def create
     minutes = params.dig(:sitting_session, :duration).to_i
     @sitting_session = current_user.sitting_sessions.build(
-      duration: minutes * 60, #秒に変換
+      duration: minutes * 60, # 秒に変換
       status: :active
     )
 
     if @sitting_session.save
-      
+
       # デバッグ用
-      #SendNotificationJob.set(wait_until: Time.current + 5.seconds)
+      # SendNotificationJob.set(wait_until: Time.current + 5.seconds)
       # .perform_later(@sitting_session.id)
 
       # タイマー終了時に通知jobを予約する
@@ -27,7 +27,6 @@ class SittingSessionsController < ApplicationController
   end
 
   def finish_current
-   
     @sitting_session = current_user.sitting_sessions.active.last
 
     if @sitting_session
@@ -35,7 +34,7 @@ class SittingSessionsController < ApplicationController
     @sitting_session.update(duration: params[:duration])
 
     @exercises = Exercise.order("RANDOM()").limit(3)
-      
+
       respond_to do |format|
       format.turbo_stream # finish_current.turbo_stream.erb を探す
       end
