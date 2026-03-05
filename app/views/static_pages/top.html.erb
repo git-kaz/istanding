@@ -89,17 +89,33 @@
       </div>
     </section>
 
-    <div class="mt-16 pb-20">
+    <%# CTA セクション %>
+    <div class="mt-16 pb-20 flex flex-col items-center gap-6">
+
+      <%# メインCTA %>
       <%= link_to "登録して始める",
         new_user_registration_path,
-        class: "inline-block px-12 py-5 rounded-full bg-primary text-white font-bold hover:bg-primary-hover transition shadow-xl shadow-primary/20 active:scale-95" %>
+        class: "inline-block w-full max-w-sm px-12 py-5 rounded-full bg-primary text-white text-xl font-bold hover:bg-primary-hover transition shadow-xl shadow-primary/30 active:scale-95" %>
 
-      <div class="mt-6">
+      <%# 区切り %>
+      <div class="flex items-center gap-4 w-full max-w-sm">
+        <div class="flex-1 h-px bg-border-light"></div>
+        <span class="text-sm text-text-secondary font-medium">または</span>
+        <div class="flex-1 h-px bg-border-light"></div>
+      </div>
+
+      <%# ゲストCTA %>
+      <div class="flex flex-col items-center gap-2">
         <%= button_to "ゲストユーザーとして始める",
             guest_login_path,
             method: :post,
-            class: "text-base text-text-secondary underline hover:text-text-main transition cursor-pointer" %>
+            class: "inline-block w-full max-w-sm px-12 py-4 rounded-full border-2 border-border-light bg-white text-text-main text-lg font-bold hover:border-primary hover:text-primary transition active:scale-95 cursor-pointer" %>
+        <p class="flex items-center gap-1 text-sm text-text-secondary">
+          <span class="material-symbols-outlined text-base">info</span>
+          ゲストユーザーの場合は記録が保存されません
+        </p>
       </div>
+
     </div>
 
   </main>
