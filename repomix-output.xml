@@ -735,71 +735,6 @@ class Users::PasswordsController < Devise::PasswordsController
 end
 </file>
 
-<file path="app/controllers/users/registrations_controller.rb">
-# frozen_string_literal: true
-
-class Users::RegistrationsController < Devise::RegistrationsController
-  # before_action :configure_sign_up_params, only: [:create]
-  # before_action :configure_account_update_params, only: [:update]
-
-  # GET /resource/sign_up
-  # def new
-  #   super
-  # end
-
-  # POST /resource
-  # def create
-  #   super
-  # end
-
-  # GET /resource/edit
-  # def edit
-  #   super
-  # end
-
-  # PUT /resource
-  # def update
-  #   super
-  # end
-
-  # DELETE /resource
-  # def destroy
-  #   super
-  # end
-
-  # GET /resource/cancel
-  # Forces the session data which is usually expired after sign
-  # in to be expired now. This is useful if the user wants to
-  # cancel oauth signing in/up in the middle of the process,
-  # removing all OAuth session data.
-  # def cancel
-  #   super
-  # end
-
-  # protected
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_up_params
-  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
-  # end
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_account_update_params
-  #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-  # end
-
-  # The path used after sign up.
-  # def after_sign_up_path_for(resource)
-  #   super(resource)
-  # end
-
-  # The path used after sign up for inactive accounts.
-  # def after_inactive_sign_up_path_for(resource)
-  #   super(resource)
-  # end
-end
-</file>
-
 <file path="app/controllers/users/sessions_controller.rb">
 # frozen_string_literal: true
 
@@ -916,6 +851,26 @@ application.debug = false
 window.Stimulus   = application
 
 export { application }
+</file>
+
+<file path="app/javascript/controllers/dropdown_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="dropdown"
+export default class extends Controller {
+    static targets = ["menu"]
+
+    toggle() {
+        this.menuTarget.classList.toggle("hidden")
+    }
+
+    hide(event) {
+        //メニュー外のクリックで閉じる
+        if (!this.element.contains(event.target)) {
+            this.menuTarget.classList.add("hidden")
+        }
+    }
+}
 </file>
 
 <file path="app/javascript/controllers/hello_controller.js">
@@ -1143,6 +1098,110 @@ end
 <% end %>
 
 <%= render "devise/shared/links" %>
+</file>
+
+<file path="app/views/devise/registrations/edit.html.erb">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F7F9F7] relative overflow-hidden">
+  <%# 背景の装飾（テーマに合わせたBlob） %>
+  <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[80px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-accent/20 blur-[80px] rounded-full"></div>
+
+  <div class="max-w-md w-full bg-white/70 backdrop-blur-xl border border-white rounded-[3xl] shadow-2xl overflow-hidden z-10">
+    <div class="px-8 pt-10 pb-4 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
+        <span class="material-symbols-outlined text-3xl">manage_accounts</span>
+      </div>
+      <h2 class="text-3xl font-black text-text-main tracking-tight">アカウント編集</h2>
+    </div>
+
+    <div class="px-8 pb-10 pt-4">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "flex flex-col gap-6" }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <%# ユーザー名 %>
+        <div class="flex flex-col gap-2">
+          <%= f.label :username, "ユーザー名", class: "text-text-main text-sm font-bold ml-1" %>
+          <%= f.text_field :username, 
+              autofocus: true,
+              autocomplete: "username",
+              placeholder: "例: ユーザー名",
+              class: "w-full rounded-2xl border-border-light bg-white/50 focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
+        </div>
+
+        <%# メールアドレス %>
+        <div class="flex flex-col gap-2">
+          <%= f.label :email, "メールアドレス", class: "text-text-main text-sm font-bold ml-1" %>
+          <%= f.email_field :email, 
+              autocomplete: "email", 
+              class: "w-full rounded-2xl border-gray-300 bg-gray-100/80 shadow-inner focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
+        </div>
+
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div class="text-xs text-orange-500 font-bold px-2">現在、確認待ちのメールアドレス: <%= resource.unconfirmed_email %></div>
+        <% end %>
+
+        <%# パスワード変更 %>
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between items-center ml-1">
+            <%= f.label :password, "新しいパスワード", class: "text-text-main text-sm font-bold" %>
+            <span class="text-[10px] text-text-secondary font-medium italic">変更しない場合は空欄</span>
+          </div>
+          <%= f.password_field :password, 
+              autocomplete: "new-password",
+              placeholder: @minimum_password_length ? "#{@minimum_password_length}文字以上" : "",
+              class: "w-full rounded-2xl border-gray-300 bg-gray-100/80 shadow-inner focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
+        </div>
+
+        <%# パスワード確認 %>
+        <div class="flex flex-col gap-2">
+          <%= f.label :password_confirmation, "新しいパスワード（確認用）", class: "text-text-main text-sm font-bold ml-1" %>
+          <%= f.password_field :password_confirmation, 
+              autocomplete: "new-password",
+              class: "w-full rounded-2xl border-gray-300 bg-gray-100/80 shadow-inner focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
+        </div>
+
+        <%# 現在のパスワード（必須） %>
+        <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10">
+          <div class="flex flex-col gap-2">
+            <%= f.label :current_password, "現在のパスワード", class: "text-primary text-sm font-black ml-1" %>
+            <%= f.password_field :current_password, 
+                autocomplete: "current-password",
+                placeholder: "変更を保存するには入力が必要です",
+                class: "w-full rounded-xl border-primary/20 bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <%= f.submit "変更を保存する",
+              class: "w-full cursor-pointer h-14 bg-primary hover:bg-primary-hover text-white font-black rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-[0.98]" %>
+        </div>
+      <% end %>
+
+      <%# 区切り線 %>
+      <div class="relative my-8">
+        <div class="w-full border-t border-gray-100"></div>
+      </div>
+
+      <%# アカウント削除 %>
+      <div class="flex flex-col gap-4">
+        <%= button_to registration_path(resource_name), 
+            data: { confirm: "本当に削除しますか？", turbo_confirm: "本当に削除しますか？" }, 
+            method: :delete,
+            class: "w-full cursor-pointer h-12 border-2 border-red-50 text-red-400 hover:bg-red-50 hover:text-red-500 font-bold rounded-2xl transition-all flex items-center justify-center gap-2" do %>
+          <span class="material-symbols-outlined text-xl">delete_forever</span>
+          アカウントを完全に削除する
+        <% end %>
+      </div>
+
+      <div class="mt-8 text-center">
+        <%= link_to :back, class: "text-text-secondary hover:text-primary font-bold text-sm inline-flex items-center gap-1 transition-colors" do %>
+          <span class="material-symbols-outlined text-base">arrow_back</span>
+          戻る
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
 </file>
 
 <file path="app/views/devise/sessions/new.html.erb">
@@ -4022,230 +4081,6 @@ require_relative "config/application"
 Rails.application.load_tasks
 </file>
 
-<file path="README.md">
-# 卒業制作
-
-「iStanding(仮称)」
-
-## サービス概要
-
-デスクワーカーの「座りすぎ」を防ぐタイマーアプリ。
-
-医学的根拠に基づいた通知タイミングと効果的な行動提案で健康習慣をサポート。
-
-通知機能や座位時間の可視化により、健康的な習慣を無理なく継続できます。
-
-## このサービスへの思い・作りたい理由
-
-理学療法士として整形外科で働く中で、腰痛や首の痛みを訴える患者様から「デスクワークで一日中座っています」という言葉を何度も耳にしてきました。日本は座位時間が世界トップレベルで、WHO や厚生労働省も座りすぎによる肥満、心筋梗塞、脳梗塞、ヘルニア、高血圧、糖尿病などのリスクを警告しています。
-
-0 次医療(予防医療)の推進が叫ばれる今、最も必要なのは「わかっているけどできない」を「自然とできる」に変えることです。多くの方が座りすぎの害を知りながらも、「めんどくさい」「まだ大丈夫」「忘れてしまう」「何をしたらいいかわからない」という理由で行動に移せていません。
-
-このアプリは、理学療法士としての専門知識を活かし、デスクワーカーが無理なく座りすぎを防ぎ、健康的な習慣を継続できるようサポートします。
-
-**参考文献**：
-
-- [Sitting Time and All-Cause Mortality Risk in 222,497 Australian Adults](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810)
-- [Sedentary time and its association with risk for disease incidence, mortality, and hospitalization in adults](https://pubmed.ncbi.nlm.nih.gov/21767731/)
-
-## ユーザー層について
-
-**メインターゲット**：デスクワークが多い 20〜40 代の会社員・フリーランス
-
-この層を対象にした理由：
-
-1 日 8 時間以上座って仕事をする人が多く、座りすぎによる健康リスクが高い
-仕事に集中すると立ち上がることを忘れがちで、客観的なアラートが必要
-SNS を日常的に使用しており、達成実績のシェアによるモチベーション維持が期待できる
-スマートフォンや PC を常時使用しているため、アプリの導入・利用ハードルが低い
-健康意識が高まる年代で、予防的な健康管理に関心がある
-
-## サービスの利用イメージ
-
-1. **作業中のサポート**：設定した間隔（例：60 分）で座りすぎアラートが通知される
-2. **休憩時間の内容提案**：休憩アクションを提案（ストレッチ、歩く、立ち作業など）
-3. **1 日の振り返り**：座位時間の推移や休憩回数をグラフで確認
-4. **リマインドによる継続性**：自発的でなく受動的にアプリの利用を促す
-5. **健康コラムによる啓発**：医学的な情報をエビデンスに基づき掲載
-
-**得られる価値**：
-
-- 座りすぎによる健康リスクの軽減（肩こり、腰痛、生活習慣病予防）
-- データの可視化による行動変容の実感、健康意識の向上
-
-## ユーザーの獲得について
-
-- **SNS 拡散**
-
-X(旧 Twitter)での達成実績シェア機能を実装
-「#座りすぎ防止」「#デスクワーク改善」などのハッシュタグで拡散
-シェアされた投稿から新規ユーザーが流入する仕組み
-
-- **健康系コミュニティへのアプローチ**
-
-産業医、産業理学療法など、企業の健康増進に携わるコミュニティへのアプローチ
-
-その後、企業内の社員への普及というレバレッジが期待できる可能性
-
-- **エンジニアコミュニティ（Qiita、Zenn など）での紹介**
-
-デスクワーカーのコミュニティでの展開
-
-- **コンテンツマーケティング**
-
-座りすぎのリスクや改善方法に関する記事を SEO 対策を用いて Web サイトで発信
-
-YMYL, E-E-A-T への留意が必要になる
-実際の利用者の事例なども紹介
-
-## サービスの差別化ポイント・推しポイント
-
-### **類似サービスとの差別化**
-
-**既存のストレッチアプリとの違い**：
-
-- 「ストレッチの継続」ではなく「座位時間の削減」にフォーカス
-- 休憩の種類を強制せず、歩く・立ち作業など柔軟な休憩方法を記録可能
-- 座位時間の可視化により、行動変容を客観的に確認できる
-
-**ポモドーロアプリとの違い**：
-
-- 単なるポモドーロではなく、休憩時間にすべきことを提案、誘導
-- デイリーチャレンジ、ダメージ可視化によるゲーミフィケーション要素
-- SNS シェア機能による社会的なモチベーション維持
-
-### **推しポイント**
-
-1. **行動変容の可視化**：座位時間の推移グラフで改善を実感できる
-2. **柔軟な休憩スタイル**：ストレッチに限定せず、自分に合った休憩方法を選択可能
-3. **小さな成功体験の積み重ね**：毎日のチャレンジ達成で継続しやすい設計
-
-## 機能候補
-
-### **MVP リリース時（最小限の機能）**
-
-1. **ユーザー登録・ログイン機能（devise）**
-
-2. **座位時間アラート機能（Solid Queue + service worker）**
-
-- アラート間隔の調整（30 分、60 分、90 分など）
-
-3. **推奨行動モーダル**
-
-- 任意の設定時間になると休憩アクションを選択（タイプ選択：ストレッチ、歩く、立ち作業など）
-
-4. **基本的なダッシュボード（一日の総座位時間、休憩回数）**
-
-- 総座位時間の表示（寿命に影響を与えると言われている 11 時間を上限とし警告を促す）
-- 連続実施日時を表示
-
-5. **休憩時間の行動リスト（seed）**
-
-- 後に CRUD 実装し、admin 画面で追加編集予定
-
-6. **SNS 共有機能**
-
-- 静的 OGP にて共有
-
-### **本リリースまでに追加したい機能**
-
-1. **admin 用 CRUD の実装（休憩時間の要素の追加、編集）**
-2. **データ可視化**
-
-- 座位時間の推移グラフ（chartkick + chart.js）
-- 最長座位時間の記録と改善推移
-
-3. **ゲーミフィケーション要素**
-
-- 連続座位時間によりキャラクターなどの状態が変化、運動や起立で回復（自身の健康状態に対するメタファー）
-- 実績・バッジシステム（3 日連続、7 日連続、累計 100 回休憩など）
-- 連続達成日数（ストリーク）の表示
-
-4. **動的 OGP へのバージョンアップ**
-
-- 達成結果に応じて SNS 共有用の OGP 画像を生成
-
-5. **休憩時に行うアクション一覧**
-
-- 運動、ストレッチなどにカテゴリ分けされた行動一覧を閲覧可能
-
-## 使用する技術スタック
-
-### **バックエンド**
-
-- **Ruby on Rails 8.x Ruby 4.0.x(最新の安定版)**
-  - フルスタックフレームワークとして採用
-  - Solid Queue によるキューイングシステムを利用するため
-  - Rails8 の新機能を活用し、インフラをシンプルに保つ
-
-### **フロントエンド**
-
-- **Hotwire（Turbo + Stimulus）**
-  - リアルタイム更新（座位時間の自動更新、アラート表示）
-  - SPA 的な UX をシンプルに実装
-- **Tailwind CSS**
-  - レスポンシブデザインの実装
-  - 理由：高速な開発とモダンな UI の実現
-
-### **データベース**
-
-- **PostgreSQL**
-  - 理由：Render での標準的な DB のため
-
-### **認証**
-
-- **Devise**
-  - スピーディーに認証機能の実装
-  - 理由：すでにアプリ作成にて学習済み、ドキュメントが豊富
-
-### **インフラ・デプロイ**
-
-- **Render**
-  - 理由：無料枠でのデプロイが可能、Heroku より設定がシンプル
-
-- **Neon or Cloudinaly**
-  - 理由：推奨行動の説明画像をアップロード
-
-### **通知機能**
-
-- **Web Push Notification API**
-  - ブラウザプッシュ通知の実装
-  - ライブラリ：`web-push` gem
-- Solid Queue
-  - Redis+Sidekiq の代わりに Rails8 のデフォルト機能を採用
-- LINE Messaging API（検討中）
-  - LINE による通知も選択可能に
-
-### **グラフ・データ可視化**
-
-- **Chartkick + Chart.js**
-  - 座位時間の推移グラフ
-  - 休憩タイプ別の集計グラフ
-
-### **SNS シェア機能**
-
-- **OGP 画像の動的生成**
-  - ImageMagick / MiniMagick
-  - 達成実績をカード形式の画像として生成
-- **SNS 連携**
-  - Twitter/X API（投稿機能）
-
-### **テスト**
-
-- **RSpec**
-  - 単体テスト、統合テスト
-- **Capybara + Selenium**
-  - E2E テスト（ブラウザ通知のテストを含む）
-
-## **画面遷移図**
-
-[画面遷移図(Figma)](https://www.figma.com/design/w2Ja1NYp5x0rgziS95OJfP/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C-iStainding--MVP-?m=auto&t=nFjaib5eNBv7qT7t-6)
-
-## **ER 図**
-
-[![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
-</file>
-
 <file path="app/assets/stylesheets/application.tailwind.css">
 @import "tailwindcss";
 
@@ -4308,26 +4143,6 @@ module TopHelper
 end
 </file>
 
-<file path="app/javascript/controllers/dropdown_controller.js">
-import { Controller } from "@hotwired/stimulus"
-
-// Connects to data-controller="dropdown"
-export default class extends Controller {
-    static targets = ["menu"]
-
-    toggle() {
-        this.menuTarget.classList.toggle("hidden")
-    }
-
-    hide(event) {
-        //メニュー外のクリックで閉じる
-        if (!this.element.contains(event.target)) {
-            this.menuTarget.classList.add("hidden")
-        }
-    }
-}
-</file>
-
 <file path="app/javascript/controllers/exercise_timer_controller.js">
 import { Controller } from "@hotwired/stimulus"
 
@@ -4371,6 +4186,52 @@ export default class extends Controller {
 
   disconnect() {
     clearInterval(this.interval)
+  }
+}
+</file>
+
+<file path="app/javascript/controllers/index.js">
+// This file is auto-generated by ./bin/rails stimulus:manifest:update
+// Run that command whenever you add a new controller or create them with
+// ./bin/rails generate stimulus controllerName
+
+import { application } from "./application"
+
+import DropdownController from "./dropdown_controller"
+application.register("dropdown", DropdownController)
+
+import ExerciseTimerController from "./exercise_timer_controller"
+application.register("exercise-timer", ExerciseTimerController)
+
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
+
+import MobileMenuController from "./mobile_menu_controller"
+application.register("mobile-menu", MobileMenuController)
+
+import NotificationController from "./notification_controller"
+application.register("notification", NotificationController)
+
+import TimerController from "./timer_controller"
+application.register("timer", TimerController)
+</file>
+
+<file path="app/javascript/controllers/mobile_menu_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="mobile-menu"
+export default class extends Controller {
+  static targets = ["menu"]
+
+  toggle(event) {
+    event.stopPropagation()
+    this.menuTarget.classList.toggle("hidden")
+  }
+
+  hide(event) {
+  if(!this.element.contains(event.target)) {
+    this.menuTarget.classList.add("hidden")
+    }
   }
 }
 </file>
@@ -4494,107 +4355,159 @@ end
 </div>
 </file>
 
-<file path="app/views/devise/registrations/edit.html.erb">
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F7F9F7] relative overflow-hidden">
-  <%# 背景の装飾（テーマに合わせたBlob） %>
-  <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[80px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-accent/20 blur-[80px] rounded-full"></div>
+<file path="app/views/devise/shared/_links.html.erb">
+<div class="flex flex-col gap-3 mt-4">
+  <%- if controller_name != 'sessions' %>
+    <%= link_to new_session_path(resource_name), 
+        class: "text-sm font-medium text-primary hover:text-primary-hover transition-colors flex items-center justify-center gap-1" do %>
+      <span class="material-symbols-outlined text-base">login</span>
+      すでにアカウントをお持ちの方（ログイン）
+    <% end %>
+  <% end %>
 
-  <div class="max-w-md w-full bg-white/70 backdrop-blur-xl border border-white rounded-[3xl] shadow-2xl overflow-hidden z-10">
-    <div class="px-8 pt-10 pb-4 text-center">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
-        <span class="material-symbols-outlined text-3xl">manage_accounts</span>
-      </div>
-      <h2 class="text-3xl font-black text-text-main tracking-tight">アカウント編集</h2>
-    </div>
+  <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+    <%= link_to new_registration_path(resource_name), 
+        class: "text-sm font-medium text-primary hover:text-primary-hover transition-colors flex items-center justify-center gap-1" do %>
+      <span class="material-symbols-outlined text-base">person_add</span>
+      新しくアカウントを作成する
+    <% end %>
+  <% end %>
 
-    <div class="px-8 pb-10 pt-4">
-      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "flex flex-col gap-6" }) do |f| %>
-        <%= render "devise/shared/error_messages", resource: resource %>
+  <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+    <%= link_to new_password_path(resource_name), 
+        class: "text-sm text-text-secondary hover:text-primary transition-colors" do %>
+      パスワードをお忘れですか？
+    <% end %>
+  <% end %>
 
-        <%# ユーザー名 %>
-        <div class="flex flex-col gap-2">
-          <%= f.label :username, "ユーザー名", class: "text-text-main text-sm font-bold ml-1" %>
-          <%= f.text_field :username, 
-              autofocus: true,
-              autocomplete: "username",
-              placeholder: "例: ユーザー名",
-              class: "w-full rounded-2xl border-border-light bg-white/50 focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
-        </div>
+  <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
+    <%= link_to "本人確認メールが届かない場合", new_confirmation_path(resource_name), 
+        class: "text-xs text-text-secondary hover:text-primary" %>
+  <% end %>
 
-        <%# メールアドレス %>
-        <div class="flex flex-col gap-2">
-          <%= f.label :email, "メールアドレス", class: "text-text-main text-sm font-bold ml-1" %>
-          <%= f.email_field :email, 
-              autocomplete: "email", 
-              class: "w-full rounded-2xl border-gray-300 bg-gray-100/80 shadow-inner focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
-        </div>
+  <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
+    <%= link_to "アカウント凍結解除メールが届かない場合", new_unlock_path(resource_name), 
+        class: "text-xs text-text-secondary hover:text-primary" %>
+  <% end %>
 
-        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-          <div class="text-xs text-orange-500 font-bold px-2">現在、確認待ちのメールアドレス: <%= resource.unconfirmed_email %></div>
-        <% end %>
-
-        <%# パスワード変更 %>
-        <div class="flex flex-col gap-2">
-          <div class="flex justify-between items-center ml-1">
-            <%= f.label :password, "新しいパスワード", class: "text-text-main text-sm font-bold" %>
-            <span class="text-[10px] text-text-secondary font-medium italic">変更しない場合は空欄</span>
-          </div>
-          <%= f.password_field :password, 
-              autocomplete: "new-password",
-              placeholder: @minimum_password_length ? "#{@minimum_password_length}文字以上" : "",
-              class: "w-full rounded-2xl border-gray-300 bg-gray-100/80 shadow-inner focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
-        </div>
-
-        <%# パスワード確認 %>
-        <div class="flex flex-col gap-2">
-          <%= f.label :password_confirmation, "新しいパスワード（確認用）", class: "text-text-main text-sm font-bold ml-1" %>
-          <%= f.password_field :password_confirmation, 
-              autocomplete: "new-password",
-              class: "w-full rounded-2xl border-gray-300 bg-gray-100/80 shadow-inner focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
-        </div>
-
-        <%# 現在のパスワード（必須） %>
-        <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10">
-          <div class="flex flex-col gap-2">
-            <%= f.label :current_password, "現在のパスワード", class: "text-primary text-sm font-black ml-1" %>
-            <%= f.password_field :current_password, 
-                autocomplete: "current-password",
-                placeholder: "変更を保存するには入力が必要です",
-                class: "w-full rounded-xl border-primary/20 bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
-          </div>
-        </div>
-
-        <div class="pt-2">
-          <%= f.submit "変更を保存する",
-              class: "w-full cursor-pointer h-14 bg-primary hover:bg-primary-hover text-white font-black rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-[0.98]" %>
-        </div>
+  <%- if devise_mapping.omniauthable? %>
+    <%- resource_class.omniauth_providers.each do |provider| %>
+      <%= button_to omniauth_authorize_path(resource_name, provider), 
+          data: { turbo: false },
+          class: "w-full py-2 px-4 border border-border-light rounded-lg text-sm font-medium hover:bg-gray-50 transition" do %>
+        <%= OmniAuth::Utils.camelize(provider) %>でサインイン
       <% end %>
+    <% end %>
+  <% end %>
+</div>
+</file>
 
-      <%# 区切り線 %>
-      <div class="relative my-8">
-        <div class="w-full border-t border-gray-100"></div>
+<file path="app/views/static_pages/top.html.erb">
+<div class="min-h-screen bg-background-light text-text-main pb-20">
+
+  <main class="max-w-5xl mx-auto px-6 text-center">
+
+    <h1 class="text-xl md:text-2xl font-semibold leading-relaxed pt-10 mb-20">
+      座りすぎは喫煙と同等に身体に悪影響を及ぼすとされています<br>
+      定期的に立ちあがり健康的な生活を目指しましょう
+    </h1>
+    
+
+    <section class="mb-24">
+      <h2 class="text-md font-black text-primary uppercase tracking-[0.3em] mb-20">How to use</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+        <div class="relative">
+          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">01</div>
+          <div class="relative z-10">
+            <h3 class="font-bold mb-3">タイマーをセット</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">作業時間を設定してスタート。<br>あなたのデスクワークを見守ります。</p>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">02</div>
+          <div class="relative z-10">
+            <h3 class="font-bold mb-3">通知で休憩</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">時間になるとデスクトップ通知でお知らせ。<br>座りすぎを防止します。</p>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">03</div>
+          <div class="relative z-10">
+            <h3 class="font-bold mb-3">最適な運動を実践</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">理学療法士監修のメニューを提案。<br>数分の運動で身体をリセット。</p>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <%# アカウント削除 %>
-      <div class="flex flex-col gap-4">
-        <%= button_to registration_path(resource_name), 
-            data: { confirm: "本当に削除しますか？", turbo_confirm: "本当に削除しますか？" }, 
-            method: :delete,
-            class: "w-full cursor-pointer h-12 border-2 border-red-50 text-red-400 hover:bg-red-50 hover:text-red-500 font-bold rounded-2xl transition-all flex items-center justify-center gap-2" do %>
-          <span class="material-symbols-outlined text-xl">delete_forever</span>
-          アカウントを完全に削除する
-        <% end %>
+    <section class="mb-24 bg-white/50 border border-white rounded-[3rem] p-10 md:p-16 shadow-sm">
+      <div class="flex flex-col md:flex-row items-center gap-12 text-left">
+        <div class="flex-1 space-y-6">
+          <div class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase">Push Notification</div>
+          <h2 class="text-2xl font-black leading-tight">ブラウザ通知をONにして<br>健康習慣を確実に。</h2>
+          <p class="text-sm text-text-secondary leading-relaxed">
+            このアプリは、ブラウザのプッシュ通知機能を利用します。ログイン後、通知の許可を求めるダイアログが表示されますので、「許可」を選択してください。
+            <br><span class="text-[10px] opacity-60">※スマートフォン・PCの両方に対応しています。</span>
+          </p>
+        </div>
+        
+        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light animate-bounce-slow">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+              <span class="material-symbols-outlined text-sm">notifications</span>
+            </div>
+            <div class="flex-1">
+              <div class="h-2 w-20 bg-gray-200 rounded"></div>
+              <div class="h-1.5 w-12 bg-gray-100 rounded mt-1"></div>
+            </div>
+          </div>
+          <div class="font-bold text-xs mb-1">休憩の時間です！</div>
+          <div class="text-[10px] text-text-secondary italic">「立ち上がって肩甲骨を回しましょう」</div>
+        </div>
       </div>
+    </section>
 
-      <div class="mt-8 text-center">
-        <%= link_to :back, class: "text-text-secondary hover:text-primary font-bold text-sm inline-flex items-center gap-1 transition-colors" do %>
-          <span class="material-symbols-outlined text-base">arrow_back</span>
-          戻る
-        <% end %>
+    <section class="mb-24">
+      <h2 class="text-md font-black text-text-secondary uppercase tracking-[0.3em] mb-12">The Risks</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
+          <h3 class="font-bold mb-2 text-sm">健康リスクの増大</h3>
+          <p class="text-xs text-text-secondary leading-relaxed">
+            脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。
+          </p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
+          <h3 class="font-bold mb-2 text-sm">集中力の低下</h3>
+          <p class="text-xs text-text-secondary leading-relaxed">
+            血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。
+          </p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
+          <h3 class="font-bold mb-2 text-sm">専門家による監修</h3>
+          <p class="text-xs text-text-secondary leading-relaxed">
+            理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-16 pb-20">
+      <%= link_to "登録して始める",
+        new_user_registration_path,
+        class: "inline-block px-12 py-5 rounded-full bg-primary text-white font-black hover:bg-primary-hover transition shadow-xl shadow-primary/20 active:scale-95" %>
+
+      <div class="mt-6">
+        <%= button_to "ゲストユーザーとして始める",
+            guest_login_path,
+            method: :post,
+            class: "text-sm text-text-secondary underline hover:text-text-main transition cursor-pointer" %>
       </div>
     </div>
-  </div>
+
+  </main>
 </div>
 </file>
 
@@ -4925,50 +4838,293 @@ end
 --require spec_helper
 </file>
 
-<file path="app/javascript/controllers/index.js">
-// This file is auto-generated by ./bin/rails stimulus:manifest:update
-// Run that command whenever you add a new controller or create them with
-// ./bin/rails generate stimulus controllerName
+<file path="README.md">
+# 卒業制作
 
-import { application } from "./application"
+「iStanding(仮称)」
 
-import DropdownController from "./dropdown_controller"
-application.register("dropdown", DropdownController)
+## サービス概要
 
-import ExerciseTimerController from "./exercise_timer_controller"
-application.register("exercise-timer", ExerciseTimerController)
+デスクワーカーの「座りすぎ」を防ぐタイマーアプリ。
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
+医学的根拠に基づいた通知タイミングと効果的な行動提案で健康習慣をサポート。
 
-import MobileMenuController from "./mobile_menu_controller"
-application.register("mobile-menu", MobileMenuController)
+通知機能や座位時間の可視化により、健康的な習慣を無理なく継続できます。
 
-import NotificationController from "./notification_controller"
-application.register("notification", NotificationController)
+## このサービスへの思い・作りたい理由
 
-import TimerController from "./timer_controller"
-application.register("timer", TimerController)
+理学療法士として整形外科で働く中で、腰痛や首の痛みを訴える患者様から「デスクワークで一日中座っています」という言葉を何度も耳にしてきました。日本は座位時間が世界トップレベルで、WHO や厚生労働省も座りすぎによる肥満、心筋梗塞、脳梗塞、ヘルニア、高血圧、糖尿病などのリスクを警告しています。
+
+0 次医療(予防医療)の推進が叫ばれる今、最も必要なのは「わかっているけどできない」を「自然とできる」に変えることです。多くの方が座りすぎの害を知りながらも、「めんどくさい」「まだ大丈夫」「忘れてしまう」「何をしたらいいかわからない」という理由で行動に移せていません。
+
+このアプリは、理学療法士としての専門知識を活かし、デスクワーカーが無理なく座りすぎを防ぎ、健康的な習慣を継続できるようサポートします。
+
+**参考文献**：
+
+- [Sitting Time and All-Cause Mortality Risk in 222,497 Australian Adults](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810)
+- [Sedentary time and its association with risk for disease incidence, mortality, and hospitalization in adults](https://pubmed.ncbi.nlm.nih.gov/21767731/)
+
+## ユーザー層について
+
+**メインターゲット**：デスクワークが多い 20〜40 代の会社員・フリーランス
+
+この層を対象にした理由：
+
+1 日 8 時間以上座って仕事をする人が多く、座りすぎによる健康リスクが高い
+仕事に集中すると立ち上がることを忘れがちで、客観的なアラートが必要
+SNS を日常的に使用しており、達成実績のシェアによるモチベーション維持が期待できる
+スマートフォンや PC を常時使用しているため、アプリの導入・利用ハードルが低い
+健康意識が高まる年代で、予防的な健康管理に関心がある
+
+## サービスの利用イメージ
+
+1. **作業中のサポート**：設定した間隔（例：60 分）で座りすぎアラートが通知される
+2. **休憩時間の内容提案**：休憩アクションを提案（ストレッチ、歩く、立ち作業など）
+3. **1 日の振り返り**：座位時間の推移や休憩回数をグラフで確認
+4. **リマインドによる継続性**：自発的でなく受動的にアプリの利用を促す
+5. **健康コラムによる啓発**：医学的な情報をエビデンスに基づき掲載
+
+**得られる価値**：
+
+- 座りすぎによる健康リスクの軽減（肩こり、腰痛、生活習慣病予防）
+- データの可視化による行動変容の実感、健康意識の向上
+
+## ユーザーの獲得について
+
+- **SNS 拡散**
+
+X(旧 Twitter)での達成実績シェア機能を実装
+「#座りすぎ防止」「#デスクワーク改善」などのハッシュタグで拡散
+シェアされた投稿から新規ユーザーが流入する仕組み
+
+- **健康系コミュニティへのアプローチ**
+
+産業医、産業理学療法など、企業の健康増進に携わるコミュニティへのアプローチ
+
+その後、企業内の社員への普及というレバレッジが期待できる可能性
+
+- **エンジニアコミュニティ（Qiita、Zenn など）での紹介**
+
+デスクワーカーのコミュニティでの展開
+
+- **コンテンツマーケティング**
+
+座りすぎのリスクや改善方法に関する記事を SEO 対策を用いて Web サイトで発信
+
+YMYL, E-E-A-T への留意が必要になる
+実際の利用者の事例なども紹介
+
+## サービスの差別化ポイント・推しポイント
+
+### **類似サービスとの差別化**
+
+**既存のストレッチアプリとの違い**：
+
+- 「ストレッチの継続」ではなく「座位時間の削減」にフォーカス
+- 休憩の種類を強制せず、歩く・立ち作業など柔軟な休憩方法を記録可能
+- 座位時間の可視化により、行動変容を客観的に確認できる
+
+**ポモドーロアプリとの違い**：
+
+- 単なるポモドーロではなく、休憩時間にすべきことを提案、誘導
+- デイリーチャレンジ、ダメージ可視化によるゲーミフィケーション要素
+- SNS シェア機能による社会的なモチベーション維持
+
+### **推しポイント**
+
+1. **行動変容の可視化**：座位時間の推移グラフで改善を実感できる
+2. **柔軟な休憩スタイル**：ストレッチに限定せず、自分に合った休憩方法を選択可能
+3. **小さな成功体験の積み重ね**：毎日のチャレンジ達成で継続しやすい設計
+
+## 機能候補
+
+### **MVP リリース時（最小限の機能）**
+
+1. **ユーザー登録・ログイン機能（devise）**
+
+2. **座位時間アラート機能（Solid Queue + service worker）**
+
+- アラート間隔の調整（30 分、60 分、90 分など）
+
+3. **推奨行動モーダル**
+
+- 任意の設定時間になると休憩アクションを選択（タイプ選択：ストレッチ、歩く、立ち作業など）
+
+4. **基本的なダッシュボード（一日の総座位時間、休憩回数）**
+
+- 総座位時間の表示（寿命に影響を与えると言われている 11 時間を上限とし警告を促す）
+- 連続実施日時を表示
+
+5. **休憩時間の行動リスト（seed）**
+
+- 後に CRUD 実装し、admin 画面で追加編集予定
+
+6. **SNS 共有機能**
+
+- 静的 OGP にて共有
+
+### **本リリースまでに追加したい機能**
+
+1. **admin 用 CRUD の実装（休憩時間の要素の追加、編集）**
+2. **データ可視化**
+
+- 座位時間の推移グラフ（chartkick + chart.js）
+- 最長座位時間の記録と改善推移
+
+3. **ケーション要ゲーミフィ素**
+
+- 連続座位時間によりキャラクターなどの状態が変化、運動や起立で回復（自身の健康状態に対するメタファー）
+- 実績・バッジシステム（3 日連続、7 日連続、累計 100 回休憩など）
+- 連続達成日数（ストリーク）の表示
+
+4. **動的 OGP へのバージョンアップ**
+
+- 達成結果に応じて SNS 共有用の OGP 画像を生成
+
+5. **休憩時に行うアクション一覧**
+
+- 運動、ストレッチなどにカテゴリ分けされた行動一覧を閲覧可能
+
+## 使用する技術スタック
+
+### **バックエンド**
+
+- **Ruby on Rails 8.x Ruby 4.0.x(最新の安定版)**
+  - フルスタックフレームワークとして採用
+  - Solid Queue によるキューイングシステムを利用するため
+  - Rails8 の新機能を活用し、インフラをシンプルに保つ
+
+### **フロントエンド**
+
+- **Hotwire（Turbo + Stimulus）**
+  - リアルタイム更新（座位時間の自動更新、アラート表示）
+  - SPA 的な UX をシンプルに実装
+- **Tailwind CSS**
+  - レスポンシブデザインの実装
+  - 理由：高速な開発とモダンな UI の実現
+
+### **データベース**
+
+- **Neon**
+  - 理由：RenderDBは期限があるため
+
+### **認証**
+
+- **Devise**
+  - スピーディーに認証機能の実装
+  - 理由：すでにアプリ作成にて学習済み、ドキュメントが豊富
+
+### **インフラ・デプロイ**
+
+- **Render**
+  - 理由：無料枠でのデプロイが可能、Heroku より設定がシンプル
+
+- **Cloudinaly**
+  - 理由：推奨行動の説明画像をアップロード
+
+### **通知機能**
+
+- **Web Push Notification API**
+  - ブラウザプッシュ通知の実装
+  - ライブラリ：`web-push` gem
+- Solid Queue
+  - Redis+Sidekiq の代わりに Rails8 のデフォルト機能を採用
+- LINE Messaging API（検討中）
+  - LINE による通知も選択可能に
+
+### **グラフ・データ可視化**
+
+- **Chartkick + Chart.js**
+  - 座位時間の推移グラフ
+  - 休憩タイプ別の集計グラフ
+
+### **SNS シェア機能**
+
+- **OGP 画像の動的生成**
+  - ImageMagick / MiniMagick
+  - 達成実績をカード形式の画像として生成
+- **SNS 連携**
+  - Twitter/X API（投稿機能）
+
+### **テスト**
+
+- **RSpec**
+  - 単体テスト、統合テスト
+- **Capybara + Selenium**
+  - E2E テスト（ブラウザ通知のテストを含む）
+
+## **画面遷移図**
+
+[画面遷移図(Figma)](https://www.figma.com/design/w2Ja1NYp5x0rgziS95OJfP/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C-iStainding--MVP-?m=auto&t=nFjaib5eNBv7qT7t-6)
+
+## **ER 図**
+
+[![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
 </file>
 
-<file path="app/javascript/controllers/mobile_menu_controller.js">
-import { Controller } from "@hotwired/stimulus"
+<file path="app/controllers/users/registrations_controller.rb">
+# frozen_string_literal: true
 
-// Connects to data-controller="mobile-menu"
-export default class extends Controller {
-  static targets = ["menu"]
+class Users::RegistrationsController < Devise::RegistrationsController
+  before_action :configure_sign_up_params, only: [ :create ]
+  before_action :configure_account_update_params, only: [ :update ]
 
-  toggle(event) {
-    event.stopPropagation()
-    this.menuTarget.classList.toggle("hidden")
-  }
+  # GET /resource/sign_up
+  # def new
+  #   super
+  # end
 
-  hide(event) {
-  if(!this.element.contains(event.target)) {
-    this.menuTarget.classList.add("hidden")
-    }
-  }
-}
+  # POST /resource
+  # def create
+  #   super
+  # end
+
+  # GET /resource/edit
+  # def edit
+  #   super
+  # end
+
+  # PUT /resource
+  # def update
+  #   super
+  # end
+
+  # DELETE /resource
+  # def destroy
+  #   super
+  # end
+
+  # GET /resource/cancel
+  # Forces the session data which is usually expired after sign
+  # in to be expired now. This is useful if the user wants to
+  # cancel oauth signing in/up in the middle of the process,
+  # removing all OAuth session data.
+  # def cancel
+  #   super
+  # end
+
+  protected
+
+  # If you have extra params to permit, append them to the sanitizer.
+  def configure_sign_up_params
+  devise_parameter_sanitizer.permit(:sign_up, keys: [ :username ])
+  end
+
+  # If you have extra params to permit, append them to the sanitizer.
+  def configure_account_update_params
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :username ])
+  end
+
+  # The path used after sign up.
+  # def after_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+
+  # The path used after sign up for inactive accounts.
+  # def after_inactive_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+end
 </file>
 
 <file path="app/views/devise/registrations/new.html.erb">
@@ -5073,50 +5229,55 @@ export default class extends Controller {
 </div>
 </file>
 
-<file path="app/views/devise/shared/_links.html.erb">
-<div class="flex flex-col gap-3 mt-4">
-  <%- if controller_name != 'sessions' %>
-    <%= link_to new_session_path(resource_name), 
-        class: "text-sm font-medium text-primary hover:text-primary-hover transition-colors flex items-center justify-center gap-1" do %>
-      <span class="material-symbols-outlined text-base">login</span>
-      すでにアカウントをお持ちの方（ログイン）
-    <% end %>
-  <% end %>
+<file path="app/views/shared/_modal.html.erb">
+<%# app/views/shared/_modal.html.erb %>
+<div class="fixed inset-0 bg-background-dark/80 backdrop-blur-xs flex items-center justify-center z-50 p-6 animate-in fade-in duration-300">
+  <div class="bg-white/90 border border-white/20 shadow-2xl rounded-[3rem] max-w-4xl w-full p-8 md:p-12 transform animate-in zoom-in-95 duration-300">
+    
+    <div class="text-center mb-10">
+      <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold tracking-widest rounded-full mb-4">COMPLETE</span>
+      <h3 class="text-3xl md:text-4xl font-black text-text-main tracking-tight">お疲れさまです！</h3>
+      <p class="text-text-secondary mt-3 text-lg font-medium">少し体を動かして、リフレッシュしましょう</p>
+    </div>
 
-  <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-    <%= link_to new_registration_path(resource_name), 
-        class: "text-sm font-medium text-primary hover:text-primary-hover transition-colors flex items-center justify-center gap-1" do %>
-      <span class="material-symbols-outlined text-base">person_add</span>
-      新しくアカウントを作成する
-    <% end %>
-  <% end %>
-
-  <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-    <%= link_to new_password_path(resource_name), 
-        class: "text-sm text-text-secondary hover:text-primary transition-colors" do %>
-      パスワードをお忘れですか？
-    <% end %>
-  <% end %>
-
-  <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
-    <%= link_to "本人確認メールが届かない場合", new_confirmation_path(resource_name), 
-        class: "text-xs text-text-secondary hover:text-primary" %>
-  <% end %>
-
-  <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
-    <%= link_to "アカウント凍結解除メールが届かない場合", new_unlock_path(resource_name), 
-        class: "text-xs text-text-secondary hover:text-primary" %>
-  <% end %>
-
-  <%- if devise_mapping.omniauthable? %>
-    <%- resource_class.omniauth_providers.each do |provider| %>
-      <%= button_to omniauth_authorize_path(resource_name, provider), 
-          data: { turbo: false },
-          class: "w-full py-2 px-4 border border-border-light rounded-lg text-sm font-medium hover:bg-gray-50 transition" do %>
-        <%= OmniAuth::Utils.camelize(provider) %>でサインイン
+    <%# 3つ横並びのグリッド %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% @exercises.each do |exercise| %>
+        <%= link_to exercise_path(exercise, reopen_modal: true), 
+            class: "group relative block overflow-hidden rounded-[2rem] border-2 border-transparent hover:border-primary hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 active:scale-95" do %>
+          
+          <%# 画像エリア %>
+          <div class="aspect-[4/5] relative">
+            <% if exercise.cloudinary_public_id.present? %>
+              <%= cl_image_tag(exercise.cloudinary_public_id, 
+                  class: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110") %>
+            <% else %>
+              <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">No Image</div>
+            <% end %>
+            
+            <%# オーバーレイ：画像の上に名前を表示 %>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+              <div class="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <div class="text-white font-black text-lg leading-tight"><%= exercise.name %></div>
+                <div class="mt-2 flex items-center text-primary-light text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  START NOW 
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
       <% end %>
-    <% end %>
-  <% end %>
+    </div>
+
+    <div class="text-center mt-10">
+      <button
+          type="button"
+          class="px-8 py-3 text-sm font-bold text-text-secondary/60 hover:text-primary transition-colors cursor-pointer tracking-widest"
+          data-action="click->timer#closeModal">
+        今はスキップして続ける →
+      </button>
+    </div>
+  </div>
 </div>
 </file>
 
@@ -5124,115 +5285,6 @@ export default class extends Controller {
 <%= turbo_stream.update "modal_container" do%>
     <%= render partial: "shared/modal", locals: { exercise: @exercises} %>
 <% end %>
-</file>
-
-<file path="app/views/static_pages/top.html.erb">
-<div class="min-h-screen bg-background-light text-text-main pb-20">
-
-  <main class="max-w-5xl mx-auto px-6 text-center">
-
-    <h1 class="text-xl md:text-2xl font-semibold leading-relaxed pt-10 mb-20">
-      座りすぎは喫煙と同等に身体に悪影響を及ぼすとされています<br>
-      定期的に立ちあがり健康的な生活を目指しましょう
-    </h1>
-    
-
-    <section class="mb-24">
-      <h2 class="text-md font-black text-primary uppercase tracking-[0.3em] mb-20">How to use</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">01</div>
-          <div class="relative z-10">
-            <h3 class="font-bold mb-3">タイマーをセット</h3>
-            <p class="text-sm text-text-secondary leading-relaxed">作業時間を設定してスタート。<br>あなたのデスクワークを見守ります。</p>
-          </div>
-        </div>
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">02</div>
-          <div class="relative z-10">
-            <h3 class="font-bold mb-3">通知で休憩</h3>
-            <p class="text-sm text-text-secondary leading-relaxed">時間になるとデスクトップ通知でお知らせ。<br>座りすぎを防止します。</p>
-          </div>
-        </div>
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">03</div>
-          <div class="relative z-10">
-            <h3 class="font-bold mb-3">最適な運動を実践</h3>
-            <p class="text-sm text-text-secondary leading-relaxed">理学療法士監修のメニューを提案。<br>数分の運動で身体をリセット。</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-24 bg-white/50 border border-white rounded-[3rem] p-10 md:p-16 shadow-sm">
-      <div class="flex flex-col md:flex-row items-center gap-12 text-left">
-        <div class="flex-1 space-y-6">
-          <div class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase">Push Notification</div>
-          <h2 class="text-2xl font-black leading-tight">ブラウザ通知をONにして<br>健康習慣を確実に。</h2>
-          <p class="text-sm text-text-secondary leading-relaxed">
-            このアプリは、ブラウザのプッシュ通知機能を利用します。ログイン後、通知の許可を求めるダイアログが表示されますので、「許可」を選択してください。
-            <br><span class="text-[10px] opacity-60">※スマートフォン・PCの両方に対応しています。</span>
-          </p>
-        </div>
-        
-        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light animate-bounce-slow">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
-              <span class="material-symbols-outlined text-sm">notifications</span>
-            </div>
-            <div class="flex-1">
-              <div class="h-2 w-20 bg-gray-200 rounded"></div>
-              <div class="h-1.5 w-12 bg-gray-100 rounded mt-1"></div>
-            </div>
-          </div>
-          <div class="font-bold text-xs mb-1">休憩の時間です！</div>
-          <div class="text-[10px] text-text-secondary italic">「立ち上がって肩甲骨を回しましょう」</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-24">
-      <h2 class="text-md font-black text-text-secondary uppercase tracking-[0.3em] mb-12">The Risks</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
-          <h3 class="font-bold mb-2 text-sm">健康リスクの増大</h3>
-          <p class="text-xs text-text-secondary leading-relaxed">
-            脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。
-          </p>
-        </div>
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
-          <h3 class="font-bold mb-2 text-sm">集中力の低下</h3>
-          <p class="text-xs text-text-secondary leading-relaxed">
-            血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。
-          </p>
-        </div>
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
-          <h3 class="font-bold mb-2 text-sm">専門家による監修</h3>
-          <p class="text-xs text-text-secondary leading-relaxed">
-            理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <div class="mt-16 pb-20">
-      <%= link_to "登録して始める",
-        new_user_registration_path,
-        class: "inline-block px-12 py-5 rounded-full bg-primary text-white font-black hover:bg-primary-hover transition shadow-xl shadow-primary/20 active:scale-95" %>
-
-      <div class="mt-6">
-        <%= button_to "ゲストユーザーとして始める",
-            guest_login_path,
-            method: :post,
-            class: "text-sm text-text-secondary underline hover:text-text-main transition cursor-pointer" %>
-      </div>
-    </div>
-
-  </main>
-</div>
 </file>
 
 <file path="config/environments/development.rb">
@@ -5471,58 +5523,6 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 end
-</file>
-
-<file path="app/views/shared/_modal.html.erb">
-<%# app/views/shared/_modal.html.erb %>
-<div class="fixed inset-0 bg-background-dark/80 backdrop-blur-xs flex items-center justify-center z-50 p-6 animate-in fade-in duration-300">
-  <div class="bg-white/90 border border-white/20 shadow-2xl rounded-[3rem] max-w-4xl w-full p-8 md:p-12 transform animate-in zoom-in-95 duration-300">
-    
-    <div class="text-center mb-10">
-      <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold tracking-widest rounded-full mb-4">COMPLETE</span>
-      <h3 class="text-3xl md:text-4xl font-black text-text-main tracking-tight">お疲れさまです！</h3>
-      <p class="text-text-secondary mt-3 text-lg font-medium">少し体を動かして、リフレッシュしましょう</p>
-    </div>
-
-    <%# 3つ横並びのグリッド %>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <% @exercises.each do |exercise| %>
-        <%= link_to exercise_path(exercise, reopen_modal: true), 
-            class: "group relative block overflow-hidden rounded-[2rem] border-2 border-transparent hover:border-primary hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 active:scale-95" do %>
-          
-          <%# 画像エリア %>
-          <div class="aspect-[4/5] relative">
-            <% if exercise.cloudinary_public_id.present? %>
-              <%= cl_image_tag(exercise.cloudinary_public_id, 
-                  class: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110") %>
-            <% else %>
-              <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">No Image</div>
-            <% end %>
-            
-            <%# オーバーレイ：画像の上に名前を表示 %>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-              <div class="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <div class="text-white font-black text-lg leading-tight"><%= exercise.name %></div>
-                <div class="mt-2 flex items-center text-primary-light text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  START NOW 
-                </div>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
-
-    <div class="text-center mt-10">
-      <button
-          type="button"
-          class="px-8 py-3 text-sm font-bold text-text-secondary/60 hover:text-primary transition-colors cursor-pointer tracking-widest"
-          data-action="click->timer#closeModal">
-        今はスキップして続ける →
-      </button>
-    </div>
-  </div>
-</div>
 </file>
 
 <file path="db/schema.rb">
@@ -6008,43 +6008,6 @@ RSpec.describe SendNotificationJob, type: :job do
 end
 </file>
 
-<file path="app/controllers/activity_logs_controller.rb">
-class ActivityLogsController < ApplicationController
-  def create
-   @sitting_session = current_user.sitting_sessions.active.last
-   @active_log = ActivityLog.new(activity_log_params)
-
-    if @active_log.save
-
-      @sitting_session.completed!
-      redirect_to root_path, notice: "運動を記録しました！", status: :see_other
-    else
-      redirect_to root_path, alert: "運動の記録に失敗しました。", status: :see_other
-    end
-  end
-
-  private
-
-  def activity_log_params
-    params.require(:activity_log).permit(:exercise_id, :sitting_session_id)
-  end
-end
-</file>
-
-<file path="app/controllers/top_controller.rb">
-class TopController < ApplicationController
-  before_action :authenticate_user!
-
-  def index
-    @total_seconds = current_user.today_total_sitting_seconds
-    @percentage = current_user.sitting_progress_percentage
-    @exercise_count = current_user.today_exercise_count
-
-    @sitting_session = current_user.sitting_sessions.new
-  end
-end
-</file>
-
 <file path="app/models/user.rb">
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
@@ -6083,130 +6046,6 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }, if: -> { password.present? }
 end
-</file>
-
-<file path="app/views/exercises/show.html.erb">
-<%# 全体の背景設定と装飾用のBlob要素 %>
-<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
-  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
-</div>
-
-<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
-  
-  <%# ヘッダーラベルとタイトル %>
-  <div class="text-center mb-10 mt-8">
-    <div class="inline-flex items-center gap-2 mb-3 text-primary">
-      <span class="material-symbols-outlined text-xl">spa</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
-    </div>
-    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
-      <%= @exercise.name %>
-    </h1>
-  </div>
-
-  <%# メインビジュアル（画像部分） %>
-  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
-    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
-      <% if @exercise.cloudinary_public_id.present? %>
-        <%= cl_image_tag(@exercise.cloudinary_public_id, 
-            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
-      <% end %>
-      
-      <%# 再生ガイド用バッジ %>
-      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
-        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
-      </div>
-    </div>
-  </div>
-
-  <%# コンテンツエリア %>
-  <div class="w-full grid md:grid-cols-3 gap-10">
-    <%# やり方の解説（左側 2/3） %>
-    <div class="md:col-span-2 space-y-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-          <span class="material-symbols-outlined">description</span>
-        </div>
-        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
-      </div>
-
-      <div class="space-y-4">
-        <%# descriptionを改行で分割してリスト化する例（もしフォーマットが決まっていれば） %>
-        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
-          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
-              <%= index + 1 %>
-            </div>
-            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
-              <%= step %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-
-    <%# 注意ポイント（右側 1/3） %>
-    <div class="space-y-6">
-      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
-        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-xl">info</span>
-          注意ポイント
-        </h3>
-        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
-          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</main>
-
-<%# 下部に固定されたアクションバー %>
-<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
-  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
-    <div class="flex flex-col md:flex-row items-center gap-6">
-      
-      <%# 進捗バー（演出用） %>
-      <div class="flex-1 w-full px-2"
-           data-controller="exercise-timer"
-           data-exercise-timer-duration-value="300">
-        <div class="flex justify-between items-end mb-2">
-          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
-          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
-        </div>
-        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
-        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
-             data-exercise-timer-target="bar"
-             style="width: 100%;">
-  
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
-        </div>
-        </div>
-        </div>
-
-      <%# アクションボタン %>
-      <div class="flex items-center gap-4 w-full md:w-auto">
-        <%= link_to root_path(reopen_modal: true),
-            data: { turbo: false },
-            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
-          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
-          <span>他の運動</span>
-        <% end %>
-
-        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id }),
-            method: :post,
-            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
-          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
-          <span>完了して戻る</span>
-        <% end %>
-      </div>
-
-    </div>
-  </div>
-</div>
 </file>
 
 <file path="app/views/layouts/application.html.erb">
@@ -6361,12 +6200,166 @@ end
   <div class="h-20 md:h-20"></div>
 <% end %>
     <%= yield %>
-    <%# どのページにいてもモーダルを表示するため %>
    
     <%# 動作確認用 %>
     <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
   </body>
 </html>
+</file>
+
+<file path="app/controllers/activity_logs_controller.rb">
+class ActivityLogsController < ApplicationController
+ def create
+  @activity_log = current_user.activity_logs.build(
+    activity_log_params.merge(sitting_session: current_user.sitting_sessions.active.last)
+  )
+
+  if @activity_log.save
+    @activity_log.sitting_session&.completed!
+    redirect_to root_path, notice: "運動を記録しました！", status: :see_other
+  else
+    redirect_back fallback_location: root_path,
+                  alert: "記録に失敗しました: #{@activity_log.errors.full_messages.join(', ')}"
+  end
+end
+
+  private
+
+  def activity_log_params
+    params.require(:activity_log).permit(:exercise_id, :sitting_session_id)
+  end
+end
+</file>
+
+<file path="app/controllers/top_controller.rb">
+class TopController < ApplicationController
+  before_action :authenticate_user!
+
+  def index
+    @total_seconds = current_user.today_total_sitting_seconds
+    @percentage = current_user.sitting_progress_percentage
+    @exercise_count = current_user.today_exercise_count
+    @sitting_session = current_user.sitting_sessions.new
+
+    if params[:reopen_modal] == "true"
+      @exercises = Exercise.order("RANDOM()").limit(3)
+    end
+  end
+end
+</file>
+
+<file path="app/views/exercises/show.html.erb">
+<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
+  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
+</div>
+
+<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
+  
+  <div class="text-center mb-10 mt-8">
+    <div class="inline-flex items-center gap-2 mb-3 text-primary">
+      <span class="material-symbols-outlined text-xl">spa</span>
+      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
+      <%= @exercise.name %>
+    </h1>
+  </div>
+
+  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
+    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
+      <% if @exercise.cloudinary_public_id.present? %>
+        <%= cl_image_tag(@exercise.cloudinary_public_id, 
+            class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
+      <% end %>
+      
+      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
+        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full grid md:grid-cols-3 gap-10">
+    <%# やり方の解説（左側 2/3） %>
+    <div class="md:col-span-2 space-y-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
+      </div>
+
+      <div class="space-y-4">
+        <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
+          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
+              <%= index + 1 %>
+            </div>
+            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
+              <%= step %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
+        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-xl">info</span>
+          注意ポイント
+        </h3>
+        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
+          <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
+  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      
+      <div class="flex-1 w-full px-2"
+           data-controller="exercise-timer"
+           data-exercise-timer-duration-value="300">
+        <div class="flex justify-between items-end mb-2">
+          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
+          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
+        </div>
+        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
+        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
+             data-exercise-timer-target="bar"
+             style="width: 100%;">
+  
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+        </div>
+        </div>
+        </div>
+
+      <div class="flex items-center gap-4 w-full md:w-auto">
+        <%= link_to root_path(reopen_modal: true),
+            data: { turbo: false },
+            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
+          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
+          <span>他の運動</span>
+        <% end %>
+
+        <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id }),
+            method: :post,
+            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
+          <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
+          <span>完了して戻る</span>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
 </file>
 
 <file path="config/routes.rb">
@@ -6391,7 +6384,9 @@ Rails.application.routes.draw do
 
   resources :activity_logs, only: [ :create ]
 
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: "users/registrations"
+  }
 
   post "guest_login", to: "users/guest_sessions#create"
 
@@ -6504,7 +6499,11 @@ end
       </div>
 
     </div>
-   <div id="modal_container"></div>
+   <div id="modal_container">
+    <% if params[:reopen_modal] == "true" && @exercises.present? %>
+      <%= render partial: "shared/modal", locals: { exercise: @exercises } %>
+    <% end %>
+   </div>
   </div>
 </div>
 </file>
@@ -6625,14 +6624,14 @@ class SittingSessionsController < ApplicationController
   def create
     minutes = params.dig(:sitting_session, :duration).to_i
     @sitting_session = current_user.sitting_sessions.build(
-      duration: minutes * 60, #秒に変換
+      duration: minutes * 60, # 秒に変換
       status: :active
     )
 
     if @sitting_session.save
-      
+
       # デバッグ用
-      #SendNotificationJob.set(wait_until: Time.current + 5.seconds)
+      # SendNotificationJob.set(wait_until: Time.current + 5.seconds)
       # .perform_later(@sitting_session.id)
 
       # タイマー終了時に通知jobを予約する
@@ -6645,7 +6644,6 @@ class SittingSessionsController < ApplicationController
   end
 
   def finish_current
-   
     @sitting_session = current_user.sitting_sessions.active.last
 
     if @sitting_session
@@ -6653,7 +6651,7 @@ class SittingSessionsController < ApplicationController
     @sitting_session.update(duration: params[:duration])
 
     @exercises = Exercise.order("RANDOM()").limit(3)
-      
+
       respond_to do |format|
       format.turbo_stream # finish_current.turbo_stream.erb を探す
       end
@@ -6717,7 +6715,6 @@ export default class extends Controller {
         }
     }
 
-    // 1. 設定：時間セット
     setTime(event) {
         const minutes = event.params.minutes
         this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
@@ -6733,7 +6730,6 @@ export default class extends Controller {
         this.updateCircle()
     }
 
-    // 2. 実行：タイマー開始
     start() {
 
         this.resetState() // 全てをクリアしてから開始
@@ -6756,7 +6752,7 @@ export default class extends Controller {
             
             if (this.remainingTime <= 0) {
                 this.stop()
-                this.showSessionModal()
+                this.finish()
             } 
         }, 1000)
     }
@@ -6773,7 +6769,6 @@ export default class extends Controller {
         this.circleTarget.style.strokeDashoffset = offset
     }
 
-    // 3. 制御：停止・リセット
     stop() {
         if (this.timer) {
             clearInterval(this.timer)
@@ -6781,7 +6776,6 @@ export default class extends Controller {
         }
     }
 
-    // 全てをクリアする（リセットボタン等で使用）
     reset() {
         this.stop()
         this.clearAutoCloseTimer()
@@ -6792,7 +6786,6 @@ export default class extends Controller {
         this.updateCircle()
     }
 
-    // 内部的な状態リセット（start時などに使用）
     resetState() {
         this.stop()
         this.clearAutoCloseTimer()
@@ -6800,7 +6793,6 @@ export default class extends Controller {
         this.clearModalUI()
     }
 
-    // 4. 通信：セッション終了と保存
     showSessionModal() {
         if (this.isModalOpen) return
         this.isModalOpen = true
@@ -6813,7 +6805,6 @@ export default class extends Controller {
     }
 
    async finish() {
-    // 1. まずフロント側のタイマーを止めて表示をゼロにする
     this.stop()
     this.clearAutoCloseTimer()
     this.remainingTime = 0
@@ -6823,11 +6814,8 @@ export default class extends Controller {
 
     if (!this.startTime) return
 
-    // 2. 実績時間を計算
     this.actualDuration = Math.floor((new Date() - this.startTime) / 1000)
 
-    // 3. サーバーへ「実績時間」を送信（PATCH）
-    // Rails側では duration だけを更新し、completed にはしない
     const response = await fetch("/sitting_sessions/finish_current", {
         method: "PATCH",
         headers: {
@@ -6839,16 +6827,14 @@ export default class extends Controller {
     })
 
     if (response.ok) {
-        // 4. Railsから返ってきた turbo_stream（モーダル表示）を実行
+        //Railsから返ってきた turbo_stream（モーダル表示）を実行
         const streamMessage = await response.text()
         Turbo.renderStreamMessage(streamMessage)
         
-        // 5. 計測状態をリセット
         this.resetState()
     }
 }
 
-    // 5. UI操作
     closeModal() {
         this.resetState()
         this.clearModalUI()
@@ -6877,19 +6863,18 @@ export default class extends Controller {
 <file path="app/models/sitting_session.rb">
 class SittingSession < ApplicationRecord
   # タイマーの時間選択肢
-  SETTING_DURATIONS = [ 30, 60, 90 ].freeze
+  SETTING_DURATIONS = [ 1, 60, 90 ].freeze
   # 一日の座位時間上限(11時間を秒に換算)
   SITTING_TIME_LIMIT = 11 * 60 * 60
 
   belongs_to :user
 
   has_many :suggested_actions, dependent: :destroy
-  # 中間テーブルを介してexerciseへ
+
   has_many :exercises, through: :suggested_actions
 
   has_many :activity_logs, dependent: :nullify
 
-  # Enums (列挙型)
   enum :status, { active: 0, completed: 1, cancelled: 2 }
 
   before_create :cancel_active_sessions
@@ -6905,13 +6890,10 @@ class SittingSession < ApplicationRecord
     self.notified = false
   end
 
-  # 今日のセッションを取得
   scope :today, -> { where(created_at: Time.zone.now.all_day) }
 
-  # 終了時刻の計算
+
   def end_time
-    # デバッグ時に使用
-    #created_at + duration.seconds
     created_at + duration.minutes
   end
 
