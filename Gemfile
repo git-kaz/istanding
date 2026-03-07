@@ -53,8 +53,8 @@ gem "web-push"
 
 gem "chartkick"
 
-#日付の穴埋めに使用
-gem "groupdate" 
+# 日付の穴埋めに使用
+gem "groupdate"
 
 
 group :development, :test do
