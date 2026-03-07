@@ -17,7 +17,7 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   host: db
   username: postgres
   password: password
@@ -70,7 +70,6 @@ production:
   # Solid Queue用：同じURL（メインDB）を使う
   queue:
     <<: *primary_production
-    pool: 1
   cable:
     <<: *primary_production
   cache:
