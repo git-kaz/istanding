@@ -1,52 +1,56 @@
-
-<div class="fixed inset-0 -z-10 overflow-hidden bg-[#F7F9F7] dark:bg-[#1A2220]">
+<%# 背景 %>
+<div class="fixed inset-0 -z-10 overflow-hidden bg-background-dark">
   <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent/20 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
 </div>
 
-<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto font-display">
-  
+<main class="min-h-screen flex flex-col items-center justify-start p-6 pb-48 w-full max-w-5xl mx-auto">
+
+  <%# タイトル %>
   <div class="text-center mb-10 mt-8">
     <div class="inline-flex items-center gap-2 mb-3 text-primary">
       <span class="material-symbols-outlined text-xl">spa</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-xs">Relax & Stretch</span>
+      <span class="font-bold tracking-[0.2em] uppercase text-md">Exercise & Stretch</span>
     </div>
-    <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight">
+    <h1 class="text-4xl md:text-5xl font-black text-text-main tracking-tight">
       <%= @exercise.name %>
     </h1>
   </div>
 
-  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl overflow-hidden mb-12 border border-white/60">
-    <div class="aspect-video bg-[#E8EFE9] dark:bg-black/20 relative group">
+  <%# 画像エリア %>
+  <div class="w-full bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] overflow-hidden mb-12 border-2 border-white/60">
+    <div class="aspect-video bg-background-dark relative group">
       <% if @exercise.cloudinary_public_id.present? %>
-        <%= cl_image_tag(@exercise.cloudinary_public_id, 
+        <%= cl_image_tag(@exercise.cloudinary_public_id,
             class: "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105") %>
       <% end %>
-      
-      <div class="absolute top-6 left-6 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/30 shadow-sm">
+
+      <div class="absolute top-6 left-6 px-4 py-2 bg-white/60 backdrop-blur-md rounded-full flex items-center gap-2 border border-white/60 shadow-sm">
         <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-        <span class="text-text-main text-[10px] font-black uppercase tracking-widest">Guide Active</span>
+        <span class="text-text-main text-sm font-black uppercase tracking-widest">Activity Guide</span>
       </div>
     </div>
   </div>
 
-  <div class="w-full grid md:grid-cols-3 gap-10">
-    <%# やり方の解説（左側 2/3） %>
-    <div class="md:col-span-2 space-y-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+  <%# 解説・注意ポイント %>
+  <div class="w-full grid md:grid-cols-3 gap-8">
+
+    <%# 動きの解説（左2/3） %>
+    <div class="md:col-span-2 space-y-5">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
           <span class="material-symbols-outlined">description</span>
         </div>
-        <h2 class="text-xl font-black text-text-main dark:text-white">動きの解説</h2>
+        <h2 class="text-xl font-black text-text-main">動きの解説</h2>
       </div>
 
       <div class="space-y-4">
         <% @exercise.description.split("\n").reject(&:blank?).each_with_index do |step, index| %>
-          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
+          <div class="flex gap-5 p-6 bg-white/50 backdrop-blur-md rounded-3xl border-2 border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
+            <div class="flex-shrink-0 w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-black text-base shadow-lg shadow-primary/20">
               <%= index + 1 %>
             </div>
-            <div class="text-text-main/90 dark:text-gray-300 text-lg leading-relaxed font-medium">
+            <div class="text-text-main text-lg leading-relaxed font-medium">
               <%= step %>
             </div>
           </div>
@@ -54,13 +58,14 @@
       </div>
     </div>
 
+    <%# 注意ポイント（右1/3） %>
     <div class="space-y-6">
-      <div class="p-8 bg-accent/30 dark:bg-stone-900/40 border border-accent/40 dark:border-stone-700/30 rounded-[2rem] backdrop-blur-sm">
-        <h3 class="text-[#8C7B60] dark:text-stone-300 font-black flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-xl">info</span>
+      <div class="p-8 bg-white/40 backdrop-blur-md border-2 border-white/60 rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
+        <h3 class="text-text-main font-black flex items-center gap-2 mb-5 text-lg">
+          <span class="material-symbols-outlined text-primary">info</span>
           注意ポイント
         </h3>
-        <ul class="text-sm text-[#5D5645] dark:text-stone-400 space-y-4 leading-relaxed font-medium">
+        <ul class="text-base text-text-secondary space-y-4 leading-relaxed font-medium">
           <li class="flex gap-3"><span class="text-primary font-bold">•</span>呼吸を止めずに、ゆっくり</li>
           <li class="flex gap-3"><span class="text-primary font-bold">•</span>痛みのない「気持ちいい」範囲で</li>
           <li class="flex gap-3"><span class="text-primary font-bold">•</span>ストレッチは1分を目安に</li>
@@ -70,38 +75,40 @@
   </div>
 </main>
 
+<%# フッターバー %>
 <div class="fixed bottom-0 left-0 right-0 z-40 p-6 md:p-8">
-  <div class="max-w-4xl mx-auto bg-white/80 dark:bg-[#243028]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-15px_50px_-10px_rgba(0,0,0,0.1)] p-5 border border-white/50">
+  <div class="max-w-4xl mx-auto bg-white/60 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_-8px_40px_rgba(0,0,0,0.08)] p-5 border-2 border-white/60">
     <div class="flex flex-col md:flex-row items-center gap-6">
-      
+
+      <%# タイマーバー %>
       <div class="flex-1 w-full px-2"
            data-controller="exercise-timer"
            data-exercise-timer-duration-value="300">
         <div class="flex justify-between items-end mb-2">
-          <span class="text-xs font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
-          <span class="text-xs font-bold text-gray-400 italic text-right">目標時間　5分</span>
+          <span class="text-md font-black text-primary uppercase tracking-[0.2em]">Exercise Progress</span>
+          <span class="text-md font-bold text-text-secondary italic">目標時間　5分</span>
         </div>
-        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-[1px]">
-        <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
-             data-exercise-timer-target="bar"
-             style="width: 100%;">
-  
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+        <div class="w-full h-3 bg-primary/10 rounded-full overflow-hidden border border-primary/20">
+          <div class="h-full bg-primary rounded-full relative transition-all duration-1000 ease-linear"
+               data-exercise-timer-target="bar"
+               style="width: 100%;">
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_8px_rgba(106,155,118,0.8)] animate-pulse"></div>
+          </div>
         </div>
-        </div>
-        </div>
+      </div>
 
+      <%# ボタン群 %>
       <div class="flex items-center gap-4 w-full md:w-auto">
         <%= link_to root_path(reopen_modal: true),
             data: { turbo: false },
-            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-text-main dark:text-white font-bold transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2 active:scale-95 group shadow-sm" do %>
+            class: "flex-1 md:flex-none px-8 h-14 rounded-2xl bg-primary/20 hover:bg-primary/30 text-text-main font-bold transition-all border-2 border-primary/30 hover:border-primary/50 flex items-center justify-center gap-2 active:scale-95 group" do %>
           <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">refresh</span>
-          <span>他の運動</span>
+          <span class="text-base">他の運動</span>
         <% end %>
 
         <%= button_to activity_logs_path(activity_log: { exercise_id: @exercise.id }),
             method: :post,
-            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full" do %>
+            class: "flex-[1.5] md:flex-none px-12 h-14 rounded-2xl bg-primary hover:bg-primary-hover text-white font-black transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 group tracking-widest w-full text-base" do %>
           <span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
           <span>完了して戻る</span>
         <% end %>
