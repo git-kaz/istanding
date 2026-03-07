@@ -8,16 +8,16 @@ Rails.application.routes.draw do
     root "static_pages#top"
   end
 
-  resources :sitting_sessions, only: [ :new, :create, :show ] do
+  resources :sitting_sessions, only: %i[new create show ] do
     collection do
       post :subscribe
       patch :finish_current
     end
   end
 
-  resources :exercises, only: [ :index, :show ]
+  resources :exercises, only: %i[index show ]
 
-  resources :activity_logs, only: [ :create ]
+  resources :activity_logs, only: %i[create index ]
 
   devise_for :users, controllers: {
     registrations: "users/registrations"

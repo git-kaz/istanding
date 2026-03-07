@@ -52,6 +52,12 @@
         <div class="hidden lg:flex items-center gap-6">
           <% if user_signed_in? %>
             <%# ログイン後：ユーザーメニュー %>
+            <%# 履歴リンクを追加 %>
+            <%= link_to activity_logs_path,
+                class: "flex items-center gap-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors" do %>
+                <span class="material-symbols-outlined text-xl">bar_chart</span>
+                履歴
+             <% end %>
             <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
               <button
                 data-action="click->dropdown#toggle"
