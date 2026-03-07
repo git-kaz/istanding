@@ -70,6 +70,7 @@ production:
   # Solid Queue用：同じURL（メインDB）を使う
   queue:
     <<: *primary_production
+    pool: 1
   cable:
     <<: *primary_production
   cache:
