@@ -24,6 +24,25 @@ class User < ApplicationRecord
     activity_logs.today.count
   end
 
+  # 座位時間の集計
+  def daily_sitting_hours(days: 7)
+    sitting_sessions
+    .where(start_at: days.days.ago.beginning_of_day..)
+    .where(status: :completed)
+    .group_by_day(:created_at, last: days, time_zone: "Tokyo")
+    .sum(:duration)
+    .transform_keys { |date| date.strftime("%-m/%-d") }  # キーを月/日に変換
+    .transform_values { |seconds| [(seconds / 3600.0).round(1), SittingSession::SITTING_TIME_LIMIT / 3600.0].min }
+  end
+
+  #運動回数の集計
+  def daily_exercise_counts(days: 7)
+    activity_logs
+    .where(created_at: days.days.ago.beginning_of_day..)
+    .group_by_day(:created_at, last: days, time_zone: "Tokyo")
+    .count
+  end
+
   # ゲストログインの実装
   def self.guest
     find_or_create_by!(email: "guest@example.com") do |user|
