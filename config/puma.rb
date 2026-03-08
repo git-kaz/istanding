@@ -27,7 +27,7 @@
 # threads. This includes Active Record's `pool` parameter in `database.yml`.
 
 # スレッド数を2つにしてメモリを制限
-threads_count = ENV.fetch("RAILS_MAX_THREADS", 2)
+threads_count = ENV.fetch("RAILS_MAX_THREADS", 1)
 threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
