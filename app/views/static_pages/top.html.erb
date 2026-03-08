@@ -7,31 +7,80 @@
       定期的に立ちあがり健康的な生活を目指しましょう
     </h1>
 
-
+    <%# How to use %>
     <section class="mb-24">
-      <h2 class="text-2xl font-black text-primary uppercase tracking-[0.3em] mb-20">How to use</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">01</div>
-          <div class="relative z-10">
-            <h3 class="text-xl font-bold mb-3">タイマーをセット</h3>
-            <p class="text-md text-text-secondary leading-relaxed">作業時間を設定してスタート。<br>あなたのデスクワークを見守ります。</p>
+      <h2 class="text-2xl font-black text-primary uppercase tracking-[0.3em] mb-10">How to use</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+
+        <%# ステップ間の矢印（PC） %>
+        <div class="hidden md:flex absolute top-1/2 left-[33%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
+          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
+        </div>
+        <div class="hidden md:flex absolute top-1/2 left-[67%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
+          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
+        </div>
+
+        <%# STEP 1 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">01</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">timer</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-black mb-2">タイマーをセット</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">好きな時間を選んでスタート。時間になったら通知が届きます。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2">
+            <div class="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold">60分</div>
+            <span class="material-symbols-outlined text-primary/30 text-sm">arrow_forward</span>
+            <div class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">スタート ▶</div>
           </div>
         </div>
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">02</div>
-          <div class="relative z-10">
-            <h3 class="text-xl font-bold mb-3">通知で休憩</h3>
-            <p class="text-md text-text-secondary leading-relaxed">時間になると通知でお知らせ。<br>座りすぎを防止します。</p>
+
+        <%# STEP 2 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">02</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">notifications_active</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-black mb-2">通知で休憩のサイン</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">時間になると通知でお知らせ。「休憩する」を押して立ち上がりましょう。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3">
+            <div class="flex items-center gap-2 text-left">
+              <div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-sm">notifications</span>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-text-main">休憩の時間です！</p>
+                <p class="text-[10px] text-text-secondary">iStanding</p>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">03</div>
-          <div class="relative z-10">
-            <h3 class="text-xl font-bold mb-3">最適な運動を実践</h3>
-            <p class="text-md text-text-secondary leading-relaxed">理学療法士監修のメニューを提案。<br>数分の運動で身体をリセット。</p>
+
+        <%# STEP 3 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">03</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">fitness_center</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-black mb-2">最適な運動を実践</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">運動メニューを提案。完了すると記録され、グラフで継続が見える。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+              <span class="material-symbols-outlined text-sm">self_improvement</span>ストレッチ
+            </div>
+            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+              <span class="material-symbols-outlined text-sm">fitness_center</span>筋トレ
+            </div>
           </div>
         </div>
+
       </div>
     </section>
 
@@ -45,8 +94,7 @@
             <br><span class="text-sm opacity-70">※スマートフォン・PCの両方に対応しています。</span>
           </p>
         </div>
-
-        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light animate-bounce-slow">
+        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light">
           <div class="flex items-center gap-3 mb-2">
             <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
               <span class="material-symbols-outlined text-sm">notifications</span>
@@ -68,43 +116,31 @@
         <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
           <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
           <h3 class="font-bold mb-3 text-xl">健康リスクの増大</h3>
-          <p class="text-base text-text-secondary leading-relaxed">
-            脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。
-          </p>
+          <p class="text-base text-text-secondary leading-relaxed">脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。</p>
         </div>
         <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
           <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
           <h3 class="font-bold mb-3 text-xl">集中力の低下</h3>
-          <p class="text-base text-text-secondary leading-relaxed">
-            血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。
-          </p>
+          <p class="text-base text-text-secondary leading-relaxed">血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。</p>
         </div>
         <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
           <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
           <h3 class="font-bold mb-3 text-xl">専門家による監修</h3>
-          <p class="text-base text-text-secondary leading-relaxed">
-            理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。
-          </p>
+          <p class="text-base text-text-secondary leading-relaxed">理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。</p>
         </div>
       </div>
     </section>
 
-    <%# CTA セクション %>
+    <%# CTA %>
     <div class="mt-16 pb-20 flex flex-col items-center gap-6">
-
-      <%# メインCTA %>
       <%= link_to "登録して始める",
         new_user_registration_path,
         class: "inline-block w-full max-w-sm px-12 py-5 rounded-full bg-primary text-white text-xl font-bold hover:bg-primary-hover transition shadow-xl shadow-primary/30 active:scale-95" %>
-
-      <%# 区切り %>
       <div class="flex items-center gap-4 w-full max-w-sm">
         <div class="flex-1 h-px bg-border-light"></div>
         <span class="text-sm text-text-secondary font-medium">または</span>
         <div class="flex-1 h-px bg-border-light"></div>
       </div>
-
-      <%# ゲストCTA %>
       <div class="flex flex-col items-center gap-2">
         <%= button_to "ゲストユーザーとして始める",
             guest_login_path,
@@ -115,7 +151,6 @@
           ゲストユーザーの場合は記録が保存されません
         </p>
       </div>
-
     </div>
 
   </main>
