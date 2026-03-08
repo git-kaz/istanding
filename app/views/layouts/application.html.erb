@@ -11,17 +11,12 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-    <%# google material読み込み%>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -29,17 +24,19 @@
 
   <body>
   <% unless devise_controller? %>
-  <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
-    <nav class="container mx-auto px-6 py-4" data-controller="mobile-menu" data-action="click@window->mobile-menu#hide">
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/40 shadow-[0_2px_20px_rgba(0,0,0,0.06)]">
+    <nav class="container mx-auto px-6 py-3" data-controller="mobile-menu" data-action="click@window->mobile-menu#hide">
       <div class="flex items-center justify-between">
-        
+
+        <%# ロゴ %>
         <div class="flex items-center">
           <%= link_to root_path, class: "flex items-center group" do %>
             <%= image_tag "header_logo.png",
-                class: "max-h-10 md:max-h-12 w-auto transition-transform group-hover:scale-105" %>
+                class: "max-h-10 md:max-h-11 w-auto transition-transform duration-300 group-hover:scale-105" %>
           <% end %>
         </div>
 
+        <%# ハンバーガー（モバイル） %>
         <button
           data-action="click->mobile-menu#toggle"
           class="lg:hidden p-2 rounded-xl hover:bg-primary/10 transition-colors text-primary"
@@ -49,100 +46,132 @@
           <span class="material-symbols-outlined text-3xl">menu</span>
         </button>
 
-        <div class="hidden lg:flex items-center gap-6">
+        <%# PC用ナビ %>
+        <div class="hidden lg:flex items-center gap-2">
           <% if user_signed_in? %>
-            <%# ログイン後：ユーザーメニュー %>
-            <%# 履歴リンクを追加 %>
+
+            <%# 履歴リンク %>
             <%= link_to activity_logs_path,
-                class: "flex items-center gap-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors" do %>
-                <span class="material-symbols-outlined text-xl">bar_chart</span>
-                履歴
-             <% end %>
+              class: "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold text-text-secondary hover:text-primary hover:bg-primary/10 transition-all duration-200" do %>
+              <span class="material-symbols-outlined text-lg">bar_chart</span>
+              履歴
+            <% end %>
+
+            <%# 区切り線 %>
+            <div class="w-px h-5 bg-border-light mx-1"></div>
+
+            <%# ユーザードロップダウン %>
             <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
               <button
                 data-action="click->dropdown#toggle"
                 type="button"
-                class="flex items-center gap-3 px-4 py-2 rounded-full hover:bg-primary/5 transition-all font-bold text-text-main cursor-pointer group"
+                class="flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full hover:bg-primary/5 transition-all duration-200 font-bold text-text-main cursor-pointer group"
               >
-                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <span class="material-symbols-outlined text-xl">person</span>
+                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-200">
+                  <span class="material-symbols-outlined text-lg">person</span>
                 </div>
                 <span class="text-sm"><%= current_user.username %></span>
-                <span class="material-symbols-outlined text-primary text-xl">expand_more</span>
+                <span class="material-symbols-outlined text-primary text-lg transition-transform duration-200">expand_more</span>
               </button>
-              
+
               <div
                 data-dropdown-target="menu"
-                class="hidden absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl py-4 z-50 animate-in fade-in zoom-in-95 duration-200"
+                class="hidden absolute right-0 mt-3 w-60 bg-white/90 backdrop-blur-xl border border-white/40 rounded-[2rem] shadow-[0_8px_40px_rgba(0,0,0,0.12)] py-3 z-50 animate-in fade-in zoom-in-95 duration-200"
               >
-                <div class="px-6 py-2 mb-2 border-b border-gray-100 pb-3">
-                  <p class="text-[10px] font-black text-primary uppercase tracking-widest">Signed in as</p>
+                <%# ユーザー情報 %>
+                <div class="px-5 py-3 mb-1 border-b border-gray-100">
+                  <p class="text-[10px] font-black text-primary uppercase tracking-widest mb-0.5">Signed in as</p>
                   <p class="text-sm font-bold text-text-main truncate"><%= current_user.email %></p>
                 </div>
 
-                <%= link_to edit_user_registration_path, 
-                  class: "flex items-center gap-3 px-6 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm" do %>
+                <%# メニュー項目 %>
+                <%= link_to edit_user_registration_path,
+                  class: "flex items-center gap-3 px-5 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm rounded-xl mx-2" do %>
                   <span class="material-symbols-outlined text-xl">settings</span>
                   マイページ設定
                 <% end %>
 
-                <%= button_to destroy_user_session_path, 
-                  method: :delete, 
-                  class: "w-full flex items-center gap-3 px-6 py-3 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-sm text-left cursor-pointer" do %>
+                <%= button_to destroy_user_session_path,
+                  method: :delete,
+                  class: "w-full flex items-center gap-3 px-5 py-3 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-sm text-left cursor-pointer rounded-xl mx-0" do %>
                   <span class="material-symbols-outlined text-xl">logout</span>
                   ログアウト
                 <% end %>
               </div>
             </div>
+
           <% else %>
-            <%# 未ログイン：ログイン・新規登録ボタン %>
-            <%= link_to "新規登録", new_user_registration_path, 
-              class: "text-sm font-bold text-text-secondary hover:text-primary transition-colors" 
+            <%# 未ログイン %>
+            <%= link_to "新規登録", new_user_registration_path,
+              class: "px-5 py-2 rounded-full text-sm font-bold text-text-secondary hover:text-primary hover:bg-primary/10 transition-all duration-200"
             %>
-            <%= link_to "ログイン", new_user_session_path, 
-              class: "px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95" 
+            <%= link_to "ログイン", new_user_session_path,
+              class: "px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all duration-200 active:scale-95"
             %>
           <% end %>
         </div>
       </div>
 
+      <%# モバイルメニュー %>
       <div
         data-mobile-menu-target="menu"
-        class="hidden lg:hidden mt-4 p-4 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl animate-in slide-in-from-top duration-300"
+        class="hidden lg:hidden mt-3 p-3 bg-white/70 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl animate-in slide-in-from-top duration-300"
       >
-        <ul class="flex flex-col gap-2">
+        <ul class="flex flex-col gap-1">
           <% if user_signed_in? %>
-            <li class="flex items-center gap-3 px-4 py-4 bg-primary/10 rounded-2xl mb-2">
-              <span class="material-symbols-outlined text-primary">account_circle</span>
-              <span class="font-bold text-text-main"><%= current_user.username %></span>
+
+            <%# ユーザー情報バッジ %>
+            <li class="flex items-center gap-3 px-4 py-3 bg-primary/10 rounded-2xl mb-2">
+              <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-lg">account_circle</span>
+              </div>
+              <div>
+                <p class="text-xs text-primary font-black uppercase tracking-widest">Signed in</p>
+                <p class="font-bold text-text-main text-sm"><%= current_user.username %></p>
+              </div>
             </li>
-            
+
+            <%# 履歴 %>
             <li>
-              <%= link_to edit_user_registration_path, 
-                class: "flex items-center gap-3 px-4 py-4 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
-                <span class="material-symbols-outlined text-primary">person</span>
-                マイページ
+              <%= link_to activity_logs_path,
+                class: "flex items-center gap-3 px-4 py-3.5 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
+                <span class="material-symbols-outlined text-primary">bar_chart</span>
+                履歴・グラフ
               <% end %>
             </li>
-            
+
+            <%# マイページ %>
             <li>
-              <%= button_to destroy_user_session_path, 
-                method: :delete, 
-                class: "w-full flex items-center gap-3 px-4 py-4 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold rounded-2xl text-left" do %>
-                <span class="material-symbols-outlined text-primary">logout</span>
+              <%= link_to edit_user_registration_path,
+                class: "flex items-center gap-3 px-4 py-3.5 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
+                <span class="material-symbols-outlined text-primary">settings</span>
+                マイページ設定
+              <% end %>
+            </li>
+
+            <%# 区切り線 %>
+            <li class="my-1 border-t border-gray-100"></li>
+
+            <%# ログアウト %>
+            <li>
+              <%= button_to destroy_user_session_path,
+                method: :delete,
+                class: "w-full flex items-center gap-3 px-4 py-3.5 text-red-400 hover:bg-red-50 hover:text-red-500 transition-colors font-bold rounded-2xl text-left" do %>
+                <span class="material-symbols-outlined">logout</span>
                 ログアウト
               <% end %>
             </li>
+
           <% else %>
             <li>
-              <%= link_to new_user_registration_path, 
-                class: "flex items-center justify-center gap-2 px-4 py-4 text-text-main font-bold rounded-2xl border border-gray-100" do %>
+              <%= link_to new_user_registration_path,
+                class: "flex items-center justify-center gap-2 px-4 py-3.5 text-text-main font-bold rounded-2xl border border-gray-100 hover:bg-primary/5 transition-colors" do %>
                 新規登録
               <% end %>
             </li>
             <li>
-              <%= link_to new_user_session_path, 
-                class: "flex items-center justify-center gap-2 px-4 py-4 text-white bg-primary font-bold rounded-2xl shadow-lg shadow-primary/20" do %>
+              <%= link_to new_user_session_path,
+                class: "flex items-center justify-center gap-2 px-4 py-3.5 text-white bg-primary font-bold rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary-hover transition-colors" do %>
                 ログイン
               <% end %>
             </li>
@@ -151,13 +180,9 @@
       </div>
     </nav>
   </header>
-  
-  <%# ヘッダーが固定(fixed)なので、コンテンツが隠れないように余白を確保 %>
+
   <div class="h-20 md:h-20"></div>
 <% end %>
     <%= yield %>
-   
-    <%# 動作確認用 %>
-    <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
   </body>
 </html>
