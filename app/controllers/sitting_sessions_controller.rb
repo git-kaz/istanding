@@ -28,18 +28,11 @@ class SittingSessionsController < ApplicationController
 
   def finish_current
     @sitting_session = current_user.sitting_sessions.active.last
-
-    if @sitting_session
-
-    @sitting_session.update(duration: params[:duration])
-
+    return head :not_found unless @sitting_session
+  
     @exercises = Exercise.order("RANDOM()").limit(3)
-
-      respond_to do |format|
-      format.turbo_stream # finish_current.turbo_stream.erb を探す
-      end
-    else
-      head :not_found
+    respond_to do |format|
+      format.turbo_stream
     end
   end
 

@@ -1,7 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
 
-const DEBUG_MODE = false; // デバッグ時に秒数を短縮するかどうか
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
@@ -21,18 +20,24 @@ export default class extends Controller {
             this.circleTarget.style.strokeDashoffset = 0
         }
 
+        // パターン1: 新規タブで開いた場合（URLパラメータ）
         const params = new URLSearchParams(window.location.search)
-        if (params.get('reopen_modal')) {
-            this.showSessionModal()
-            // URLからパラメータを削除
-            const newUrl = window.location.pathname
-            window.history.replaceState({}, document.title, newUrl)
+        if (params.get('session_id')) {
+            window.history.replaceState({}, document.title, window.location.pathname)
+            this.finish()
         }
+
+        // パターン2: 既存タブがあった場合（postMessage）
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data?.type === 'SHOW_MODAL') {
+                this.finish()
+            }
+        })
     }
 
     setTime(event) {
         const minutes = event.params.minutes
-        this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
+        this.selectedSeconds =  minutes * 60
         this.remainingTime = this.selectedSeconds
 
         if (this.hasDurationInputTarget) {
@@ -119,36 +124,31 @@ export default class extends Controller {
         }, AUTO_CLOSE_MS)
     }
 
-   async finish() {
-    this.stop()
-    this.clearAutoCloseTimer()
-    this.remainingTime = 0
-    this.updateDisplay()
-    this.clearModalUI()
-    this.updateCircle()
+    async finish() {
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.remainingTime = 0
+        this.updateDisplay()
+        this.clearModalUI()
+        this.updateCircle()
 
-    if (!this.startTime) return
+        const response = await fetch("/sitting_sessions/finish_current", {
+            method: "PATCH",
+            headers: {
+                "Accept": "text/vnd.turbo-stream.html",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
 
-    this.actualDuration = Math.floor((new Date() - this.startTime) / 1000)
-
-    const response = await fetch("/sitting_sessions/finish_current", {
-        method: "PATCH",
-        headers: {
-            "Accept": "text/vnd.turbo-stream.html",
-            "Content-Type": "application/json",
-            "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ duration: this.actualDuration })
-    })
-
-    if (response.ok) {
-        //Railsから返ってきた turbo_stream（モーダル表示）を実行
-        const streamMessage = await response.text()
-        Turbo.renderStreamMessage(streamMessage)
+        if (response.ok) {
+            //Railsから返ってきた turbo_stream（モーダル表示）を実行
+            const streamMessage = await response.text()
+            Turbo.renderStreamMessage(streamMessage)
         
-        this.resetState()
+            this.resetState()
+        }
     }
-}
 
     closeModal() {
         this.resetState()
