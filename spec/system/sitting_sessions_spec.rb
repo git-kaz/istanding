@@ -13,5 +13,4 @@ RSpec.describe "SittingSessions", type: :system do
     fill_in "パスワード", with: user.password
     click_button "ログイン"
   end
-
 end
