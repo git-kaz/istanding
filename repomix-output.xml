@@ -185,6 +185,7 @@ config/
     devise.rb
     filter_parameter_logging.rb
     inflections.rb
+    memory_logger.rb
   locales/
     devise.en.yml
     en.yml
@@ -2488,24 +2489,6 @@ require_relative "application"
 Rails.application.initialize!
 </file>
 
-<file path="config/recurring.yml">
-# examples:
-#   periodic_cleanup:
-#     class: CleanSoftDeletedRecordsJob
-#     queue: background
-#     args: [ 1000, { batch_size: 500 } ]
-#     schedule: every hour
-#   periodic_cleanup_with_command:
-#     command: "SoftDeletedRecord.due.delete_all"
-#     priority: 2
-#     schedule: at 5am every day
-
-production:
-  clear_solid_queue_finished_jobs:
-    command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
-    schedule: every hour at minute 12
-</file>
-
 <file path="config/storage.yml">
 test:
   service: Disk
@@ -2674,6 +2657,398 @@ class CreateActivityLogs < ActiveRecord::Migration[8.1]
     end
   end
 end
+</file>
+
+<file path="db/schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "activity_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
+    t.index ["user_id"], name: "index_activity_logs_on_user_id"
+  end
+
+  create_table "exercises", force: :cascade do |t|
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.datetime "start_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "solid_queue_blocked_executions", force: :cascade do |t|
+    t.string "concurrency_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
+    t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
+    t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_claimed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.bigint "process_id"
+    t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
+    t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
+  end
+
+  create_table "solid_queue_failed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.bigint "job_id", null: false
+    t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_jobs", force: :cascade do |t|
+    t.string "active_job_id"
+    t.text "arguments"
+    t.string "class_name", null: false
+    t.string "concurrency_key"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at"
+    t.datetime "updated_at", null: false
+    t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
+    t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
+    t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
+    t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
+    t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
+  end
+
+  create_table "solid_queue_pauses", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "queue_name", null: false
+    t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
+  end
+
+  create_table "solid_queue_processes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "hostname"
+    t.string "kind", null: false
+    t.datetime "last_heartbeat_at", null: false
+    t.text "metadata"
+    t.string "name", null: false
+    t.integer "pid", null: false
+    t.bigint "supervisor_id"
+    t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
+    t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
+    t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
+  end
+
+  create_table "solid_queue_ready_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
+    t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
+    t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
+  end
+
+  create_table "solid_queue_recurring_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.datetime "run_at", null: false
+    t.string "task_key", null: false
+    t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
+    t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
+  end
+
+  create_table "solid_queue_recurring_tasks", force: :cascade do |t|
+    t.text "arguments"
+    t.string "class_name"
+    t.string "command", limit: 2048
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key", null: false
+    t.integer "priority", default: 0
+    t.string "queue_name"
+    t.string "schedule", null: false
+    t.boolean "static", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
+    t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
+  end
+
+  create_table "solid_queue_scheduled_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
+    t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
+  end
+
+  create_table "solid_queue_semaphores", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.integer "value", default: 1, null: false
+    t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
+    t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
+    t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+  end
+
+  create_table "suggested_actions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "sitting_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.string "p256dh"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "activity_logs", "exercises"
+  add_foreign_key "activity_logs", "sitting_sessions"
+  add_foreign_key "activity_logs", "users"
+  add_foreign_key "sitting_sessions", "users"
+  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "suggested_actions", "exercises"
+  add_foreign_key "suggested_actions", "sitting_sessions"
+end
+</file>
+
+<file path="db/seeds.rb">
+puts "シードデータを投入中"
+
+exercises_data = [
+  {
+    name: "ウォーキング",
+    category: :walk,
+    cloudinary_public_id: "walk",
+    description: <<~TEXT
+      外に出て歩きましょう！
+      理想は20分以上。まずは5分からでも大丈夫です。
+      やや歩幅を広げる
+      ペースも少し早めに
+      軽く息が上がるくらいが効果的
+      ちゃんと戻ってきてくださいね！
+    TEXT
+  },
+  {
+    name: "スクワット",
+    category: :training,
+    cloudinary_public_id: "squat",
+    description: <<~TEXT
+      足を肩幅に開き、ゆっくり腰を下ろします。
+      膝が爪先より前に出すぎないように意識してください。
+      膝が90°まで曲がるとより効果的。浅くても大丈夫です！
+      下半身の血流を良くして、脳をリフレッシュさせましょう。
+    TEXT
+  },
+   {
+    name: "踵上げ",
+    category: :training,
+    cloudinary_public_id: "heel_raise",
+    description: <<~TEXT
+      立ち上がり椅子やテーブルに軽く捕まりましょう
+      足の指に力を入れながら踵を上げていきます
+      下ろす時をゆっくり行うとより効果的です
+      踵をつかないように続けるとさらに負荷が上がりますよ！
+      ふくらはぎは『第2の心臓』！全身の血流が良くなります
+    TEXT
+  },
+   {
+    name: "ヒップエクステンション",
+    category: :training,
+    cloudinary_public_id: "hip_extension",
+    description: <<~TEXT
+      壁や机に手をついて姿勢を安定させる。
+      膝を伸ばしたまま、片脚を後ろにゆっくり蹴り出す。
+      お尻の力で脚を上げ、ゆっくり元の位置に戻す
+      体が前に倒れないように注意！
+      座り続けるとお尻の筋肉が固まってくるので、とても効果的です
+    TEXT
+  },
+   {
+    name: "肩甲骨の運動",
+    category: :training,
+    cloudinary_public_id: "scapula",
+    description: <<~TEXT
+      肘を90°に曲げます
+      手のひらを自分の方に向けながら、腕をくっつけます
+      手のひらを外に向けながら肩甲骨を寄せます
+      2~3を繰り返しましょう
+      長く座っていると背中が丸くなっていませんか？
+      肩甲骨をどんどん動かそう！
+    TEXT
+  },
+   {
+    name: "胸の壁ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "pectoralis",
+    description: <<~TEXT
+      肘から手のひらを壁につけます
+      そのまま体を開いていきます
+      胸を開いて前側が伸びるように
+      腕の高さによって伸び方が変わるので調整してみましょう
+      胸の硬さは『THE 猫背』の象徴です
+      顔のむくみがスッキリすることも
+    TEXT
+  },
+   {
+    name: "お尻のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "gluteus",
+    description: <<~TEXT
+      片方の足首を太ももの上に乗せます
+      膝を外に開きます
+      そのままお辞儀をしていきます
+      お尻の外側が伸びるの感じましょう
+      反対側も同様に行いましょう！
+    TEXT
+  },
+   {
+    name: "外側の全身ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "lateral_line",
+    description: <<~TEXT
+      片手をテーブルや背もたれにつきます
+      反対の足を前からクロスします
+      もう一方の手をバンザイして横に倒れていきましょう
+      脇腹からお尻までが伸びるのを感じながら深呼吸
+      反対側も同様に行いましょう！
+      全身につながる『筋膜』を伸ばしていきます
+    TEXT
+  },
+  {
+    name: "肩のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "shoulder",
+    description: <<~TEXT
+      両手を後ろで組みます（立って行ってもOK）
+      お辞儀をしながら手を天井の方へ伸ばしていきます
+      肩甲骨を寄せながら、肩周りを伸ばしていきましょう
+      首も下をむくとより伸びが感じられます
+      肩を痛めないようにゆっくり無理せず
+      息が止まらないように注意して行いましょう
+    TEXT
+  },
+  {
+    name: "後面の全身ストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "back_line",
+    description: <<~TEXT
+      両手をテーブルや背もたれにつきます
+      背中はまっすぐのまま股関節から体を曲げていきましょう
+      頭は両腕の間に入れるようにします
+      背中から足までが伸びるのを感じます
+      辛い方は膝を少し曲げても大丈夫です
+      全身につながる『筋膜』を伸ばしていきます
+    TEXT
+  },
+  {
+    name: "背骨のひねりストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "thorax_rotation",
+    description: <<~TEXT
+      座ったまま胸の前で腕を交叉します
+      上半身を捻っていきましょう
+      息を吐きながら捻っていきます
+      背中が丸くならないように気をつけます
+      左右交互に行いましょう！
+      背骨を動かすことで自律神経にも働きかけます
+    TEXT
+  },
+  {
+    name: "背中のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "latissimus",
+    description: <<~TEXT
+      床に膝立ちになり、両肘を椅子につきます
+      顔を両腕の間に入れるように正座していきます
+      背中が伸びるのを感じながらキープします
+      肩を痛めないように無理せず行いましょう
+      デスクワークで丸まりがちな背中を伸ばしていきましょう
+      背骨が動くと自律神経にも良い影響があります
+    TEXT
+  },
+  {
+    name: "首のストレッチ",
+    category: :stretch,
+    cloudinary_public_id: "neck_side",
+    description: <<~TEXT
+      片手で頭の反対側を抑えます
+      そのまま首を横に倒していきましょう
+      首から肩にかけて伸びるのを感じます
+      肩がすくまない様に注意
+      首は痛めやすいので強くやりすぎないように
+      首が硬くなると頭痛や眼精疲労の原因にも
+    TEXT
+  }
+]
+
+exercises_data.each do |data|
+  # find_or_create_byでseedの重複を避ける
+  Exercise.find_or_create_by!(name: data[:name]) do |e|
+    e.category = data[:category]
+    e.cloudinary_public_id = data[:cloudinary_public_id]
+    e.description = data[:description]
+  end
+end
+
+puts "完了！"
 </file>
 
 <file path="lib/tasks/.keep">
@@ -3424,6 +3799,8 @@ self.addEventListener('notificationclick', function (event) {
                     const client = windowClients[i]
 
                     if (client.url.startsWith(rootUrl) && 'focus' in client) {
+                        
+                        client.postMessage({ type: 'SHOW_MODAL', url: sessionUrl })
                         //あればフォーカス
                         return client.focus()
                     }
@@ -4288,7 +4665,11 @@ class SendNotificationJob < ApplicationJob
 
     begin
       WebPush.payload_send(
-        message: "休憩しましょう！",
+        message: JSON.generate({
+          title: "休憩の時間です！",
+          body: "身体を動かしましょう！",
+          url: "/?session_id=#{sitting_session_id}"  # タブを閉じてもsession_idを探してmodalを開ける
+      }),
         endpoint: user.endpoint,
         p256dh: user.p256dh,
         auth: user.auth,
@@ -4580,396 +4961,34 @@ end
 </div>
 </file>
 
-<file path="db/schema.rb">
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
-#
-# This file is the source Rails uses to define your schema when running `bin/rails
-# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
-# be faster and is potentially less error prone than running all of your
-# migrations from scratch. Old migrations may fail to apply correctly if those
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_203641) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
-  create_table "activity_logs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
-    t.index ["user_id"], name: "index_activity_logs_on_user_id"
+<file path="config/initializers/memory_logger.rb">
+if Rails.env.production?
+  Thread.new do
+    loop do
+      memory_mb = `cat /proc/self/status | grep VmRSS`.match(/(\d+)/)[1].to_i / 1024
+      Rails.logger.info "[MemoryMonitor] RSS: #{memory_mb} MB"
+      sleep 60 # 1分ごとに出力
+    end
   end
-
-  create_table "exercises", force: :cascade do |t|
-    t.integer "category"
-    t.string "cloudinary_public_id"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "sitting_sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.boolean "notified"
-    t.datetime "notify_at"
-    t.datetime "start_at"
-    t.integer "status", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
-  end
-
-  create_table "solid_queue_blocked_executions", force: :cascade do |t|
-    t.string "concurrency_key", null: false
-    t.datetime "created_at", null: false
-    t.datetime "expires_at", null: false
-    t.bigint "job_id", null: false
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
-    t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
-    t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
-  end
-
-  create_table "solid_queue_claimed_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.bigint "process_id"
-    t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
-    t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
-  end
-
-  create_table "solid_queue_failed_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "error"
-    t.bigint "job_id", null: false
-    t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
-  end
-
-  create_table "solid_queue_jobs", force: :cascade do |t|
-    t.string "active_job_id"
-    t.text "arguments"
-    t.string "class_name", null: false
-    t.string "concurrency_key"
-    t.datetime "created_at", null: false
-    t.datetime "finished_at"
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.datetime "scheduled_at"
-    t.datetime "updated_at", null: false
-    t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
-    t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
-    t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
-    t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
-    t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
-  end
-
-  create_table "solid_queue_pauses", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "queue_name", null: false
-    t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
-  end
-
-  create_table "solid_queue_processes", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "hostname"
-    t.string "kind", null: false
-    t.datetime "last_heartbeat_at", null: false
-    t.text "metadata"
-    t.string "name", null: false
-    t.integer "pid", null: false
-    t.bigint "supervisor_id"
-    t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
-    t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
-    t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
-  end
-
-  create_table "solid_queue_ready_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
-    t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
-    t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
-  end
-
-  create_table "solid_queue_recurring_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.datetime "run_at", null: false
-    t.string "task_key", null: false
-    t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
-    t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
-  end
-
-  create_table "solid_queue_recurring_tasks", force: :cascade do |t|
-    t.text "arguments"
-    t.string "class_name"
-    t.string "command", limit: 2048
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "key", null: false
-    t.integer "priority", default: 0
-    t.string "queue_name"
-    t.string "schedule", null: false
-    t.boolean "static", default: true, null: false
-    t.datetime "updated_at", null: false
-    t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
-    t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
-  end
-
-  create_table "solid_queue_scheduled_executions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "job_id", null: false
-    t.integer "priority", default: 0, null: false
-    t.string "queue_name", null: false
-    t.datetime "scheduled_at", null: false
-    t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
-    t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
-  end
-
-  create_table "solid_queue_semaphores", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "expires_at", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.integer "value", default: 1, null: false
-    t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
-    t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
-    t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
-  end
-
-  create_table "suggested_actions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "exercise_id", null: false
-    t.bigint "sitting_session_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_suggested_actions_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_suggested_actions_on_sitting_session_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "auth"
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "endpoint"
-    t.string "p256dh"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
-    t.datetime "updated_at", null: false
-    t.string "username", default: "", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  end
-
-  add_foreign_key "activity_logs", "exercises"
-  add_foreign_key "activity_logs", "sitting_sessions"
-  add_foreign_key "activity_logs", "users"
-  add_foreign_key "sitting_sessions", "users"
-  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "suggested_actions", "exercises"
-  add_foreign_key "suggested_actions", "sitting_sessions"
 end
 </file>
 
-<file path="db/seeds.rb">
-puts "シードデータを投入中"
+<file path="config/recurring.yml">
+# examples:
+#   periodic_cleanup:
+#     class: CleanSoftDeletedRecordsJob
+#     queue: background
+#     args: [ 1000, { batch_size: 500 } ]
+#     schedule: every hour
+#   periodic_cleanup_with_command:
+#     command: "SoftDeletedRecord.due.delete_all"
+#     priority: 2
+#     schedule: at 5am every day
 
-exercises_data = [
-  {
-    name: "ウォーキング",
-    category: :walk,
-    cloudinary_public_id: "walk",
-    description: <<~TEXT
-      外に出て歩きましょう！
-      理想は20分以上。まずは5分からでも大丈夫です。
-      やや歩幅を広げる
-      ペースも少し早めに
-      軽く息が上がるくらいが効果的
-      ちゃんと戻ってきてくださいね！
-    TEXT
-  },
-  {
-    name: "スクワット",
-    category: :training,
-    cloudinary_public_id: "squat",
-    description: <<~TEXT
-      足を肩幅に開き、ゆっくり腰を下ろします。
-      膝が爪先より前に出すぎないように意識してください。
-      膝が90°まで曲がるとより効果的。浅くても大丈夫です！
-      下半身の血流を良くして、脳をリフレッシュさせましょう。
-    TEXT
-  },
-   {
-    name: "踵上げ",
-    category: :training,
-    cloudinary_public_id: "heel_raise",
-    description: <<~TEXT
-      立ち上がり椅子やテーブルに軽く捕まりましょう
-      足の指に力を入れながら踵を上げていきます
-      下ろす時をゆっくり行うとより効果的です
-      踵をつかないように続けるとさらに負荷が上がりますよ！
-      ふくらはぎは『第2の心臓』！全身の血流が良くなります
-    TEXT
-  },
-   {
-    name: "ヒップエクステンション",
-    category: :training,
-    cloudinary_public_id: "hip_extension",
-    description: <<~TEXT
-      壁や机に手をついて姿勢を安定させる。
-      膝を伸ばしたまま、片脚を後ろにゆっくり蹴り出す。
-      お尻の力で脚を上げ、ゆっくり元の位置に戻す
-      体が前に倒れないように注意！
-      座り続けるとお尻の筋肉が固まってくるので、とても効果的です
-    TEXT
-  },
-   {
-    name: "肩甲骨の運動",
-    category: :training,
-    cloudinary_public_id: "scapula",
-    description: <<~TEXT
-      肘を90°に曲げます
-      手のひらを自分の方に向けながら、腕をくっつけます
-      手のひらを外に向けながら肩甲骨を寄せます
-      2~3を繰り返しましょう
-      長く座っていると背中が丸くなっていませんか？
-      肩甲骨をどんどん動かそう！
-    TEXT
-  },
-   {
-    name: "胸の壁ストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "pectoralis",
-    description: <<~TEXT
-      肘から手のひらを壁につけます
-      そのまま体を開いていきます
-      胸を開いて前側が伸びるように
-      腕の高さによって伸び方が変わるので調整してみましょう
-      胸の硬さは『THE 猫背』の象徴です
-      顔のむくみがスッキリすることも
-    TEXT
-  },
-   {
-    name: "お尻のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "gluteus",
-    description: <<~TEXT
-      片方の足首を太ももの上に乗せます
-      膝を外に開きます
-      そのままお辞儀をしていきます
-      お尻の外側が伸びるの感じましょう
-      反対側も同様に行いましょう！
-    TEXT
-  },
-   {
-    name: "外側の全身ストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "lateral_line",
-    description: <<~TEXT
-      片手をテーブルや背もたれにつきます
-      反対の足を前からクロスします
-      もう一方の手をバンザイして横に倒れていきましょう
-      脇腹からお尻までが伸びるのを感じながら深呼吸
-      反対側も同様に行いましょう！
-      全身につながる『筋膜』を伸ばしていきます
-    TEXT
-  },
-  {
-    name: "肩のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "shoulder",
-    description: <<~TEXT
-      両手を後ろで組みます（立って行ってもOK）
-      お辞儀をしながら手を天井の方へ伸ばしていきます
-      肩甲骨を寄せながら、肩周りを伸ばしていきましょう
-      首も下をむくとより伸びが感じられます
-      肩を痛めないようにゆっくり無理せず
-      息が止まらないように注意して行いましょう
-    TEXT
-  },
-  {
-    name: "後面の全身ストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "back_line",
-    description: <<~TEXT
-      両手をテーブルや背もたれにつきます
-      背中はまっすぐのまま股関節から体を曲げていきましょう
-      頭は両腕の間に入れるようにします
-      背中から足までが伸びるのを感じます
-      辛い方は膝を少し曲げても大丈夫です
-      全身につながる『筋膜』を伸ばしていきます
-    TEXT
-  },
-  {
-    name: "背骨のひねりストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "thorax_rotation",
-    description: <<~TEXT
-      座ったまま胸の前で腕を交叉します
-      上半身を捻っていきましょう
-      息を吐きながら捻っていきます
-      背中が丸くならないように気をつけます
-      左右交互に行いましょう！
-      背骨を動かすことで自律神経にも働きかけます
-    TEXT
-  },
-  {
-    name: "背中のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "latissimus",
-    description: <<~TEXT
-      床に膝立ちになり、両肘を椅子につきます
-      顔を両腕の間に入れるように正座していきます
-      背中が伸びるのを感じながらキープします
-      肩を痛めないように無理せず行いましょう
-      デスクワークで丸まりがちな背中を伸ばしていきましょう
-      背骨が動くと自律神経にも良い影響があります
-    TEXT
-  },
-  {
-    name: "首のストレッチ",
-    category: :stretch,
-    cloudinary_public_id: "neck_side",
-    description: <<~TEXT
-      片手で頭の反対側を抑えます
-      そのまま首を横に倒していきましょう
-      首から肩にかけて伸びるのを感じます
-      肩がすくまない様に注意
-      首は痛めやすいので強くやりすぎないように
-      首が硬くなると頭痛や眼精疲労の原因にも
-    TEXT
-  }
-]
-
-exercises_data.each do |data|
-  # find_or_create_byでseedの重複を避ける
-  Exercise.find_or_create_by!(name: data[:name]) do |e|
-    e.category = data[:category]
-    e.cloudinary_public_id = data[:cloudinary_public_id]
-    e.description = data[:description]
-  end
-end
-
-puts "完了！"
+production:
+  #clear_solid_queue_finished_jobs:
+  #command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
+  #schedule: every hour at minute 12
 </file>
 
 <file path="spec/spec_helper.rb">
@@ -5268,131 +5287,6 @@ end
 <% end %>
 </file>
 
-<file path="app/views/static_pages/top.html.erb">
-<div class="min-h-screen bg-background-light text-text-main pb-20">
-
-  <main class="max-w-5xl mx-auto px-6 text-center">
-
-    <h1 class="text-3xl md:text-2xl font-medium leading-relaxed pt-10 mb-20">
-      座りすぎは喫煙と同等に身体に悪影響を及ぼすとされています<br>
-      定期的に立ちあがり健康的な生活を目指しましょう
-    </h1>
-
-
-    <section class="mb-24">
-      <h2 class="text-2xl font-black text-primary uppercase tracking-[0.3em] mb-20">How to use</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">01</div>
-          <div class="relative z-10">
-            <h3 class="text-xl font-bold mb-3">タイマーをセット</h3>
-            <p class="text-md text-text-secondary leading-relaxed">作業時間を設定してスタート。<br>あなたのデスクワークを見守ります。</p>
-          </div>
-        </div>
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">02</div>
-          <div class="relative z-10">
-            <h3 class="text-xl font-bold mb-3">通知で休憩</h3>
-            <p class="text-md text-text-secondary leading-relaxed">時間になると通知でお知らせ。<br>座りすぎを防止します。</p>
-          </div>
-        </div>
-        <div class="relative">
-          <div class="text-6xl font-black text-primary/30 absolute -top-10 left-1/2 -translate-x-1/2">03</div>
-          <div class="relative z-10">
-            <h3 class="text-xl font-bold mb-3">最適な運動を実践</h3>
-            <p class="text-md text-text-secondary leading-relaxed">理学療法士監修のメニューを提案。<br>数分の運動で身体をリセット。</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-24 bg-white/50 border border-white rounded-[3rem] p-10 md:p-16 shadow-sm">
-      <div class="flex flex-col md:flex-row items-center gap-12 text-left">
-        <div class="flex-1 space-y-6">
-          <div class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold tracking-widest uppercase">Push Notification</div>
-          <h2 class="text-2xl font-bold leading-tight">ブラウザ通知をONにして<br>健康習慣を確実に。</h2>
-          <p class="text-lg text-text-secondary leading-relaxed">
-            このアプリは、ブラウザのプッシュ通知機能を利用します。ログイン後、通知の許可を求めるダイアログが表示されますので、「許可」を選択してください。
-            <br><span class="text-sm opacity-70">※スマートフォン・PCの両方に対応しています。</span>
-          </p>
-        </div>
-
-        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light animate-bounce-slow">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
-              <span class="material-symbols-outlined text-sm">notifications</span>
-            </div>
-            <div class="flex-1">
-              <div class="h-2 w-20 bg-gray-200 rounded"></div>
-              <div class="h-1.5 w-12 bg-gray-100 rounded mt-1"></div>
-            </div>
-          </div>
-          <div class="font-bold text-sm mb-1">休憩の時間です！</div>
-          <div class="text-xs text-text-secondary italic">「立ち上がって肩甲骨を回しましょう」</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-24">
-      <h2 class="text-2xl font-black text-text-secondary uppercase tracking-[0.3em] mb-12">The Risks</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
-          <h3 class="font-bold mb-3 text-xl">健康リスクの増大</h3>
-          <p class="text-base text-text-secondary leading-relaxed">
-            脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。
-          </p>
-        </div>
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
-          <h3 class="font-bold mb-3 text-xl">集中力の低下</h3>
-          <p class="text-base text-text-secondary leading-relaxed">
-            血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。
-          </p>
-        </div>
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
-          <h3 class="font-bold mb-3 text-xl">専門家による監修</h3>
-          <p class="text-base text-text-secondary leading-relaxed">
-            理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <%# CTA セクション %>
-    <div class="mt-16 pb-20 flex flex-col items-center gap-6">
-
-      <%# メインCTA %>
-      <%= link_to "登録して始める",
-        new_user_registration_path,
-        class: "inline-block w-full max-w-sm px-12 py-5 rounded-full bg-primary text-white text-xl font-bold hover:bg-primary-hover transition shadow-xl shadow-primary/30 active:scale-95" %>
-
-      <%# 区切り %>
-      <div class="flex items-center gap-4 w-full max-w-sm">
-        <div class="flex-1 h-px bg-border-light"></div>
-        <span class="text-sm text-text-secondary font-medium">または</span>
-        <div class="flex-1 h-px bg-border-light"></div>
-      </div>
-
-      <%# ゲストCTA %>
-      <div class="flex flex-col items-center gap-2">
-        <%= button_to "ゲストユーザーとして始める",
-            guest_login_path,
-            method: :post,
-            class: "inline-block w-full max-w-sm px-12 py-4 rounded-full border-2 border-border-light bg-white text-text-main text-lg font-bold hover:border-primary hover:text-primary transition active:scale-95 cursor-pointer" %>
-        <p class="flex items-center gap-1 text-sm text-text-secondary">
-          <span class="material-symbols-outlined text-base">info</span>
-          ゲストユーザーの場合は記録が保存されません
-        </p>
-      </div>
-
-    </div>
-
-  </main>
-</div>
-</file>
-
 <file path="config/environments/development.rb">
 require "active_support/core_ext/integer/time"
 
@@ -5507,27 +5401,6 @@ module Istanding
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end
-</file>
-
-<file path="config/queue.yml">
-default: &default
-  dispatchers:
-    - polling_interval: 10
-      batch_size: 100
-  workers:
-    - queues: "*"
-      threads: 1
-      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
-      polling_interval: 5
-
-development:
-  <<: *default
-
-test:
-  <<: *default
-
-production:
-  <<: *default
 </file>
 
 <file path="spec/factories/users.rb">
@@ -5930,6 +5803,77 @@ end
 </div>
 </file>
 
+<file path="config/puma.rb">
+# This configuration file will be evaluated by Puma. The top-level methods that
+# are invoked here are part of Puma's configuration DSL. For more information
+# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
+#
+# Puma starts a configurable number of processes (workers) and each process
+# serves each request in a thread from an internal thread pool.
+#
+# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
+# should only set this value when you want to run 2 or more workers. The
+# default is already 1. You can set it to `auto` to automatically start a worker
+# for each available processor.
+#
+# The ideal number of threads per worker depends both on how much time the
+# application spends waiting for IO operations and on how much you wish to
+# prioritize throughput over latency.
+#
+# As a rule of thumb, increasing the number of threads will increase how much
+# traffic a given process can handle (throughput), but due to CRuby's
+# Global VM Lock (GVL) it has diminishing returns and will degrade the
+# response time (latency) of the application.
+#
+# The default is set to 3 threads as it's deemed a decent compromise between
+# throughput and latency for the average Rails application.
+#
+# Any libraries that use a connection pool or another resource pool should
+# be configured to provide at least as many connections as the number of
+# threads. This includes Active Record's `pool` parameter in `database.yml`.
+
+# スレッド数を2つにしてメモリを制限
+threads_count = ENV.fetch("RAILS_MAX_THREADS", 1)
+threads threads_count, threads_count
+
+# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+port ENV.fetch("PORT", 3000)
+
+# Allow puma to be restarted by `bin/rails restart` command.
+plugin :tmp_restart
+
+# Run the Solid Queue supervisor inside of Puma for single-server deployments.
+plugin :solid_queue # if ENV["SOLID_QUEUE_IN_PUMA"]
+
+# Specify the PID file. Defaults to tmp/pids/server.pid in development.
+# In other environments, only set the PID file if requested.
+pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+# シングルスレッドで動かす
+workers 0
+</file>
+
+<file path="config/queue.yml">
+default: &default
+  dispatchers:
+    - polling_interval: 10
+      batch_size: 10
+  workers:
+    - queues: "*"
+      threads: 1
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      polling_interval: 5
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+</file>
+
 <file path="spec/factories/exercises.rb">
 FactoryBot.define do
   factory :exercise do
@@ -6075,56 +6019,6 @@ class ActivityLogsController < ApplicationController
 end
 </file>
 
-<file path="config/puma.rb">
-# This configuration file will be evaluated by Puma. The top-level methods that
-# are invoked here are part of Puma's configuration DSL. For more information
-# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
-#
-# Puma starts a configurable number of processes (workers) and each process
-# serves each request in a thread from an internal thread pool.
-#
-# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
-# should only set this value when you want to run 2 or more workers. The
-# default is already 1. You can set it to `auto` to automatically start a worker
-# for each available processor.
-#
-# The ideal number of threads per worker depends both on how much time the
-# application spends waiting for IO operations and on how much you wish to
-# prioritize throughput over latency.
-#
-# As a rule of thumb, increasing the number of threads will increase how much
-# traffic a given process can handle (throughput), but due to CRuby's
-# Global VM Lock (GVL) it has diminishing returns and will degrade the
-# response time (latency) of the application.
-#
-# The default is set to 3 threads as it's deemed a decent compromise between
-# throughput and latency for the average Rails application.
-#
-# Any libraries that use a connection pool or another resource pool should
-# be configured to provide at least as many connections as the number of
-# threads. This includes Active Record's `pool` parameter in `database.yml`.
-
-# スレッド数を2つにしてメモリを制限
-threads_count = ENV.fetch("RAILS_MAX_THREADS", 2)
-threads threads_count, threads_count
-
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch("PORT", 3000)
-
-# Allow puma to be restarted by `bin/rails restart` command.
-plugin :tmp_restart
-
-# Run the Solid Queue supervisor inside of Puma for single-server deployments.
-plugin :solid_queue # if ENV["SOLID_QUEUE_IN_PUMA"]
-
-# Specify the PID file. Defaults to tmp/pids/server.pid in development.
-# In other environments, only set the PID file if requested.
-pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
-
-# シングルスレッドで動かす
-workers 0
-</file>
-
 <file path="config/routes.rb">
 Rails.application.routes.draw do
   # ログイン時のroot
@@ -6240,6 +6134,166 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }, if: -> { password.present? }
 end
+</file>
+
+<file path="app/views/static_pages/top.html.erb">
+<div class="min-h-screen bg-background-light text-text-main pb-20">
+
+  <main class="max-w-5xl mx-auto px-6 text-center">
+
+    <h1 class="text-3xl md:text-2xl font-medium leading-relaxed pt-10 mb-20">
+      座りすぎは喫煙と同等に身体に悪影響を及ぼすとされています<br>
+      定期的に立ちあがり健康的な生活を目指しましょう
+    </h1>
+
+    <%# How to use %>
+    <section class="mb-24">
+      <h2 class="text-2xl font-black text-primary uppercase tracking-[0.3em] mb-10">How to use</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+
+        <%# ステップ間の矢印（PC） %>
+        <div class="hidden md:flex absolute top-1/2 left-[33%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
+          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
+        </div>
+        <div class="hidden md:flex absolute top-1/2 left-[67%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
+          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
+        </div>
+
+        <%# STEP 1 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">01</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">timer</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-black mb-2">タイマーをセット</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">好きな時間を選んでスタート。時間になったら通知が届きます。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2">
+            <div class="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold">60分</div>
+            <span class="material-symbols-outlined text-primary/30 text-sm">arrow_forward</span>
+            <div class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">スタート ▶</div>
+          </div>
+        </div>
+
+        <%# STEP 2 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">02</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">notifications_active</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-black mb-2">通知で休憩のサイン</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">時間になると通知でお知らせ。「休憩する」を押して立ち上がりましょう。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3">
+            <div class="flex items-center gap-2 text-left">
+              <div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-sm">notifications</span>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-text-main">休憩の時間です！</p>
+                <p class="text-[10px] text-text-secondary">iStanding</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <%# STEP 3 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">03</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">fitness_center</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-black mb-2">最適な運動を実践</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">運動メニューを提案。完了すると記録され、グラフで継続が見える。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+              <span class="material-symbols-outlined text-sm">self_improvement</span>ストレッチ
+            </div>
+            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+              <span class="material-symbols-outlined text-sm">fitness_center</span>筋トレ
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="mb-24 bg-white/50 border border-white rounded-[3rem] p-10 md:p-16 shadow-sm">
+      <div class="flex flex-col md:flex-row items-center gap-12 text-left">
+        <div class="flex-1 space-y-6">
+          <div class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold tracking-widest uppercase">Push Notification</div>
+          <h2 class="text-2xl font-bold leading-tight">ブラウザ通知をONにして<br>健康習慣を確実に。</h2>
+          <p class="text-lg text-text-secondary leading-relaxed">
+            このアプリは、ブラウザのプッシュ通知機能を利用します。ログイン後、通知の許可を求めるダイアログが表示されますので、「許可」を選択してください。
+            <br><span class="text-sm opacity-70">※スマートフォン・PCの両方に対応しています。</span>
+          </p>
+        </div>
+        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+              <span class="material-symbols-outlined text-sm">notifications</span>
+            </div>
+            <div class="flex-1">
+              <div class="h-2 w-20 bg-gray-200 rounded"></div>
+              <div class="h-1.5 w-12 bg-gray-100 rounded mt-1"></div>
+            </div>
+          </div>
+          <div class="font-bold text-sm mb-1">休憩の時間です！</div>
+          <div class="text-xs text-text-secondary italic">「立ち上がって肩甲骨を回しましょう」</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-24">
+      <h2 class="text-2xl font-black text-text-secondary uppercase tracking-[0.3em] mb-12">The Risks</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
+          <h3 class="font-bold mb-3 text-xl">健康リスクの増大</h3>
+          <p class="text-base text-text-secondary leading-relaxed">脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。</p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
+          <h3 class="font-bold mb-3 text-xl">集中力の低下</h3>
+          <p class="text-base text-text-secondary leading-relaxed">血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。</p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
+          <h3 class="font-bold mb-3 text-xl">専門家による監修</h3>
+          <p class="text-base text-text-secondary leading-relaxed">理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。</p>
+        </div>
+      </div>
+    </section>
+
+    <%# CTA %>
+    <div class="mt-16 pb-20 flex flex-col items-center gap-6">
+      <%= link_to "登録して始める",
+        new_user_registration_path,
+        class: "inline-block w-full max-w-sm px-12 py-5 rounded-full bg-primary text-white text-xl font-bold hover:bg-primary-hover transition shadow-xl shadow-primary/30 active:scale-95" %>
+      <div class="flex items-center gap-4 w-full max-w-sm">
+        <div class="flex-1 h-px bg-border-light"></div>
+        <span class="text-sm text-text-secondary font-medium">または</span>
+        <div class="flex-1 h-px bg-border-light"></div>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <%= button_to "ゲストユーザーとして始める",
+            guest_login_path,
+            method: :post,
+            class: "inline-block w-full max-w-sm px-12 py-4 rounded-full border-2 border-border-light bg-white text-text-main text-lg font-bold hover:border-primary hover:text-primary transition active:scale-95 cursor-pointer" %>
+        <p class="flex items-center gap-1 text-sm text-text-secondary">
+          <span class="material-symbols-outlined text-base">info</span>
+          ゲストユーザーの場合は記録が保存されません
+        </p>
+      </div>
+    </div>
+
+  </main>
+</div>
 </file>
 
 <file path="Gemfile">
@@ -6452,172 +6506,6 @@ end
     </div>
   </div>
 </div>
-</file>
-
-<file path="app/views/layouts/application.html.erb">
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for(:title) || "iStanding" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Myapp">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-    <%# google material読み込み%>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  </head>
-
-  <body>
-  <% unless devise_controller? %>
-  <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
-    <nav class="container mx-auto px-6 py-4" data-controller="mobile-menu" data-action="click@window->mobile-menu#hide">
-      <div class="flex items-center justify-between">
-        
-        <div class="flex items-center">
-          <%= link_to root_path, class: "flex items-center group" do %>
-            <%= image_tag "header_logo.png",
-                class: "max-h-10 md:max-h-12 w-auto transition-transform group-hover:scale-105" %>
-          <% end %>
-        </div>
-
-        <button
-          data-action="click->mobile-menu#toggle"
-          class="lg:hidden p-2 rounded-xl hover:bg-primary/10 transition-colors text-primary"
-          type="button"
-          aria-label="メニューを開く"
-        >
-          <span class="material-symbols-outlined text-3xl">menu</span>
-        </button>
-
-        <div class="hidden lg:flex items-center gap-6">
-          <% if user_signed_in? %>
-            <%# ログイン後：ユーザーメニュー %>
-            <%# 履歴リンクを追加 %>
-            <%= link_to activity_logs_path,
-                class: "flex items-center gap-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors" do %>
-                <span class="material-symbols-outlined text-xl">bar_chart</span>
-                履歴
-             <% end %>
-            <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
-              <button
-                data-action="click->dropdown#toggle"
-                type="button"
-                class="flex items-center gap-3 px-4 py-2 rounded-full hover:bg-primary/5 transition-all font-bold text-text-main cursor-pointer group"
-              >
-                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <span class="material-symbols-outlined text-xl">person</span>
-                </div>
-                <span class="text-sm"><%= current_user.username %></span>
-                <span class="material-symbols-outlined text-primary text-xl">expand_more</span>
-              </button>
-              
-              <div
-                data-dropdown-target="menu"
-                class="hidden absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl py-4 z-50 animate-in fade-in zoom-in-95 duration-200"
-              >
-                <div class="px-6 py-2 mb-2 border-b border-gray-100 pb-3">
-                  <p class="text-[10px] font-black text-primary uppercase tracking-widest">Signed in as</p>
-                  <p class="text-sm font-bold text-text-main truncate"><%= current_user.email %></p>
-                </div>
-
-                <%= link_to edit_user_registration_path, 
-                  class: "flex items-center gap-3 px-6 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm" do %>
-                  <span class="material-symbols-outlined text-xl">settings</span>
-                  マイページ設定
-                <% end %>
-
-                <%= button_to destroy_user_session_path, 
-                  method: :delete, 
-                  class: "w-full flex items-center gap-3 px-6 py-3 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-sm text-left cursor-pointer" do %>
-                  <span class="material-symbols-outlined text-xl">logout</span>
-                  ログアウト
-                <% end %>
-              </div>
-            </div>
-          <% else %>
-            <%# 未ログイン：ログイン・新規登録ボタン %>
-            <%= link_to "新規登録", new_user_registration_path, 
-              class: "text-sm font-bold text-text-secondary hover:text-primary transition-colors" 
-            %>
-            <%= link_to "ログイン", new_user_session_path, 
-              class: "px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95" 
-            %>
-          <% end %>
-        </div>
-      </div>
-
-      <div
-        data-mobile-menu-target="menu"
-        class="hidden lg:hidden mt-4 p-4 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl animate-in slide-in-from-top duration-300"
-      >
-        <ul class="flex flex-col gap-2">
-          <% if user_signed_in? %>
-            <li class="flex items-center gap-3 px-4 py-4 bg-primary/10 rounded-2xl mb-2">
-              <span class="material-symbols-outlined text-primary">account_circle</span>
-              <span class="font-bold text-text-main"><%= current_user.username %></span>
-            </li>
-            
-            <li>
-              <%= link_to edit_user_registration_path, 
-                class: "flex items-center gap-3 px-4 py-4 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
-                <span class="material-symbols-outlined text-primary">person</span>
-                マイページ
-              <% end %>
-            </li>
-            
-            <li>
-              <%= button_to destroy_user_session_path, 
-                method: :delete, 
-                class: "w-full flex items-center gap-3 px-4 py-4 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold rounded-2xl text-left" do %>
-                <span class="material-symbols-outlined text-primary">logout</span>
-                ログアウト
-              <% end %>
-            </li>
-          <% else %>
-            <li>
-              <%= link_to new_user_registration_path, 
-                class: "flex items-center justify-center gap-2 px-4 py-4 text-text-main font-bold rounded-2xl border border-gray-100" do %>
-                新規登録
-              <% end %>
-            </li>
-            <li>
-              <%= link_to new_user_session_path, 
-                class: "flex items-center justify-center gap-2 px-4 py-4 text-white bg-primary font-bold rounded-2xl shadow-lg shadow-primary/20" do %>
-                ログイン
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    </nav>
-  </header>
-  
-  <%# ヘッダーが固定(fixed)なので、コンテンツが隠れないように余白を確保 %>
-  <div class="h-20 md:h-20"></div>
-<% end %>
-    <%= yield %>
-   
-    <%# 動作確認用 %>
-    <%# <%= render partial: "shared/modal", locals: { exercise: Exercise.first || Exercise.new(name: "テスト運動", description: "これはテストです") } %> 
-  </body>
-</html>
 </file>
 
 <file path="app/views/top/index.html.erb">
@@ -6852,11 +6740,201 @@ Rails.application.configure do
 end
 </file>
 
+<file path="app/views/layouts/application.html.erb">
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "iStanding" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Myapp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  </head>
+
+  <body>
+  <% unless devise_controller? %>
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/40 shadow-[0_2px_20px_rgba(0,0,0,0.06)]">
+    <nav class="container mx-auto px-6 py-3" data-controller="mobile-menu" data-action="click@window->mobile-menu#hide">
+      <div class="flex items-center justify-between">
+
+        <%# ロゴ %>
+        <div class="flex items-center">
+          <%= link_to root_path, class: "flex items-center group" do %>
+            <%= image_tag "header_logo.png",
+                class: "max-h-10 md:max-h-11 w-auto transition-transform duration-300 group-hover:scale-105" %>
+          <% end %>
+        </div>
+
+        <%# ハンバーガー（モバイル） %>
+        <button
+          data-action="click->mobile-menu#toggle"
+          class="lg:hidden p-2 rounded-xl hover:bg-primary/10 transition-colors text-primary"
+          type="button"
+          aria-label="メニューを開く"
+        >
+          <span class="material-symbols-outlined text-3xl">menu</span>
+        </button>
+
+        <%# PC用ナビ %>
+        <div class="hidden lg:flex items-center gap-2">
+          <% if user_signed_in? %>
+
+            <%# 履歴リンク %>
+            <%= link_to activity_logs_path,
+              class: "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold text-text-secondary hover:text-primary hover:bg-primary/10 transition-all duration-200" do %>
+              <span class="material-symbols-outlined text-lg">bar_chart</span>
+              履歴
+            <% end %>
+
+            <%# 区切り線 %>
+            <div class="w-px h-5 bg-border-light mx-1"></div>
+
+            <%# ユーザードロップダウン %>
+            <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
+              <button
+                data-action="click->dropdown#toggle"
+                type="button"
+                class="flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full hover:bg-primary/5 transition-all duration-200 font-bold text-text-main cursor-pointer group"
+              >
+                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-200">
+                  <span class="material-symbols-outlined text-lg">person</span>
+                </div>
+                <span class="text-sm"><%= current_user.username %></span>
+                <span class="material-symbols-outlined text-primary text-lg transition-transform duration-200">expand_more</span>
+              </button>
+
+              <div
+                data-dropdown-target="menu"
+                class="hidden absolute right-0 mt-3 w-60 bg-white/90 backdrop-blur-xl border border-white/40 rounded-[2rem] shadow-[0_8px_40px_rgba(0,0,0,0.12)] py-3 z-50 animate-in fade-in zoom-in-95 duration-200"
+              >
+                <%# ユーザー情報 %>
+                <div class="px-5 py-3 mb-1 border-b border-gray-100">
+                  <p class="text-[10px] font-black text-primary uppercase tracking-widest mb-0.5">Signed in as</p>
+                  <p class="text-sm font-bold text-text-main truncate"><%= current_user.email %></p>
+                </div>
+
+                <%# メニュー項目 %>
+                <%= link_to edit_user_registration_path,
+                  class: "flex items-center gap-3 px-5 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm rounded-xl mx-2" do %>
+                  <span class="material-symbols-outlined text-xl">settings</span>
+                  マイページ設定
+                <% end %>
+
+                <%= button_to destroy_user_session_path,
+                  method: :delete,
+                  class: "w-full flex items-center gap-3 px-5 py-3 text-text-main hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-sm text-left cursor-pointer rounded-xl mx-0" do %>
+                  <span class="material-symbols-outlined text-xl">logout</span>
+                  ログアウト
+                <% end %>
+              </div>
+            </div>
+
+          <% else %>
+            <%# 未ログイン %>
+            <%= link_to "新規登録", new_user_registration_path,
+              class: "px-5 py-2 rounded-full text-sm font-bold text-text-secondary hover:text-primary hover:bg-primary/10 transition-all duration-200"
+            %>
+            <%= link_to "ログイン", new_user_session_path,
+              class: "px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all duration-200 active:scale-95"
+            %>
+          <% end %>
+        </div>
+      </div>
+
+      <%# モバイルメニュー %>
+      <div
+        data-mobile-menu-target="menu"
+        class="hidden lg:hidden mt-3 p-3 bg-white/70 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl animate-in slide-in-from-top duration-300"
+      >
+        <ul class="flex flex-col gap-1">
+          <% if user_signed_in? %>
+
+            <%# ユーザー情報バッジ %>
+            <li class="flex items-center gap-3 px-4 py-3 bg-primary/10 rounded-2xl mb-2">
+              <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-lg">account_circle</span>
+              </div>
+              <div>
+                <p class="text-xs text-primary font-black uppercase tracking-widest">Signed in</p>
+                <p class="font-bold text-text-main text-sm"><%= current_user.username %></p>
+              </div>
+            </li>
+
+            <%# 履歴 %>
+            <li>
+              <%= link_to activity_logs_path,
+                class: "flex items-center gap-3 px-4 py-3.5 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
+                <span class="material-symbols-outlined text-primary">bar_chart</span>
+                履歴・グラフ
+              <% end %>
+            </li>
+
+            <%# マイページ %>
+            <li>
+              <%= link_to edit_user_registration_path,
+                class: "flex items-center gap-3 px-4 py-3.5 text-text-main hover:bg-primary/5 transition-colors font-bold rounded-2xl" do %>
+                <span class="material-symbols-outlined text-primary">settings</span>
+                マイページ設定
+              <% end %>
+            </li>
+
+            <%# 区切り線 %>
+            <li class="my-1 border-t border-gray-100"></li>
+
+            <%# ログアウト %>
+            <li>
+              <%= button_to destroy_user_session_path,
+                method: :delete,
+                class: "w-full flex items-center gap-3 px-4 py-3.5 text-red-400 hover:bg-red-50 hover:text-red-500 transition-colors font-bold rounded-2xl text-left" do %>
+                <span class="material-symbols-outlined">logout</span>
+                ログアウト
+              <% end %>
+            </li>
+
+          <% else %>
+            <li>
+              <%= link_to new_user_registration_path,
+                class: "flex items-center justify-center gap-2 px-4 py-3.5 text-text-main font-bold rounded-2xl border border-gray-100 hover:bg-primary/5 transition-colors" do %>
+                新規登録
+              <% end %>
+            </li>
+            <li>
+              <%= link_to new_user_session_path,
+                class: "flex items-center justify-center gap-2 px-4 py-3.5 text-white bg-primary font-bold rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary-hover transition-colors" do %>
+                ログイン
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="h-20 md:h-20"></div>
+<% end %>
+    <%= yield %>
+  </body>
+</html>
+</file>
+
 <file path="app/javascript/controllers/timer_controller.js">
 import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
 
-const DEBUG_MODE = false; // デバッグ時に秒数を短縮するかどうか
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
@@ -6876,18 +6954,24 @@ export default class extends Controller {
             this.circleTarget.style.strokeDashoffset = 0
         }
 
+        // パターン1: 新規タブで開いた場合（URLパラメータ）
         const params = new URLSearchParams(window.location.search)
-        if (params.get('reopen_modal')) {
-            this.showSessionModal()
-            // URLからパラメータを削除
-            const newUrl = window.location.pathname
-            window.history.replaceState({}, document.title, newUrl)
+        if (params.get('session_id')) {
+            window.history.replaceState({}, document.title, window.location.pathname)
+            this.finish()
         }
+
+        // パターン2: 既存タブがあった場合（postMessage）
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data?.type === 'SHOW_MODAL') {
+                this.finish()
+            }
+        })
     }
 
     setTime(event) {
         const minutes = event.params.minutes
-        this.selectedSeconds = DEBUG_MODE ? 5 : minutes * 60
+        this.selectedSeconds =  minutes * 60
         this.remainingTime = this.selectedSeconds
 
         if (this.hasDurationInputTarget) {
@@ -6982,8 +7066,6 @@ export default class extends Controller {
     this.clearModalUI()
     this.updateCircle()
 
-    if (!this.startTime) return
-
     this.actualDuration = Math.floor((new Date() - this.startTime) / 1000)
 
     const response = await fetch("/sitting_sessions/finish_current", {
@@ -6992,8 +7074,7 @@ export default class extends Controller {
             "Accept": "text/vnd.turbo-stream.html",
             "Content-Type": "application/json",
             "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ duration: this.actualDuration })
+        }
     })
 
     if (response.ok) {
@@ -7061,19 +7142,14 @@ class SittingSessionsController < ApplicationController
 
   def finish_current
     @sitting_session = current_user.sitting_sessions.active.last
-
-    if @sitting_session
-
-    @sitting_session.update(duration: params[:duration])
+    return head :not_found if @sitting_session
 
     @exercises = Exercise.order("RANDOM()").limit(3)
 
       respond_to do |format|
       format.turbo_stream # finish_current.turbo_stream.erb を探す
       end
-    else
-      head :not_found
-    end
+  
   end
 
   def subscribe

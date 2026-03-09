@@ -15,7 +15,11 @@ class SendNotificationJob < ApplicationJob
 
     begin
       WebPush.payload_send(
-        message: "休憩しましょう！",
+        message: JSON.generate({
+          title: "休憩の時間です！",
+          body: "身体を動かしましょう！",
+          url: "/?session_id=#{sitting_session_id}"  # タブを閉じてもsession_idを探してmodalを開ける
+      }),
         endpoint: user.endpoint,
         p256dh: user.p256dh,
         auth: user.auth,
