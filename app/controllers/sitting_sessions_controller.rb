@@ -29,10 +29,10 @@ class SittingSessionsController < ApplicationController
   def finish_current
     @sitting_session = current_user.sitting_sessions.active.last
     return head :not_found unless @sitting_session
-    
+
     # 休憩するボタンで終了した時に通知を送らないようにする
     @sitting_session.completed!
-  
+
     @exercises = Exercise.order("RANDOM()").limit(3)
     respond_to do |format|
       format.turbo_stream
