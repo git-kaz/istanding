@@ -92,6 +92,9 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
+  config.hosts << "istanding.jp"      # 独自ドメイン 
+  config.hosts << "www.istanding.jp"  # サブドメイン
+
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
