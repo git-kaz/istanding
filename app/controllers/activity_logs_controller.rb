@@ -1,8 +1,6 @@
 class ActivityLogsController < ApplicationController
  def create
-  @activity_log = current_user.activity_logs.build(
-    activity_log_params.merge(sitting_session: current_user.sitting_sessions.active.last)
-  )
+  @activity_log = current_user.activity_logs.build(activity_log_params)
 
     if @activity_log.save
       @activity_log.sitting_session&.completed!

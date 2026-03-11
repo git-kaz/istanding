@@ -22,8 +22,11 @@
 
   /*導入ページの動き用*/
   @keyframes bounce-slow {
-    0%, 100% { transform: translateY(-15%); }
-    50% { transform: translateY(0); }
+  0%, 100% { transform: translateY(-15%); }
+  50% { transform: translateY(0); }
   }
-  --animate-bounce-slow: bounce-slow 2s infinite;
+
+  @utility animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+  }
 }

@@ -6,10 +6,6 @@ class SittingSession < ApplicationRecord
 
   belongs_to :user
 
-  has_many :suggested_actions, dependent: :destroy
-
-  has_many :exercises, through: :suggested_actions
-
   has_many :activity_logs, dependent: :nullify
 
   enum :status, { active: 0, completed: 1, cancelled: 2 }

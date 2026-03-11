@@ -116,7 +116,7 @@
 
     <div id="modal_container">
       <% if params[:reopen_modal] == "true" && @exercises.present? %>
-        <%= render partial: "shared/modal", locals: { exercise: @exercises } %>
+      <%= render partial: "shared/modal", locals: { exercises: @exercises, sitting_session_id: params[:sitting_session_id] } %>
       <% end %>
     </div>
   </div>
