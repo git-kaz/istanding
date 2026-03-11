@@ -1,6 +1,6 @@
 # 卒業制作
 
-「iStanding(仮称)」
+「iStanding」
 
 ## サービス概要
 
@@ -9,6 +9,8 @@
 医学的根拠に基づいた通知タイミングと効果的な行動提案で健康習慣をサポート。
 
 通知機能や座位時間の可視化により、健康的な習慣を無理なく継続できます。
+
+サービスURL: https://istanding.jp
 
 ## このサービスへの思い・作りたい理由
 
@@ -95,127 +97,112 @@ YMYL, E-E-A-T への留意が必要になる
 2. **柔軟な休憩スタイル**：ストレッチに限定せず、自分に合った休憩方法を選択可能
 3. **小さな成功体験の積み重ね**：毎日のチャレンジ達成で継続しやすい設計
 
-## 機能候補
+## 機能一覧
 
-### **MVP リリース時（最小限の機能）**
+### 実装済み
 
-1. **ユーザー登録・ログイン機能（devise）**
+1. ユーザー登録・ログイン機能（Devise、ゲストログイン対応）
+2. 座位時間アラート機能（Solid Queue + Web Push）
 
-2. **座位時間アラート機能（Solid Queue + service worker）**
+- 1分・60分・90分からタイマー時間を選択
+- ブラウザを閉じていてもプッシュ通知が届く
+- 通知クリックで運動提案モーダルが自動表示
 
-- アラート間隔の調整（30 分、60 分、90 分など）
+3. 運動提案モーダル
 
-3. **推奨行動モーダル**
+- 理学療法士監修の運動を3つランダム提案
+- ストレッチ・筋トレ・ウォーキングのカテゴリ別表示
 
-- 任意の設定時間になると休憩アクションを選択（タイプ選択：ストレッチ、歩く、立ち作業など）
+4. ダッシュボード
 
-4. **基本的なダッシュボード（一日の総座位時間、休憩回数）**
+- 今日の総座位時間・運動回数・進捗率を表示
+- 週次の座位時間グラフ・運動回数グラフ（Chartkick + Chart.js）
 
-- 総座位時間の表示（寿命に影響を与えると言われている 11 時間を上限とし警告を促す）
-- 連続実施日時を表示
+5. 運動記録・履歴（運動完了を記録、履歴一覧で確認可能）
 
-5. **休憩時間の行動リスト（seed）**
+### 実装予定
 
-- 後に CRUD 実装し、admin 画面で追加編集予定
-
-6. **SNS 共有機能**
-
-- 静的 OGP にて共有
-
-### **本リリースまでに追加したい機能**
-
-1. **admin 用 CRUD の実装（休憩時間の要素の追加、編集）**
-2. **データ可視化**
-
-- 座位時間の推移グラフ（chartkick + chart.js）
-- 最長座位時間の記録と改善推移
-
-3. **ケーション要ゲーミフィ素**
-
-- 連続座位時間によりキャラクターなどの状態が変化、運動や起立で回復（自身の健康状態に対するメタファー）
-- 実績・バッジシステム（3 日連続、7 日連続、累計 100 回休憩など）
-- 連続達成日数（ストリーク）の表示
-
-4. **動的 OGP へのバージョンアップ**
-
-- 達成結果に応じて SNS 共有用の OGP 画像を生成
-
-5. **休憩時に行うアクション一覧**
-
-- 運動、ストレッチなどにカテゴリ分けされた行動一覧を閲覧可能
+1. SNSログイン（Google・GitHub認証）
+2. PWA 化（ホーム画面への追加、オフライン対応）
+3. ゲーミフィケーション（座位時間でキャラクターがダメージを受ける表現）
+4. 連続記録ストリーク表示
+5. タイマー時間のスライダー選択
+6. 健康TIPS のランダム表示
+7. admin 用 CRUD（運動メニューの追加・編集）
+8. 動的 OGP
 
 ## 使用する技術スタック
 
-### **バックエンド**
-
-- **Ruby on Rails 8.x Ruby 4.0.x(最新の安定版)**
-  - フルスタックフレームワークとして採用
-  - Solid Queue によるキューイングシステムを利用するため
-  - Rails8 の新機能を活用し、インフラをシンプルに保つ
-
-### **フロントエンド**
-
-- **Hotwire（Turbo + Stimulus）**
-  - リアルタイム更新（座位時間の自動更新、アラート表示）
-  - SPA 的な UX をシンプルに実装
-- **Tailwind CSS**
-  - レスポンシブデザインの実装
-  - 理由：高速な開発とモダンな UI の実現
-
-### **データベース**
-
-- **Neon**
-  - 理由：RenderDBは期限があるため
-
-### **認証**
-
-- **Devise**
-  - スピーディーに認証機能の実装
-  - 理由：すでにアプリ作成にて学習済み、ドキュメントが豊富
-
-### **インフラ・デプロイ**
-
-- **Render**
-  - 理由：無料枠でのデプロイが可能、Heroku より設定がシンプル
-
-- **Cloudinaly**
-  - 理由：推奨行動の説明画像をアップロード
-
-### **通知機能**
-
-- **Web Push Notification API**
-  - ブラウザプッシュ通知の実装
-  - ライブラリ：`web-push` gem
-- Solid Queue
-  - Redis+Sidekiq の代わりに Rails8 のデフォルト機能を採用
-- LINE Messaging API（検討中）
-  - LINE による通知も選択可能に
-
-### **グラフ・データ可視化**
-
-- **Chartkick + Chart.js**
-  - 座位時間の推移グラフ
-  - 休憩タイプ別の集計グラフ
-
-### **SNS シェア機能**
-
-- **OGP 画像の動的生成**
-  - ImageMagick / MiniMagick
-  - 達成実績をカード形式の画像として生成
-- **SNS 連携**
-  - Twitter/X API（投稿機能）
-
-### **テスト**
-
-- **RSpec**
-  - 単体テスト、統合テスト
-- **Capybara + Selenium**
-  - E2E テスト（ブラウザ通知のテストを含む）
+| カテゴリ       | 技術                         | 採用理由                                                                         |
+| -------------- | ---------------------------- | -------------------------------------------------------------------------------- |
+| バックエンド   | Ruby on Rails 8.1 / Ruby 4.0 | Solid Queue等Rails 8新機能を活用しインフラをシンプルに保つ                       |
+| フロントエンド | Hotwire（Turbo + Stimulus）  | タイマーのリアルタイム更新・モーダル表示をSPA的なUXでシンプルに実装              |
+| フロントエンド | Tailwind CSS v4              | 高速な開発とモダンなUIの実現                                                     |
+| データベース   | Neon（PostgreSQL）           | サーバーレスPostgreSQL。Render DBは90日で期限切れになるため採用                  |
+| 認証           | Devise                       | メール認証・ゲストログイン対応。ドキュメントが豊富                               |
+| インフラ       | Render                       | 無料枠でのデプロイが可能、設定がシンプル                                         |
+| 画像管理       | Cloudinary                   | 運動メニューの説明画像をアップロード・管理                                       |
+| 通知           | Web Push API + web-push gem  | ブラウザプッシュ通知の実装                                                       |
+| ジョブ管理     | Solid Queue                  | Redis + Sidekiqの代わりにRails 8デフォルト機能を採用。任意の時刻に通知を予約送信 |
+| グラフ         | Chartkick + Chart.js         | 週次の座位時間・運動回数グラフを表示                                             |
+| テスト         | RSpec                        | 単体テスト・統合テスト                                                           |
 
 ## **画面遷移図**
 
-[画面遷移図(Figma)](https://www.figma.com/design/w2Ja1NYp5x0rgziS95OJfP/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C-iStainding--MVP-?m=auto&t=nFjaib5eNBv7qT7t-6)
+画面遷移図[Figma](https://www.figma.com/design/JKk9gF7VlIXwZ6NmctJhtm/iStandiing?node-id=3-9&t=kKzcKVxdmVC17r2o-1)
 
 ## **ER 図**
 
-[![Image from Gyazo](https://i.gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7.png)](https://gyazo.com/77e5ce3e2a8bdd4f6348da22ce384fa7)
+```mermaid
+erDiagram
+    users {
+        bigint id PK
+        string username
+        string email
+        string encrypted_password
+        string endpoint
+        string p256dh
+        string auth
+        string reset_password_token
+        datetime reset_password_sent_at
+        datetime remember_created_at
+        datetime created_at
+        datetime updated_at
+    }
+
+    sitting_sessions {
+        bigint id PK
+        bigint user_id FK
+        integer duration
+        integer status
+        datetime start_at
+        datetime notify_at
+        boolean notified
+        datetime created_at
+        datetime updated_at
+    }
+
+    exercises {
+        bigint id PK
+        string name
+        text description
+        integer category
+        string cloudinary_public_id
+        datetime created_at
+        datetime updated_at
+    }
+
+    activity_logs {
+        bigint id PK
+        bigint user_id FK
+        bigint exercise_id FK
+        bigint sitting_session_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    users ||--o{ sitting_sessions : "has many"
+    users ||--o{ activity_logs : "has many"
+    sitting_sessions ||--o{ activity_logs : "has many"
+    exercises ||--o{ activity_logs : "has many"
+```
