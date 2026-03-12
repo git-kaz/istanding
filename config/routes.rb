@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "pages/terms"
+  get "pages/privacy"
   # ログイン時のroot
   authenticated :user do
     root "top#index", as: :authenticated_root
@@ -23,7 +25,12 @@ Rails.application.routes.draw do
     registrations: "users/registrations"
   }
 
+  # ゲストログイン
   post "guest_login", to: "users/guest_sessions#create"
+
+  # 利用規約、プライバシーポリシー
+  get "terms", to: "pages#terms"
+  get "privacy", to: "pages#privacy"
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

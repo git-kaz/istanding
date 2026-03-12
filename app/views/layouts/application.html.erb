@@ -198,5 +198,27 @@
   <div class="h-20 md:h-20"></div>
 <% end %>
     <%= yield %>
+
+    <footer class="bg-white/60 backdrop-blur-xl border-t border-white/40">
+      <div class="max-w-5xl mx-auto px-6 py-4">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+
+          <%# ロゴ・コピーライト %>
+          <div class="flex items-center gap-3">
+            <%= link_to root_path, class: "flex items-center group" do %>
+              <%= image_tag "header_logo.png", class: "max-h-8 w-auto opacity-80 group-hover:opacity-100 transition-opacity" %>
+            <% end %>
+            <p class="text-xs text-text-secondary">© 2026 iStanding</p>
+          </div>
+
+          <%# リンク %>
+          <nav class="flex items-center gap-6 text-sm font-bold text-text-secondary">
+            <%= link_to "利用規約", terms_path, class: "hover:text-primary transition-colors" %>
+            <%= link_to "プライバシーポリシー", privacy_path, class: "hover:text-primary transition-colors" %>
+          </nav>
+
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
