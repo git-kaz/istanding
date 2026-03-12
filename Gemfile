@@ -46,7 +46,7 @@ gem "image_processing", "~> 1.2"
 gem "devise"
 gem "devise-i18n"
 
-#Google認証
+# Google認証
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 
