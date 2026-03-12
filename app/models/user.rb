@@ -52,7 +52,7 @@ class User < ApplicationRecord
     end
   end
 
-  def self.from_omniauth(auth)
+def self.from_omniauth(auth)
   user = where(provider: auth.provider, uid: auth.uid)
            .or(where(email: auth.info.email))
            .first_or_create do |u|
