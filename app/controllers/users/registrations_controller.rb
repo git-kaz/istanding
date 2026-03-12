@@ -50,6 +50,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
     devise_parameter_sanitizer.permit(:account_update, keys: [ :username ])
   end
 
+  def build_resource(hash = nil)
+    hash ||= resource_params || {}
+    hash = hash.to_h  # StrongParametersをHashに変換
+    hash[:uid] = SecureRandom.uuid if hash[:uid].blank?
+    super
+  end
   # The path used after sign up.
   # def after_sign_up_path_for(resource)
   #   super(resource)

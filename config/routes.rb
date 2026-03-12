@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   resources :activity_logs, only: %i[create index ]
 
   devise_for :users, controllers: {
+    omniauth_callbacks: "users/omniauth_callbacks",
     registrations: "users/registrations"
   }
 

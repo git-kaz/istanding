@@ -75,6 +75,13 @@
         %>
       <% end %>
 
+       <%# Googleログイン区切り %>
+        <div class="flex items-center gap-3 my-2">
+          <div class="flex-1 h-px bg-border-light"></div>
+          <span class="text-sm text-text-secondary font-medium">または</span>
+          <div class="flex-1 h-px bg-border-light"></div>
+        </div>
+
       <!-- Links -->
       <div class="mt-6 text-center space-y-2">
         <%= render "devise/shared/links" %>
