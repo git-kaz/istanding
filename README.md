@@ -2,6 +2,10 @@
 
 「iStanding」
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/81be41f9-31b3-46e7-8f55-32b0193c19cd" alt="iStanding OGP" width="600">
+</p>
+
 ## サービス概要
 
 デスクワーカーの「座りすぎ」を防ぐタイマーアプリ。
