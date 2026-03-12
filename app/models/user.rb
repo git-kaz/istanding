@@ -2,7 +2,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
 
   has_many :sitting_sessions, dependent: :destroy
   has_many :activity_logs, dependent: :destroy
@@ -50,6 +51,22 @@ class User < ApplicationRecord
       user.username = "ゲストユーザー"
     end
   end
+
+  def self.from_omniauth(auth)
+  user = where(provider: auth.provider, uid: auth.uid)
+           .or(where(email: auth.info.email))
+           .first_or_create do |u|
+             u.email = auth.info.email
+             u.password = Devise.friendly_token[0, 20]
+             u.username = auth.info.name
+             u.provider = auth.provider
+             u.uid = auth.uid
+           end
+
+  # 既存ユーザーの場合もprovider/uidを更新
+  user.update(provider: auth.provider, uid: auth.uid) unless user.provider.present?
+  user
+end
 
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }, if: -> { password.present? }

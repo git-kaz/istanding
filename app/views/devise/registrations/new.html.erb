@@ -86,14 +86,22 @@
         <%= f.submit "アカウントを作成",
               class: "mt-4 w-full h-12 rounded-lg bg-primary
                       hover:bg-primary-hover text-white font-bold
-                      transition shadow-md" %>
+                      transition shadow-md cursor-pointer" %>
+         <% end %>
+        <%# Googleログイン区切り %>
+        <div class="flex items-center gap-3 my-2">
+          <div class="flex-1 h-px bg-border-light"></div>
+          <span class="text-sm text-text-secondary font-medium">または</span>
+          <div class="flex-1 h-px bg-border-light"></div>
+        </div>
 
+        
         <!-- links -->
         <div class="text-center text-sm mt-2">
           <%= render "devise/shared/links" %>
         </div>
 
-      <% end %>
+     
     </div>
   </div>
 </div>
