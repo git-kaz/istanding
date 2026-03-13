@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    get "exercises/index"
+    get "exercises/new"
+    get "exercises/create"
+    get "exercises/edit"
+    get "exercises/update"
+    get "exercises/destroy"
+  end
   get "pages/terms"
   get "pages/privacy"
   # ログイン時のroot
