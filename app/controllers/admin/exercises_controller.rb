@@ -29,7 +29,7 @@ class Admin::ExercisesController < ApplicationController
   end
 
   def update
-    autorize @exercise
+    authorize @exercise
     if @exercise.update(exercise_params)
       redirect_to admin_exercises_path, notice: "Exerciseを更新しました"
     else
@@ -50,6 +50,6 @@ class Admin::ExercisesController < ApplicationController
   end
 
   def exercise_params
-    params.require(:exercise).permit(:name, :description, :category, :image)
+    params.require(:exercise).permit(:name, :instructions, :category, :image, :benefits)
   end
 end

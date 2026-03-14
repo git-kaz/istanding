@@ -71,6 +71,13 @@
               履歴
             <% end %>
 
+            <%# admin用リンク%>
+            <% if current_user.admin? %>
+              <%= link_to admin_exercises_path,
+                class: "flex items-center gap-3 px-5 py-3 text-text-main hover:bg-primary/10 hover:text-primary transition-colors font-bold text-sm rounded-xl mx-2" do %>
+                管理画面
+              <% end %>
+            <% end %>
             <%# 区切り線 %>
             <div class="w-px h-5 bg-border-light mx-1"></div>
 
