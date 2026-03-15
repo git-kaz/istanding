@@ -33,10 +33,10 @@
   </div>
 
   <%# 解説・効果 %>
-  <div class="w-full grid md:grid-cols-3 gap-8">
+  <div class="w-full space-y-8">
 
-    <%# 手順（左2/3） %>
-    <div class="md:col-span-2 space-y-5">
+    <%# 手順（全幅） %>
+    <div>
       <div class="flex items-center gap-3 mb-4">
         <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
           <span class="material-symbols-outlined">format_list_numbered</span>
@@ -44,28 +44,32 @@
         <h2 class="text-xl font-black text-text-main">やり方</h2>
       </div>
 
-      <div class="p-6 bg-white/50 backdrop-blur-md rounded-3xl border-2 border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] space-y-2">
-      
-        <% @exercise.instructions.to_s.split("\n").reject(&:blank?).each_with_index do |step, index| %>
-          <div class="flex gap-4 items-start">
-          <div class="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20">
-            <%= index + 1 %>
+      <div class="p-6 bg-white/50 backdrop-blur-md rounded-3xl border-2 border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
+        <div class="relative pl-3">
+          <div class="absolute left-[0.85rem] top-3 bottom-3 w-0.5 bg-primary/20 rounded-full"></div>
+          <div class="space-y-2">
+            <% steps = @exercise.instructions.to_s.split("\n").reject(&:blank?) %>
+            <% steps.each_with_index do |step, index| %>
+              <div class="flex gap-4 items-start">
+                <div class="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg shadow-primary/20 z-10 mt-1">
+                  <%= index + 1 %>
+                </div>
+                <div class="text-text-main text-xl leading-relaxed font-medium pt-0.5 flex-1">
+                  <%= step %>
+                </div>
+              </div>
+              <% unless index == steps.length - 1 %>
+                <div class="border-t border-white/60 ml-11"></div>
+              <% end %>
+            <% end %>
           </div>
-        <div class="text-text-main text-xl leading-relaxed font-medium pt-0.5">
-          <%= step %>
         </div>
       </div>
-    <% unless index == @exercise.instructions.split("\n").reject(&:blank?).length - 1 %>
-      <div class="border-t border-white/60"></div>
-    <% end %>
-  <% end %>
-</div>
     </div>
 
-    <%# 右カラム（効果・注意ポイント） %>
-    <div class="space-y-6">
+    <%# 効果・注意ポイント（横並び） %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <%# 効果 %>
       <% if @exercise.benefits.present? %>
         <div class="p-8 bg-white/40 backdrop-blur-md border-2 border-white/60 rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
           <h3 class="text-text-main font-black flex items-center gap-2 mb-5 text-lg">
@@ -83,7 +87,6 @@
         </div>
       <% end %>
 
-      <%# 注意ポイント %>
       <div class="p-8 bg-white/40 backdrop-blur-md border-2 border-white/60 rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
         <h3 class="text-text-main font-black flex items-center gap-2 mb-5 text-lg">
           <span class="material-symbols-outlined text-primary">info</span>
