@@ -20,5 +20,4 @@ class ExercisePolicy < ApplicationPolicy
       scope.all
     end
   end
-  
 end

@@ -53,7 +53,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def build_resource(hash = nil)
     hash ||= resource_params || {}
     hash = hash.respond_to?(:permit!) ? hash.permit!.to_h : hash.to_h
-  # StrongParametersをHashに変換
+    # StrongParametersをHashに変換
     hash[:uid] = SecureRandom.uuid if hash[:uid].blank?
     super
   end

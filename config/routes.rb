@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  #運動管理画面
+  # 運動管理画面
   namespace :admin do
     resources :exercises
   end
