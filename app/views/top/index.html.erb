@@ -5,7 +5,7 @@
   <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-center justify-center gap-8 lg:gap-16 transition-all duration-500">
     
     <%# タイマーカード %>
-    <div class="flex flex-col items-center px-10 py-10 md:px-14 md:py-12 rounded-[4rem]
+    <div class="flex flex-col items-center px-4 py-10 md:px-4 md:py-12 rounded-[4rem]
                 bg-input-bg-light/80 backdrop-blur-3xl 
                 border border-white/40
                 shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5 
@@ -34,16 +34,21 @@
       <%= form_with model: SittingSession.new, id: "timer-form" do |f| %>
       <div class="mt-8 w-full space-y-5">
 
-       <%# 時間選択ボタン %>
-        <div class="flex flex-wrap gap-3 justify-center">
-          <% SittingSession::SETTING_DURATIONS.each do |minutes| %>
+      <%# 時間選択ボタン（セグメントコントロール） %>
+      <div class="-mx-20 md:-mx-30">
+        <div class="w-full flex bg-primary/20 rounded-3xl p-1 gap-1">
+          <% SittingSession::SETTING_DURATIONS.each_with_index do |minutes, index| %>
             <button type="button"
-                    class="flex-1 min-w-[96px] py-5 bg-white/40 border border-border-light hover:border-primary hover:bg-white rounded-2xl text-text-main text-2xl font-bold transition-all active:scale-90 cursor-pointer"
-                    data-action="click->timer#setTime" data-timer-minutes-param="<%= minutes %>">
-              <%= minutes %><span class="text-base ml-1 text-text-secondary font-medium">min</span>
+              class="flex-1 py-2 rounded-3xl text-lg font-bold transition-all cursor-pointer duration-button whitespace-nowrap
+                   <%= index == 0 ? 'bg-primary text-white shadow-md' : 'text-text-secondary hover:text-text-main' %>"
+                data-action="click->timer#setTime"
+                data-timer-minutes-param="<%= minutes %>">
+              <%= minutes %><span class="text-xs ml-0.5 font-medium">分</span>
             </button>
           <% end %>
         </div>
+      </div>
+
 
         <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
 

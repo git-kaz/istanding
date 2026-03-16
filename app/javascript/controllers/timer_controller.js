@@ -36,19 +36,27 @@ export default class extends Controller {
     }
 
     setTime(event) {
-        const minutes = event.params.minutes
-        this.selectedSeconds =  minutes * 60
-        this.remainingTime = this.selectedSeconds
+  const minutes = event.params.minutes
+  this.selectedSeconds = minutes * 60
+  this.remainingTime = this.selectedSeconds
 
-        if (this.hasDurationInputTarget) {
-            this.durationInputTarget.value = minutes
-            console.log("Set durationInput to:", this.durationInputTarget.value) // デバッグ用
-    } else {
-        console.error("durationInputTarget not found!") // 見つからない場合のエラー
-        }
-        this.updateDisplay()
-        this.updateCircle()
-    }
+  if (this.hasDurationInputTarget) {
+    this.durationInputTarget.value = minutes
+  } else {
+    console.error("durationInputTarget not found!")
+  }
+
+  // 選択状態の切り替え
+  document.querySelectorAll('.duration-button').forEach(btn => {
+    btn.classList.remove('bg-primary', 'text-white', 'shadow-md')
+    btn.classList.add('text-text-secondary')
+  })
+  event.currentTarget.classList.add('bg-primary', 'text-white', 'shadow-md')
+  event.currentTarget.classList.remove('text-text-secondary')
+
+  this.updateDisplay()
+  this.updateCircle()
+}
 
     start() {
 
