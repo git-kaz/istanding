@@ -30,6 +30,8 @@ class SittingSessionsController < ApplicationController
     @sitting_session = current_user.sitting_sessions.active.last
     return head :not_found unless @sitting_session
 
+    # 休憩するで早期に終了したらdurationを更新
+    @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
     # 休憩するボタンで終了した時に通知を送らないようにする
     @sitting_session.completed!
 
