@@ -1,7 +1,5 @@
 class HealthTip
   #健康TIPのデータ。ActiveRecordは継承していないのでテーブルなしのモデル
-
-  class HealthTip
   TIPS = [
     <<~TIP,
       ドイツでは「ぎっくり腰」のことを、その急激な痛みから
