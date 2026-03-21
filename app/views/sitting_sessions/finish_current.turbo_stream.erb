@@ -1,3 +1,7 @@
 <%= turbo_stream.update "modal_container" do %>
   <%= render partial: "shared/modal", locals: { exercises: @exercises, sitting_session_id: @sitting_session.id } %>
 <% end %>
+
+<%= turbo_stream.update "hp_card" do%>
+  <%= render partial: "shared/hp_card"%>
+<% end %>

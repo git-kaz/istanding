@@ -44,6 +44,17 @@ class User < ApplicationRecord
     .count
   end
 
+  # ダメージゲージの計算
+  def take_damage(duration)
+    damage = (duration / 3600.0 * 10).round # 1時間で10ダメージ
+    update(hp: [ hp - damage, 0 ].max)  # 0未満にならないように
+  end
+
+  def recover(amount = 10)
+    update(hp: [ hp + amount, 100 ].min) # 101以上にならないように
+  end
+
+
   # ゲストログインの実装
   def self.guest
     find_or_create_by!(email: "guest@example.com") do |user|
@@ -70,4 +81,5 @@ end
 
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }, if: -> { password.present? }
+  validates :hp, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
 end

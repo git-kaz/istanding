@@ -13,10 +13,6 @@ class SittingSessionsController < ApplicationController
 
     if @sitting_session.save
 
-      # デバッグ用
-      # SendNotificationJob.set(wait_until: Time.current + 5.seconds)
-      # .perform_later(@sitting_session.id)
-
       # タイマー終了時に通知jobを予約する
       SendNotificationJob.set(wait_until: @sitting_session.notify_at)
                           .perform_later(@sitting_session.id)
@@ -30,8 +26,15 @@ class SittingSessionsController < ApplicationController
     @sitting_session = current_user.sitting_sessions.active.last
     return head :not_found unless @sitting_session
 
+    # 休憩するで早期に終了したらdurationを更新
+    @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
+
+    # ダメージを計算
+    current_user.take_damage(@sitting_session.duration)
+
     # 休憩するボタンで終了した時に通知を送らないようにする
     @sitting_session.completed!
+
     # N+1を防ぐために一回のアクセスで3つの画像を取得
     @exercises = Exercise.order("RANDOM()").limit(3).includes(image_attachment: :blob)
     respond_to do |format|

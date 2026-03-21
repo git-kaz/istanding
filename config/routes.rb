@@ -22,7 +22,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :exercises, only: %i[index show ]
+  resources :exercises, only: %i[index show ] do
+    collection do
+      post :random
+    end
+  end
 
   resources :activity_logs, only: %i[create index ]
 

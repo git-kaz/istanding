@@ -1,8 +1,9 @@
 class ActivityLogsController < ApplicationController
- def create
-  @activity_log = current_user.activity_logs.build(activity_log_params)
+  def create
+    @activity_log = current_user.activity_logs.build(activity_log_params)
 
     if @activity_log.save
+      current_user.recover(10) # 運動するたびにHPを10回復
       @activity_log.sitting_session&.completed!
       redirect_to root_path, notice: "運動を記録しました！", status: :see_other
     else
