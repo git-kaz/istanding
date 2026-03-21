@@ -34,8 +34,8 @@ class SittingSessionsController < ApplicationController
     @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
     # 休憩するボタンで終了した時に通知を送らないようにする
     @sitting_session.completed!
-
-    @exercises = Exercise.order("RANDOM()").limit(3)
+    # N+1を防ぐために一回のアクセスで3つの画像を取得
+    @exercises = Exercise.order("RANDOM()").limit(3).includes(image_attachment: :blob)
     respond_to do |format|
       format.turbo_stream
     end
