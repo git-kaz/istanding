@@ -62,9 +62,16 @@
             class="w-full py-4 rounded-2xl text-lg font-bold tracking-widest bg-primary/20 text-text-main border-primary/50 shadow-lg hover:bg-primary/30 hover:border-primary/50 transition-all active:scale-95 cursor-pointer">
             休憩する
           </button>
+          
         </div>
       </div>
       <% end %>
+      <div class="mt-4">
+        <%= button_to "とりあえず運動する", random_exercises_path, 
+            method: :post,
+            class: "w-full py-4 text-lg font-bold tracking-widest text-primary transition-all hover:scale-110 cursor-pointer" %>
+      </div>
+      
     </div>
 
     <%# 右カラム: 統計エリア %>
