@@ -31,11 +31,11 @@
         </div>
       </div>
 
-      <%= form_with model: SittingSession.new, id: "timer-form" do |f| %>
+      <%= form_with model: SittingSession.new, id: "timer-form", class: "w-full" do |f| %>
       <div class="mt-8 w-full space-y-5">
 
         <%# 時間選択ボタン（セグメントコントロール） %>
-        <div class="-mx-20 md:-mx-30">
+        <div>
           <div class="w-full flex bg-primary/20 rounded-3xl p-1 gap-1">
             <% SittingSession::SETTING_DURATIONS.each_with_index do |minutes, index| %>
               <button type="button"
@@ -52,14 +52,15 @@
         <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
 
         <%# スタート・休憩するボタン %>
-        <div class="space-y-3 pt-1">
+        <div class="flex flex-col items-center space-y-3 pt-1 relative">
           <%= f.submit "スタート",
-            class: "bg-primary text-white py-5 w-full rounded-[1.5rem] text-xl font-black tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer",
-            data: { action: "click->timer#start" } %>
+            class: "bg-primary text-white py-5 px-12 rounded-[1.5rem] text-xl font-black tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer",
+            data: { action: "click->timer#start", timer_target: "startButton" } %>
 
           <button type="button"
+            data-timer-target="breakButton"
             data-action="click->timer#finish"
-            class="w-full py-4 rounded-2xl text-lg font-bold tracking-widest bg-primary/20 text-text-main border-primary/50 shadow-lg hover:bg-primary/30 hover:border-primary/50 transition-all active:scale-95 cursor-pointer">
+            class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-primary/20 text-text-main border-primary/50 shadow-lg hover:bg-primary/30 hover:border-primary/50 transition-all active:scale-95 cursor-pointer hidden">
             休憩する
           </button>
           

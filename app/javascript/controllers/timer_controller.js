@@ -4,7 +4,7 @@ import { Turbo } from "@hotwired/turbo-rails"
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display", "circle", "durationInput"]
+    static targets = ["display", "circle", "durationInput", "startButton", "breakButton"]
 
     connect() {
         this.remainingTime = 0
@@ -67,6 +67,9 @@ export default class extends Controller {
         this.updateCircle()
         this.runTimer()
 
+        //スタートボタンを消して休憩ボタンを表示
+        this.startButtonTarget.classList.add("hidden")
+        this.breakButtonTarget.classList.remove("hidden")
 
     }
 
@@ -139,6 +142,10 @@ export default class extends Controller {
         this.updateDisplay()
         this.clearModalUI()
         this.updateCircle()
+
+        //休憩ボタンを消してスタートボタンを表示
+        this.breakButtonTarget.classList.add("hidden")
+        this.startButtonTarget.classList.remove("hidden")
 
         const response = await fetch("/sitting_sessions/finish_current", {
             method: "PATCH",
