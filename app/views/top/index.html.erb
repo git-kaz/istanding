@@ -39,8 +39,7 @@
           <div class="w-full flex bg-primary/20 rounded-3xl p-1 gap-1">
             <% SittingSession::SETTING_DURATIONS.each_with_index do |minutes, index| %>
               <button type="button"
-                class="flex-1 py-2 rounded-3xl text-lg font-bold transition-all cursor-pointer duration-button whitespace-nowrap
-                     <%= index == 0 ? 'bg-primary text-white shadow-md' : 'text-text-secondary hover:text-text-main' %>"
+                class="flex-1 py-2 rounded-3xl text-lg font-bold transition-all cursor-pointer duration-button whitespace-nowrap text-text-secondary hover:text-text-main"
                   data-action="click->timer#setTime"
                   data-timer-minutes-param="<%= minutes %>">
                 <%= minutes %><span class="text-xs ml-0.5 font-medium">分</span>
@@ -48,7 +47,15 @@
             <% end %>
           </div>
         </div>
-
+        <div class="flex items-center justify-center gap-2 mt-4 transition-all duration-300 hidden" 
+             data-timer-target="errorMessage">
+          <span class="material-symbols-outlined text-red-500 text-xl font-bold">
+            error
+          </span>
+          <p class="text-red-500 text-sm font-bold tracking-tight">
+            時間を選択してください
+          </p>
+        </div>
         <%= f.hidden_field :duration, data: { timer_target: "durationInput" } %>
 
         <%# スタート・休憩するボタン %>
@@ -58,10 +65,17 @@
             data: { action: "click->timer#start", timer_target: "startButton" } %>
 
           <button type="button"
-            data-timer-target="breakButton"
+            data-timer-target="runningButton"
             data-action="click->timer#finish"
             class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-primary/20 text-text-main border-primary/50 shadow-lg hover:bg-primary/30 hover:border-primary/50 transition-all active:scale-95 cursor-pointer hidden">
             休憩する
+          </button>
+
+          <button type="button"
+            data-timer-target="runningButton"
+            data-action="click->timer#reset"
+            class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-white text-primary ring-2 ring-primary shadow-lg hover:bg-primary/10 hover: transition-all active:scale-95 cursor-pointer hidden">
+            リセット
           </button>
           
         </div>

@@ -4,7 +4,7 @@ import { Turbo } from "@hotwired/turbo-rails"
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display", "circle", "durationInput", "startButton", "breakButton"]
+    static targets = ["display", "circle", "durationInput", "startButton", "runningButton", "errorMessage"]
 
     connect() {
         this.remainingTime = 0
@@ -36,30 +36,35 @@ export default class extends Controller {
     }
 
     setTime(event) {
-  const minutes = event.params.minutes
-  this.selectedSeconds = minutes * 60
-  this.remainingTime = this.selectedSeconds
+        const minutes = event.params.minutes
+        this.selectedSeconds = minutes * 60
+        this.remainingTime = this.selectedSeconds
 
-  if (this.hasDurationInputTarget) {
-    this.durationInputTarget.value = minutes
-  } else {
-    console.error("durationInputTarget not found!")
-  }
+        if (this.hasDurationInputTarget) {
+            this.durationInputTarget.value = minutes
+        } else {
+            console.error("durationInputTarget not found!")
+        }
 
-  // 選択状態の切り替え
-  document.querySelectorAll('.duration-button').forEach(btn => {
-    btn.classList.remove('bg-primary', 'text-white', 'shadow-md')
-    btn.classList.add('text-text-secondary')
-  })
-  event.currentTarget.classList.add('bg-primary', 'text-white', 'shadow-md')
-  event.currentTarget.classList.remove('text-text-secondary')
+        // 選択状態の切り替え
+        document.querySelectorAll('.duration-button').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white', 'shadow-md')
+            btn.classList.add('text-text-secondary')
+        })
+        event.currentTarget.classList.add('bg-primary', 'text-white', 'shadow-md')
+        event.currentTarget.classList.remove('text-text-secondary')
 
-  this.updateDisplay()
-  this.updateCircle()
-}
+        this.updateDisplay()
+        this.updateCircle()
+    }
 
     start() {
 
+        if (this.selectedSeconds === 0) {
+            this.errorMessageTarget.classList.remove("hidden")
+            return
+        }
+        
         this.resetState() // 全てをクリアしてから開始
         this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
@@ -69,8 +74,12 @@ export default class extends Controller {
 
         //スタートボタンを消して休憩ボタンを表示
         this.startButtonTarget.classList.add("hidden")
-        this.breakButtonTarget.classList.remove("hidden")
 
+        this.runningButtonTargets.forEach(button => {
+            button.classList.remove("hidden")
+        })
+
+        this.errorMessageTarget.classList.add("hidden")
     }
 
     runTimer() {
@@ -107,7 +116,7 @@ export default class extends Controller {
         }
     }
 
-    reset() {
+    async reset() {
         this.stop()
         this.clearAutoCloseTimer()
         this.remainingTime = 0
@@ -115,6 +124,20 @@ export default class extends Controller {
         this.updateDisplay()
         this.clearModalUI()
         this.updateCircle()
+
+        await fetch("/sitting_sessions/reset_current", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+
+            //休憩ボタンを消してスタートボタンを表示
+        this.runningButtonTargets.forEach(button => {
+            button.classList.add("hidden")
+        })
+        this.startButtonTarget.classList.remove("hidden")
     }
 
     resetState() {
@@ -144,7 +167,9 @@ export default class extends Controller {
         this.updateCircle()
 
         //休憩ボタンを消してスタートボタンを表示
-        this.breakButtonTarget.classList.add("hidden")
+        this.runningButtonTargets.forEach(button => {
+            button.classList.add("hidden")
+        })
         this.startButtonTarget.classList.remove("hidden")
 
         const response = await fetch("/sitting_sessions/finish_current", {
