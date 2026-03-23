@@ -1,13 +1,19 @@
  <%# HPバー %>
-<div class="mb-2">
+<div class="mb-2"
+     data-controller="damage-gauge"
+     data-damage-gauge-hp-value="<%= current_user.hp %>">
     <div class="flex justify-between items-center mb-2">
         <h3 class="text-lg font-black text-text-secondary uppercase tracking-[0.2em]">HP</h3>
-        <span class="text-lg font-black text-text-main"><%= current_user.hp %> / 100</span>
+        <span class="text-lg font-black text-text-main"
+              data-damage-gauge-target="hpText">
+            <%= current_user.hp %> / 100
+        </span>
     </div>
     <%# 5段階メモリ付きゲージ %>
     <div class="relative h-6 w-full bg-border-light/40 rounded-full overflow-hidden border border-white/50">
         <div class="h-full rounded-full transition-all duration-[1500ms] ease-out"
-            style="width: <%= current_user.hp %>%; background-color: <%= hp_color(current_user.hp) %>;">
+            data-damage-gauge-target="gauge"
+            style="width: 0%; background-color: <%= hp_color(current_user.hp) %>;">
         </div>
         <%# 5段階のメモリ %>    
         <div class="absolute inset-0 flex pointer-events-none">
