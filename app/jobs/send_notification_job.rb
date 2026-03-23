@@ -8,6 +8,7 @@ class SendNotificationJob < ApplicationJob
 
     return if session.nil?
 
+    # statusがactiveの時だけ通知
     return unless session&.active?
 
     user = session.user

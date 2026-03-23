@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     collection do
       post :subscribe
       patch :finish_current
+      delete :reset_current
     end
   end
 

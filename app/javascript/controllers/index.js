@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import DamageGaugeController from "./damage_gauge_controller"
+application.register("damage-gauge", DamageGaugeController)
+
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 
