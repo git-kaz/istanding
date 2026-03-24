@@ -168,6 +168,10 @@ erDiagram
         string p256dh
         string auth
         string reset_password_token
+        string provider
+        string uid
+        boolean admin
+        integer hp
         datetime reset_password_sent_at
         datetime remember_created_at
         datetime created_at
@@ -189,7 +193,8 @@ erDiagram
     exercises {
         bigint id PK
         string name
-        text description
+        text benefits
+        text instructions
         integer category
         string cloudinary_public_id
         datetime created_at
