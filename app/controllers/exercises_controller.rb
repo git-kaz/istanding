@@ -4,7 +4,19 @@ class ExercisesController < ApplicationController
 
   def show
     @exercise = Exercise.find(params[:id])
-    @health_tip = HealthTip.random_tips
+    @tips_index, @health_tip = HealthTip.random_tips
+
+    @ogp_url = ogp_image_url(index: @tips_index)
+
+    set_meta_tags og: {
+      title: "iStanding - 座りすぎを防ぐタイマーアプリ",
+      image: @ogp_url,
+      type: "article"
+    },
+    twitter: {
+      card: "summary_large_image",
+      image: @ogp_url
+    }
   end
 
   def random
