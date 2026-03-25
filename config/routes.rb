@@ -43,5 +43,8 @@ Rails.application.routes.draw do
   get "terms", to: "pages#terms"
   get "privacy", to: "pages#privacy"
 
+  # OGP
+  get "ogp/:index", to: "ogp_images#show", as: :ogp_image, constraints: { text: /[^\/]+/ } # スラッシュ以外は許可
+
   get "up" => "rails/health#show", as: :rails_health_check
 end
