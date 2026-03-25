@@ -46,5 +46,9 @@ Rails.application.routes.draw do
   # OGP
   get "ogp/:index", to: "ogp_images#show", as: :ogp_image, constraints: { text: /[^\/]+/ } # スラッシュ以外は許可
 
+  # PWA
+  get "/manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
+  get "/service-worker.js", to: "rails/pwa#service-worker", as: :pwa_service_worker
+
   get "up" => "rails/health#show", as: :rails_health_check
 end
