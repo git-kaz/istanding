@@ -15,11 +15,10 @@ Rails.application.routes.draw do
     root "static_pages#top"
   end
 
-  resources :sitting_sessions, only: %i[new create show ] do
+  resources :sitting_sessions, only: %i[new create show destroy] do
     collection do
       post :subscribe
       patch :finish_current
-      delete :reset_current
     end
   end
 
@@ -44,7 +43,7 @@ Rails.application.routes.draw do
   get "privacy", to: "pages#privacy"
 
   # OGP
-  get "ogp/:index", to: "ogp_images#show", as: :ogp_image, constraints: { text: /[^\/]+/ } # スラッシュ以外は許可
+  get "ogp/:index", to: "ogp_images#show", as: :ogp_image
 
   # PWA
   get "/manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest

@@ -22,6 +22,14 @@ class SittingSessionsController < ApplicationController
     end
   end
 
+  # リセットボタン用
+  def destroy
+    @sitting_session = current_user.sitting_sessions.active.last
+    return head :not_found unless @sitting_session
+
+    @sitting_session.destroy!
+  end
+
   # タイマー終了時にduration更新とステータス変更
   def finish_current
     @sitting_session = current_user.sitting_sessions.active.last
@@ -41,14 +49,6 @@ class SittingSessionsController < ApplicationController
     respond_to do |format|
       format.turbo_stream
     end
-  end
-
-  # リセットボタン用
-  def reset_current
-    @sitting_session = current_user.sitting_sessions.active.last
-    return head :not_found unless @sitting_session
-
-    @sitting_session.cancelled!
   end
 
   def subscribe

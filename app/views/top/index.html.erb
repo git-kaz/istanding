@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-background-dark p-4 md:p-6 overflow-x-hidden"
     data-controller="notification timer"
-    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>">
+    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>"
+    data-timer-session-id-value="<%= current_user.sitting_sessions.active.last&.id %>">
 
   <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-center justify-center gap-8 lg:gap-16 transition-all duration-500">
 

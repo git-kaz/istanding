@@ -125,7 +125,7 @@ export default class extends Controller {
         this.clearModalUI()
         this.updateCircle()
 
-        await fetch("/sitting_sessions/reset_current", {
+        await fetch(`/sitting_sessions/${this.sessionIdValue}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
