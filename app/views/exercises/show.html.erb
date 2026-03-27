@@ -28,12 +28,12 @@
 </div>
 
    <%# 健康TIPS表示%>
-<div class="mb-6 w-full p-6 bg-white/50 backdrop-blur-md border-l-4 border-primary rounded-2xl">
+<div class="mb-6 w-full p-4 bg-white/50 backdrop-blur-md border-l-4 border-primary rounded-2xl">
   <div class="inline-flex items-center gap-2 mb-3 px-3 py-1 bg-primary/20 rounded-full">
     <span class="material-symbols-outlined text-primary text-sm">lightbulb</span>
     <span class="text-primary text-sm font-black uppercase tracking-widest">健康Tips</span>
   </div>
-  <p class="text-text-main text-xl leading-relaxed font-medium text-center">
+  <p class="text-text-main text-sm md:text-xl leading-relaxed font-medium text-center">
     <%= @health_tip.gsub("\n", "<br>").html_safe %>
   </p>
 </div>
@@ -53,7 +53,7 @@
     <span>シェアする</span>
   <% end %>
   <!-- キャッチコピー部分 -->
-  <p class="my-4 text-sm font-bold text-gray-600 sm:text-base">
+  <p class="my-4 text-xs font-bold text-gray-600 sm:text-base">
     <span class="inline-block  border-b-2 border-primary-500 pb-1">
       💡 健康知識をみんなにシェアして、座り過ぎ撲滅！
     </span>
@@ -73,7 +73,7 @@
         <h2 class="text-xl font-black text-text-main">やり方</h2>
       </div>
 
-      <div class="p-6 bg-white/50 backdrop-blur-md rounded-3xl border-2 border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
+      <div class="p-4 bg-white/50 backdrop-blur-md rounded-3xl border-2 border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
         <div class="relative pl-3">
           <div class="absolute left-[0.85rem] top-3 bottom-3 w-0.5 bg-primary/20 rounded-full"></div>
           <div class="space-y-2">
@@ -100,7 +100,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
       <% if @exercise.benefits.present? %>
-        <div class="p-8 bg-white/40 backdrop-blur-md border-2 border-white/60 rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
+        <div class="p-4 bg-white/40 backdrop-blur-md border-2 border-white/60 rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
           <h3 class="text-text-main font-black flex items-center gap-2 mb-5 text-lg">
             <span class="material-symbols-outlined text-primary">stars</span>
             期待できる効果
@@ -116,7 +116,7 @@
         </div>
       <% end %>
 
-      <div class="p-8 bg-white/40 backdrop-blur-md border-2 border-white/60 rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
+      <div class="p-4 bg-white/40 backdrop-blur-md border-2 border-white/60 rounded-[2rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)]">
         <h3 class="text-text-main font-black flex items-center gap-2 mb-5 text-lg">
           <span class="material-symbols-outlined text-primary">info</span>
           注意ポイント
