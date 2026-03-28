@@ -57,6 +57,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
     hash[:uid] = SecureRandom.uuid if hash[:uid].blank?
     super
   end
+
+  # google userはパスワードなしで更新
+  def update_resource(resource, params)
+    if resource.provider.present?
+      # 誤ってパスワードが入力されてもガード
+      params.delete(:current_password)
+      resource.update_without_password(params)
+    # google use以外は通常の更新（要パスワード）
+    else
+      super
+    end
+  end
+
   # The path used after sign up.
   # def after_sign_up_path_for(resource)
   #   super(resource)
