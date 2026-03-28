@@ -58,21 +58,33 @@
         </div>
 
         <%# 現在のパスワード（必須） %>
-        <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10">
-          <div class="flex flex-col gap-2">
-            <%= f.label :current_password, "現在のパスワード", class: "text-primary text-sm font-black ml-1" %>
-            <%= f.password_field :current_password, 
-                autocomplete: "current-password",
-                placeholder: "変更を保存するには入力が必要です",
-                class: "w-full rounded-xl border-primary/20 bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
+        <% if current_user.provider.present? %>
+          <%# Googleユーザー向け：パスワード不要のメッセージ %>
+          <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200">
+            <div class="flex items-center gap-2 text-text-secondary">
+              <p class="text-xs font-medium text-gray-500">
+                Googleアカウントのためパスワード入力は不要です
+              </p>
+            </div>
           </div>
-        </div>
+        <% else %>
+          <%# 通常ユーザー向け：パスワード入力欄 %>
+          <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10">
+            <div class="flex flex-col gap-2">
+              <%= f.label :current_password, "現在のパスワード", class: "text-primary text-sm font-black ml-1" %>
+              <%= f.password_field :current_password, 
+              autocomplete: "current-password",
+              placeholder: "変更を保存するには入力が必要です",
+              class: "w-full rounded-xl border-primary/20 bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 h-12 px-4 text-text-main transition-all" %>
+            </div>
+          </div>
+        <% end %>
 
-        <div class="pt-2">
-          <%= f.submit "変更を保存する",
-              class: "w-full cursor-pointer h-14 bg-primary hover:bg-primary-hover text-white font-black rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-[0.98]" %>
-        </div>
-      <% end %>
+          <div class="pt-2">
+            <%= f.submit "変更を保存する",
+                class: "w-full cursor-pointer h-14 bg-primary hover:bg-primary-hover text-white font-black rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-[0.98]" %>
+          </div>
+        <% end %>
 
       <%# 区切り線 %>
       <div class="relative my-8">
