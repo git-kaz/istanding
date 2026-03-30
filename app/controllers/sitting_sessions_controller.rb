@@ -7,7 +7,7 @@ class SittingSessionsController < ApplicationController
   def create
     minutes = params.dig(:sitting_session, :duration).to_i
     @sitting_session = current_user.sitting_sessions.build(
-      duration: minutes * 60, # 秒に変換
+      duration: minutes,
       status: :active
     )
 
@@ -16,9 +16,8 @@ class SittingSessionsController < ApplicationController
       # タイマー終了時に通知jobを予約する
       SendNotificationJob.set(wait_until: @sitting_session.notify_at)
                           .perform_later(@sitting_session.id)
-
-      # テンプレートエラーが出るなら以下を追記
-      head :no_content
+      # notify_atをJSに渡す
+      render json: { notify_at: @sitting_session.notify_at.iso8601 }
     end
   end
 
