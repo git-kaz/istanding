@@ -4,7 +4,8 @@ import { Turbo } from "@hotwired/turbo-rails"
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display", "circle", "durationInput", "startButton", "runningButton", "errorMessage"]
+    static targets = ["display", "circle", "startButton", "runningButton", "errorMessage"]
+    static values = { notifyAt: String }
 
     connect() {
         this.remainingTime = 0
@@ -18,6 +19,19 @@ export default class extends Controller {
             this.circumference = 2 * Math.PI * radius
             this.circleTarget.style.strokeDasharray = `${this.circumference} ${this.circumference}`
             this.circleTarget.style.strokeDashoffset = 0
+        }
+
+        // リロード時はnotifyAtから残り時間を取得
+        if (this.hasNotifyAtValue && this.notifyAtValue) {
+            const notifyAt = new Date(this.notifyAtValue)
+            this.remainingTime = Math.floor((notifyAt - new Date()) / 1000)
+
+            this.startButtonTarget.classList.add("hidden")
+            this.runningButtonTargets.forEach(button => button.classList.remove("hidden"))
+
+            this.updateCircle()
+            this.updateDisplay()
+            this.runTimer()
         }
 
         // パターン1: 新規タブで開いた場合（URLパラメータ）
@@ -40,12 +54,6 @@ export default class extends Controller {
         this.selectedSeconds = minutes * 60
         this.remainingTime = this.selectedSeconds
 
-        if (this.hasDurationInputTarget) {
-            this.durationInputTarget.value = minutes
-        } else {
-            console.error("durationInputTarget not found!")
-        }
-
         // 選択状態の切り替え
         document.querySelectorAll('.duration-button').forEach(btn => {
             btn.classList.remove('bg-primary', 'text-white', 'shadow-md')
@@ -58,15 +66,28 @@ export default class extends Controller {
         this.updateCircle()
     }
 
-    start() {
+    async start() {
 
         if (this.selectedSeconds === 0) {
             this.errorMessageTarget.classList.remove("hidden")
             return
         }
-        
+
+        const response = await fetch("/sitting_sessions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                sitting_session: { duration: this.selectedSeconds }
+            })
+        })
+
+        const data = await response.json()
+        this.notifyAtValue = data.notify_at
+
         this.resetState() // 全てをクリアしてから開始
-        this.remainingTime = this.selectedSeconds
         this.startTime = new Date()
         this.updateDisplay()
         this.updateCircle()
@@ -85,15 +106,17 @@ export default class extends Controller {
     runTimer() {
         this.timer = setInterval(() => {
             if (!this.timer) return
-            
-            this.remainingTime -= 1
-            this.updateDisplay()       
+
+            const notifyAt = new Date(this.notifyAtValue)
+            this.remainingTime = Math.floor((notifyAt - new Date()) / 1000)
+
+            this.updateDisplay()
             this.updateCircle()
-            
+
             if (this.remainingTime <= 0) {
                 this.stop()
                 this.finish()
-            } 
+            }
         }, 1000)
     }
 
@@ -133,7 +156,7 @@ export default class extends Controller {
             }
         })
 
-            //休憩ボタンを消してスタートボタンを表示
+        //休憩ボタンを消してスタートボタンを表示
         this.runningButtonTargets.forEach(button => {
             button.classList.add("hidden")
         })
@@ -151,7 +174,7 @@ export default class extends Controller {
         if (this.isModalOpen) return
         this.isModalOpen = true
 
-        
+
         // 放置対策：一定時間後に自動で閉じる
         this.autoCloseTimer = setTimeout(() => {
             if (this.isModalOpen) this.closeModal()
@@ -185,7 +208,7 @@ export default class extends Controller {
             //Railsから返ってきた turbo_stream（モーダル表示）を実行
             const streamMessage = await response.text()
             Turbo.renderStreamMessage(streamMessage)
-        
+
             this.resetState()
         }
     }
