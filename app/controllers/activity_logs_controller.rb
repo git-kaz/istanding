@@ -24,6 +24,6 @@ class ActivityLogsController < ApplicationController
   private
 
   def activity_log_params
-    params.require(:activity_log).permit(:exercise_id, :sitting_session_id)
+    params.require(:activity_log).permit(:exercise_id, :sitting_session_id, :note, :duration_minutes)
   end
 end
