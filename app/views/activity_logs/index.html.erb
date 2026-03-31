@@ -125,7 +125,13 @@
   <div class="flex items-center gap-4 p-5 bg-white/50 border border-white/60 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:bg-white/70 transition-all">
     <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shrink-0">
       <span class="material-symbols-outlined text-xl">
-        <%= log.exercise.category == "walk" ? "directions_walk" : log.exercise.category == "stretch" ? "self_improvement" : "fitness_center" %>
+        <% if log.note.present? %>
+          <%# 自由運動（入力あり）の場合はノートアイコン %>
+          edit_note
+        <% else %>
+          <%# それ以外はカテゴリー別に分岐 %>
+          <%= log.exercise.category == "stretch" ? "self_improvement" : "fitness_center" %>
+        <% end %>
       </span>
     </div>
     <div>
@@ -135,7 +141,7 @@
       </p>
       <p class="text-xs text-text-secondary mt-0.5">
         <span class="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold border border-primary/20">
-          <%= { "stretch" => "ストレッチ", "training" => "トレーニング", "walk" => "ウォーキング" }[log.exercise.category] %>
+          <%= { "stretch" => "ストレッチ", "training" => "トレーニング", "other" => "その他" }[log.exercise.category] %>
         </span>
       </p>
     </div>
