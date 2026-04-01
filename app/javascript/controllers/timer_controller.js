@@ -5,7 +5,7 @@ const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
     static targets = ["display", "circle", "startButton", "runningButton", "errorMessage"]
-    static values = { notifyAt: String }
+    static values = { notifyAt: String, audioUrl: String }
 
     connect() {
         this.remainingTime = 0
@@ -13,6 +13,12 @@ export default class extends Controller {
         this.timer = null
         this.isModalOpen = false
         this.autoCloseTimer = null // 自動閉鎖用タイマー
+
+        // 通知音を設定
+        if (this.audioUrlValue) {
+            this.audio = new Audio(this.audioUrlValue)
+            this.audio.preload = "auto"
+        }
 
         if (this.hasCircleTarget) {
             const radius = this.circleTarget.r.baseVal.value
@@ -101,6 +107,18 @@ export default class extends Controller {
         })
 
         this.errorMessageTarget.classList.add("hidden")
+
+        //オートプレイ制限解除のための空回し
+        if (this.audio) {
+            this.audio.volume = 0
+            this.audio.play().then(() => {
+                //再生できたらポーズして最初に戻る
+                this.audio.pause()
+                this.audio.currentTime = 0
+            }).catch(error => {
+                console.warn("Audioの初期設定エラー:", error)
+            })
+        }
     }
 
     runTimer() {
@@ -188,6 +206,15 @@ export default class extends Controller {
         this.updateDisplay()
         this.clearModalUI()
         this.updateCircle()
+
+        //通知音を鳴らす
+        if (this.audio) {
+            this.audio.volume = 1.0
+            this.audio.currentTime = 0
+            this.audio.play().catch(error => {
+                console.error("Audio再生エラー:", error)
+            })
+        }
 
         //休憩ボタンを消してスタートボタンを表示
         this.runningButtonTargets.forEach(button => {
