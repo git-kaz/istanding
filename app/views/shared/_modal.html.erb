@@ -38,13 +38,11 @@
     </div>
 
     <%= link_to new_activity_log_path(exercise_id: @other_exercise.id, sitting_session_id: @sitting_session&.id), 
-        class: "flex flex-col items-center p-4 bg-background-light border border-border-light rounded-2xl hover:bg-background-dark transition-all active:scale-95",
+        class: "flex flex-col items-center mt-6 p-4 bg-background-dark border border-border-light rounded-2xl hover:bg-primary hover:text-white transition-all active:scale-95",
         data: { turbo: false } do %>
-      <span class="material-symbols-outlined text-3xl text-primary mb-1">
-        more_horiz
-      </span>
-      <span class="text-xs font-bold text-text-secondary">
-        その他
+      
+      <span class="text-md font-bold">
+        自分のことは自分で決める！
       </span>
     <% end %>
     

@@ -12,12 +12,16 @@ class ActivityLog < ApplicationRecord
   scope :today, -> { where(created_at: Time.zone.now.all_day) }
 
   # 運動記録を作成時にHP回復を実行
-  before_create :apply_hp_recovery
+  after_create :apply_hp_recovery
 
   private
 
   # userの回復ロジックを使う
   def apply_hp_recovery
+    # 回復が0以下でもnilを返さないガード節
+    amount = calculate_recovery_amount
+    return if amount.nil? || amount <= 0
+
     user.recover(calculate_recovery_amount)
   end
 
