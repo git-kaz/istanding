@@ -11,7 +11,7 @@
     </p>
   </div>
 
-  <%= form_with(model: @activity_log, local: true, class: "space-y-8") do |f| %>
+  <%= form_with(model: @activity_log, local: true, data: { turbo: false }, class: "space-y-8") do |f| %>
     <%= f.hidden_field :exercise_id %>
     <%= f.hidden_field :sitting_session_id %>
 

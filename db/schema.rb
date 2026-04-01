@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_31_204617) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_01_025018) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,6 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_204617) do
   end
 
   create_table "exercises", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.text "benefits"
     t.integer "category"
     t.string "cloudinary_public_id"

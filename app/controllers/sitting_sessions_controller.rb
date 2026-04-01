@@ -29,6 +29,9 @@ class SittingSessionsController < ApplicationController
     # 休憩するで早期に終了したらdurationを更新
     @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
 
+     # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
+    @other_exercise = Exercise.find_by(category: :other)
+
     # ダメージを計算
     current_user.take_damage(@sitting_session.duration)
 

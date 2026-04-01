@@ -9,6 +9,7 @@
     <table class="w-full text-sm">
       <thead class="bg-gray-50 border-b border-border-light">
         <tr>
+          <th class="text-left px-6 py-3 font-bold text-text-secondary">状態</th> <%# 追加 %>
           <th class="text-left px-6 py-3 font-bold text-text-secondary">名前</th>
           <th class="text-left px-6 py-3 font-bold text-text-secondary">カテゴリ</th>
           <th class="text-left px-6 py-3 font-bold text-text-secondary">操作</th>
@@ -17,15 +18,25 @@
       <tbody class="divide-y divide-border-light">
         <% @exercises.each do |exercise| %>
           <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4"> <%# ステータス表示の追加 %>
+              <% if exercise.active %>
+                <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20">表示中</span>
+              <% else %>
+                <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 text-[10px] font-bold border border-gray-200">非表示</span>
+              <% end %>
+            </td>
             <td class="px-6 py-4 font-bold"><%= exercise.name %></td>
             <td class="px-6 py-4 text-text-secondary"><%= exercise.category %></td>
             <td class="px-6 py-4 flex items-center gap-3">
               <%= link_to "編集", edit_admin_exercise_path(exercise),
                   class: "text-primary font-bold hover:underline" %>
-              <%= button_to "削除", admin_exercise_path(exercise),
-                  method: :delete,
-                  data: { turbo_confirm: "本当に削除しますか？" },
-                  class: "text-red-400 font-bold hover:underline cursor-pointer" %>
+              <%# 履歴がある場合は削除ボタンを出さない運用 %>
+              <% if exercise.activity_logs.empty? %>
+                <%= button_to "削除", admin_exercise_path(exercise),
+                    method: :delete,
+                    data: { turbo_confirm: "本当に削除しますか？" },
+                    class: "text-red-400 font-bold hover:underline cursor-pointer" %>
+              <% end %>
             </td>
           </tr>
         <% end %>
