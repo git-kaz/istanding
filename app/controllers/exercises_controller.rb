@@ -20,7 +20,7 @@ class ExercisesController < ApplicationController
   end
 
   def random
-    @exercise = Exercise.order("RANDOM()").first
+    @exercise = Exercise.active.order("RANDOM()").first
     redirect_to exercise_path(@exercise)
   end
 end
