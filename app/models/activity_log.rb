@@ -11,6 +11,9 @@ class ActivityLog < ApplicationRecord
 
   scope :today, -> { where(created_at: Time.zone.now.all_day) }
 
+  # 運動記録を作成時にHP回復を実行
+  before_create :apply_hp_recovery
+
   private
 
   # userの回復ロジックを使う

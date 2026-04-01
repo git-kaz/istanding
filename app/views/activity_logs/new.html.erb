@@ -1,0 +1,73 @@
+<div class="max-w-md mx-auto p-8 my-10 bg-light rounded-[2rem] shadow-sm border border-border-light mt-10">
+  <div class="text-center mb-8">
+    <span class="material-symbols-outlined text-4xl text-primary mb-2">
+      edit_note
+    </span>
+    <h1 class="text-2xl font-bold text-main">
+      運動の記録
+    </h1>
+    <p class="text-sm text-secondary mt-1">
+      内容と時間を記録しよう
+    </p>
+  </div>
+
+  <%= form_with(model: @activity_log, local: true, class: "space-y-8") do |f| %>
+    <%= f.hidden_field :exercise_id %>
+    <%= f.hidden_field :sitting_session_id %>
+
+    <div class="space-y-4">
+      <label class="flex items-center text-sm font-bold text-main">
+        <span class="material-symbols-outlined text-lg mr-1">directions_run</span>
+        何をした？
+      </label>
+      
+      <div class="flex flex-wrap gap-2">
+        <% ["散歩", "立ち作業", "家事", "ストレッチ"].each do |preset| %>
+          <button type="button" 
+                  class="px-4 py-2 bg-background-dark text-primary rounded-full text-sm font-medium hover:bg-primary hover:text-white transition-colors active:scale-95"
+                  onclick="document.getElementById('note-input').value = '<%= preset %>'">
+            <%= preset %>
+          </button>
+        <% end %>
+      </div>
+
+      <%= f.text_field :note, id: "note-input", 
+          class: "w-full p-4 bg-background-light border border-border-light rounded-2xl text-[var(--color-text-main)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none placeholder:text-[var(--color-text-secondary)]/50", 
+          placeholder: "その他（自由に入力）" %>
+    </div>
+
+    <div class="space-y-4">
+      <label class="flex items-center text-sm font-bold text-main)]">
+        <span class="material-symbols-outlined text-lg mr-1">schedule</span>
+        どのくらい？ 
+      </label>
+      
+      <div class="grid grid-cols-4 gap-3">
+        <% [5, 10, 20].each do |min| %>
+          <button type="button" 
+                  class="p-3 bg-background-dark text-primary rounded-2xl font-bold hover:bg-primary hover:text-white transition-all active:scale-95"
+                  onclick="document.getElementById('duration-input').value = <%= min %>">
+            <%= min %>分
+          </button>
+        <% end %>
+        
+        <%= f.number_field :duration_minutes, id: "duration-input", 
+            class: "w-full p-3 bg-background-light border border-border-light rounded-2xl text-center font-bold focus:ring-2 focus:ring-primary focus:outline-none", 
+            placeholder: "自由" %>
+      </div>
+      <p class="text-sm text-secondary text-center italic">
+        ※20分以上はHP回復量は増えにくいです<br>こまめに運動をしましょう！
+      </p>
+    </div>
+
+    <div class="pt-4 space-y-3">
+      <%= f.submit "この内容で記録する", 
+          class: "w-full py-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-bold rounded-2xl shadow-md transition-all active:transform active:scale-[0.98] cursor-pointer" %>
+      
+      <%= link_to root_path, class: "flex items-center justify-center text-sm text-secondary hover:text-main transition-colors" do %>
+        <span class="material-symbols-outlined text-lg mr-1">arrow_back</span>
+        戻る
+      <% end %>
+    </div>
+  <% end %>
+</div>
