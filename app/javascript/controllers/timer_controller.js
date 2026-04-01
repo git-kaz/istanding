@@ -4,7 +4,7 @@ import { Turbo } from "@hotwired/turbo-rails"
 const AUTO_CLOSE_MS = 600000; // 10分
 
 export default class extends Controller {
-    static targets = ["display", "circle", "startButton", "runningButton", "errorMessage"]
+    static targets = ["display", "circle", "startButton", "runningButton", "errorMessage", "mute"]
     static values = { notifyAt: String, audioUrl: String }
 
     connect() {
@@ -208,7 +208,7 @@ export default class extends Controller {
         this.updateCircle()
 
         //通知音を鳴らす
-        if (this.audio) {
+        if (this.audio && this.muteTarget.checked) {
             this.audio.volume = 1.0
             this.audio.currentTime = 0
             this.audio.play().catch(error => {
