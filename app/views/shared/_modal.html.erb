@@ -10,7 +10,7 @@
 
     <%# 3つ横並びのグリッド %>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-      <% @exercises.each do |exercise| %>
+      <% @exercises.active.each do |exercise| %>
         <%= link_to exercise_path(exercise, reopen_modal: true, sitting_session_id: sitting_session_id),
             class: "group relative block overflow-hidden rounded-xl md:rounded-[2rem] border-2 border-white/50 hover:border-primary/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_32px_rgba(106,155,118,0.25)] transition-all duration-500 active:scale-95" do %>
 
@@ -37,6 +37,15 @@
       <% end %>
     </div>
 
+    <%= link_to new_activity_log_path(exercise_id: @other_exercise.id, sitting_session_id: @sitting_session&.id), 
+        class: "flex flex-col items-center mt-6 p-4 bg-background-dark border border-border-light rounded-2xl hover:bg-primary hover:text-white transition-all active:scale-95",
+        data: { turbo: false } do %>
+      
+      <span class="text-md font-bold">
+        自分のことは自分で決める！
+      </span>
+    <% end %>
+    
     <div class="text-center mt-6 md:mt-10">
       <button
           type="button"

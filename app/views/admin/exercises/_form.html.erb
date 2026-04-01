@@ -32,6 +32,11 @@
       class: "w-full px-4 py-3 rounded-lg border border-border-light bg-input-bg-light focus:border-primary text-base resize-none" %>
   </div>
 
+  <div class="flex items-center gap-3 p-4 bg-background-light rounded-2xl border border-border-light">
+    <%= f.check_box :active, class: "w-5 h-5 rounded text-primary focus:ring-primary" %>
+    <%= f.label :active, "この運動をアプリに表示する", class: "text-sm font-bold text-text-main" %>
+  </div>
+
   <div>
     <label class="text-sm font-bold mb-1 block">画像</label>
     <%= f.file_field :image,

@@ -2,19 +2,6 @@ puts "シードデータを投入中"
 
 exercises_data = [
   {
-    name: "ウォーキング",
-    category: :walk,
-    cloudinary_public_id: "walk",
-    description: <<~TEXT
-      外に出て歩きましょう！
-      理想は20分以上。まずは5分からでも大丈夫です。
-      やや歩幅を広げる
-      ペースも少し早めに
-      軽く息が上がるくらいが効果的
-      ちゃんと戻ってきてくださいね！
-    TEXT
-  },
-  {
     name: "スクワット",
     category: :training,
     cloudinary_public_id: "squat",

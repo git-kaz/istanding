@@ -23,19 +23,8 @@ default: &default
   password: password
 
 development:
-  primary:
-    <<: *default
-    database: myapp_development
-
-  # Solid Queue用の設定
-  queue:
-    <<: *default
-    database: myapp_development
-    migrations_paths: db/queue_migrate
-
-test:
   <<: *default
-  database: myapp_test
+  database: myapp_development
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

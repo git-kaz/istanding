@@ -1,6 +1,6 @@
 class Admin::ExercisesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_exercise, only: %i[edit update destroy]
+  before_action :set_exercise, only: %i[edit update]
 
   def index
     @exercises = policy_scope(Exercise)
@@ -36,11 +36,11 @@ class Admin::ExercisesController < ApplicationController
     end
   end
 
-  def destroy
-    authorize @exercise
-    @exercise.destroy
-    redirect_to admin_exercises_path, notice: "Exerciseを削除しました"
-  end
+  # def destroy
+  #   authorize @exercise
+  #   @exercise.destroy
+  #   redirect_to admin_exercises_path, notice: "Exerciseを削除しました"
+  # end
 
   private
 
@@ -49,6 +49,6 @@ class Admin::ExercisesController < ApplicationController
   end
 
   def exercise_params
-    params.require(:exercise).permit(:name, :instructions, :category, :image, :benefits)
+    params.require(:exercise).permit(:name, :instructions, :category, :image, :benefits, :active)
   end
 end

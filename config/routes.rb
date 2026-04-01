@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :activity_logs, only: %i[create index ]
+  resources :activity_logs, only: %i[create index new]
 
   devise_for :users, controllers: {
     omniauth_callbacks: "users/omniauth_callbacks",
