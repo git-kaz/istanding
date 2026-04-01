@@ -1,7 +1,8 @@
 <div class="min-h-screen bg-background-dark p-4 md:p-6 overflow-x-hidden"
     data-controller="notification timer"
     data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>"
-    data-timer-notify-at-value="<%= @active_session&.notify_at&.iso8601 %>">
+    data-timer-notify-at-value="<%= @active_session&.notify_at&.iso8601 %>"
+    data-timer-audio-url-value="/chime.mp3">
 
   <%# メインコンテナ: lg:flex-row で横並び、items-start で上揃えに調整 %>
   <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-12 transition-all duration-500">
@@ -61,7 +62,7 @@
           data-timer-target="startButton">
           スタート
         </button>
-
+        
         <button type="button"
           data-timer-target="runningButton"
           data-action="click->timer#finish"
@@ -75,6 +76,17 @@
           class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-white text-primary ring-2 ring-primary shadow-lg hover:bg-primary/10 transition-all active:scale-95 cursor-pointer hidden w-full max-w-[240px]">
           リセット
         </button>
+      </div>
+      <%# 通知音トグル %>
+      <div class="flex items-center space-x-2 mt-4">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" 
+                 checked 
+                 data-timer-target="mute" 
+                 class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          <span class="ml-3 text-sm font-medium text-gray-900">終了時に通知音を鳴らす</span>
+        </label>
       </div>
     </div> <%# タイマーカードの閉じタグ %>
 
