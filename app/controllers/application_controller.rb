@@ -25,4 +25,10 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     root_path
   end
+
+  def require_login
+    unless user_signed_in?
+      redirect_to root_path
+    end
+  end
 end
