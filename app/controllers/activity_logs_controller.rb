@@ -1,4 +1,6 @@
 class ActivityLogsController < ApplicationController
+  before_action :require_login
+
   def new
     @exercise = Exercise.find(params[:exercise_id])
     @activity_log = current_user.activity_logs.build(exercise: @exercise)
