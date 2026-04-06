@@ -8,7 +8,7 @@ class ActivityReport
   end
 
   def total_duration_hours
-    #秒を時間に変換して小数点第一位まで表示
+    # 秒を時間に変換して小数点第一位まで表示
     (sitting_sessions.sum(:duration) / 3600.0).round(1)
   end
 
@@ -29,4 +29,3 @@ class ActivityReport
     (total_duration_hours / active_days_count).round(1)
   end
 end
-

@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe ActivityReport, type: :model do
   let(:user) { create(:user) }
-  let(:period) { Time.zone.now.all_day} #今日一日
+  let(:period) { Time.zone.now.all_day } # 今日一日
 
   before do
-    #30分(1800秒)のセッションを2つ
+    # 30分(1800秒)のセッションを2つ
     create(:sitting_session, user: user, duration: 1800, created_at: Time.zone.now)
     create(:sitting_session, user: user, duration: 1800, created_at: Time.zone.now)
   end
@@ -49,8 +49,4 @@ RSpec.describe ActivityReport, type: :model do
 
     expect(report.exercise_count).to eq 2
   end
-
-
 end
-
-
