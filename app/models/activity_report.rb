@@ -30,7 +30,10 @@ class ActivityReport
     all_sessions = user.sitting_sessions.where(created_at: date_range).group_by { |s| s.created_at.to_date }
     all_logs = user.activity_logs.where(created_at: date_range).group_by { |l| l.created_at.to_date }
 
-    date_range.map do |date|
+    # TimeWithZoneはイテレートできないのでDateに変換
+    date_only_range = date_range.begin.to_date..date_range.end.to_date
+
+    date_only_range.map do |date|
       new(
         date.all_day,
         all_sessions[date] || [],

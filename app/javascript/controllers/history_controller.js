@@ -25,6 +25,7 @@ export default class extends Controller {
       const dot = document.createElement("div")
       const count = report.exercise_count || 0
       const date = report.date_label
+
       // tailwindのクラス付与
       dot.classList.add("w-4", "h-4", "rounded-sm", "border", "border-primary/30", "transition-all", "hover:border-primary", "hover:z-10")
 
