@@ -49,6 +49,32 @@ class ActivityReport
       )
     end
   end
+  # 連続日数を計算する（ストリーク）
+  def self.calculate_streak(user)
+    # 全ての活動日を新しい順で取得
+    session_dates = user.sitting_sessions.pluck(:created_at).map(&:to_date)
+    log_dates = user.activity_logs.pluck(:created_at).map(&:to_date)
+    active_dates = (session_dates + log_dates).uniq.sort.reverse
+
+    return 0 if active_dates.empty?
+
+    streak = 0
+    # 今日または昨日からカウント開始
+    current_date = active_dates.first == Date.current ? Date.current : (Date.current - 1.day)
+
+    # 最後の活動日が昨日より前ならストリークは0
+    return 0 if active_dates.first < (Date.current - 1.day)
+
+    active_dates.each do |date|
+      if date == current_date
+        streak += 1
+        current_date -= 1.day
+      elsif date < current_date
+        break
+      end
+    end
+    streak
+  end
 
   # ハッシュを作るメソッド
   def to_hash

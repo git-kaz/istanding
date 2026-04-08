@@ -11,34 +11,80 @@
       data-history-monthly-value="<%= @monthly_reports.to_json %>"
       data-history-heatmap-value="<%= @heatmap_reports.to_json %>">
 
-  <%# 1. 常に表示：GitHub風の草（ヒートマップ） %>
+  <%# 1. アクティビティセクション %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 mb-10 shadow-sm">
-    <div class="flex items-center gap-3 mb-6">
+    <div class="flex items-center gap-3 mb-8">
       <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
-        <span class="material-symbols-outlined">grid_view</span>
+        <span class="material-symbols-outlined text-xl">grid_view</span>
       </div>
-      <h2 class="text-base font-black text-text-main tracking-tight">運動回数ヒートマップ</h2>
+      <h2 class="text-base font-black text-text-main tracking-tight">運動して草を生やそう</h2>
     </div>
-    <%# JSでここにドットを生成する %>
-    <div data-history-target="heatmapContainer" class="flex flex-wrap gap-1.5 justify-center md:justify-start"></div>
-      <p class="text-[10px] text-text-secondary mt-4 text-right font-bold uppercase tracking-widest">少ない 
-      <span class="inline-block w-2 h-2 bg-gray-100 rounded-sm mx-1"></span>
-      <span class="inline-block w-2 h-2 bg-primary/30 rounded-sm mx-1"></span>
-      <span class="inline-block w-2 h-2 bg-primary/60 rounded-sm mx-1"></span>
-      <span class="inline-block w-2 h-2 bg-primary rounded-sm mx-1"></span>多い
-      </p>
+
+    <%# 常に横並びを維持するコンテナ (sm:以上でflex-row) %>
+    <div class="flex flex-col sm:flex-row gap-6 items-stretch">
+      
+      <%# A. ヒートマップ：メインエリア %>
+      <div class="flex-1 bg-white/30 rounded-3xl p-6 border border-white/40 overflow-hidden">
+        <div class="flex items-start">
+          <div class="flex flex-col gap-1.5 text-[10px] text-text-secondary pr-3 font-bold py-0 shrink-0">
+            <span class="h-4 flex items-center">月</span>
+            <span class="h-4 invisible">火</span>
+            <span class="h-4 flex items-center">水</span>
+            <span class="h-4 invisible">木</span>
+            <span class="h-4 flex items-center">金</span>
+            <span class="h-4 invisible">土</span>
+            <span class="h-4 flex items-center text-red-400/80">日</span>
+          </div>
+
+          <div class="overflow-x-auto pb-2 scrollbar-hide">
+            <div data-history-target="heatmapContainer" class="flex flex-col flex-wrap gap-1.5 h-40 content-start justify-start w-fit">
+              <%# JSで生成 %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-4 flex justify-start items-center gap-1.5">
+          <p class="text-[9px] text-text-secondary font-bold uppercase tracking-widest">少ない</p>
+          <div class="flex gap-1">
+            <span class="w-2.5 h-2.5 bg-slate-200/40 border border-slate-300 rounded-sm"></span>
+            <span class="w-2.5 h-2.5 bg-primary/30 border border-primary/30 rounded-sm"></span>
+            <span class="w-2.5 h-2.5 bg-primary/60 border border-primary/40 rounded-sm"></span>
+            <span class="w-2.5 h-2.5 bg-primary border border-primary/50 rounded-sm"></span>
+          </div>
+          <p class="text-[9px] text-text-secondary font-bold uppercase tracking-widest">多い</p>
+        </div>
+      </div>
+
+      <%# B. 数値カード：ストリーク %>
+      <div class="flex-1 sm:flex-none sm:w-40 bg-white/50 rounded-3xl p-6 border border-white/60 flex flex-col justify-center items-center text-center shadow-inner">
+        <p class="text-md font-black text-text-secondary uppercase tracking-[0.15em] mb-2">継続日数</p>
+        <div class="flex flex-col items-center">
+          <span class="text-5xl font-black text-primary drop-shadow-sm"><%= @current_streak %></span>
+          <span class="text-md font-bold text-primary/70 uppercase mt-1">日</span>
+        </div>
+      </div>
+
+      <%# C. 数値カード：今月の回数 %>
+      <div class="flex-1 sm:flex-none sm:w-40 bg-white/50 rounded-3xl p-6 border border-white/60 flex flex-col justify-center items-center text-center shadow-inner">
+        <p class="text-md font-black text-text-secondary uppercase tracking-[0.15em] mb-2">今月の運動</p>
+        <div class="flex flex-col items-center">
+          <span class="text-5xl font-black text-text-main drop-shadow-sm"><%= @this_month_count %></span>
+          <span class="text-md font-bold text-text-secondary uppercase mt-1">回</span>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <%# 2. タブ切り替え（日・週・月） %>
+  <%# 2. タブ切り替え %>
   <div class="flex bg-white/40 backdrop-blur-xl p-1.5 rounded-2xl mb-8 border border-white/60 w-fit">
     <button data-action="click->history#switch" data-history-target="tab" data-tab="daily" class="px-8 py-2.5 rounded-xl text-sm font-black bg-white shadow-sm transition-all">日別</button>
     <button data-action="click->history#switch" data-history-target="tab" data-tab="weekly" class="px-8 py-2.5 rounded-xl text-sm font-black text-text-secondary hover:text-text-main transition-all">週別</button>
     <button data-action="click->history#switch" data-history-target="tab" data-tab="monthly" class="px-8 py-2.5 rounded-xl text-sm font-black text-text-secondary hover:text-text-main transition-all">月別</button>
   </div>
 
-  <%# 3. 切り替え表示されるグラフエリア %>
+  <%# 3. グラフエリア %>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-    <%# 座位時間パネル %>
     <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
       <div data-history-target="dailyPane">
         <canvas id="dailySittingChart"></canvas>
@@ -52,20 +98,19 @@
     </div>
   </div>
 
-  <%# 運動履歴リスト %>
+  <%# 4. 運動履歴リスト %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
     <div class="flex items-center gap-3 mb-6">
-    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
-      <span class="material-symbols-outlined">history</span>
-    </div>
-    	<h2 class="text-base font-black text-text-main">運動履歴</h2>
+      <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+        <span class="material-symbols-outlined">history</span>
+      </div>
+      <h2 class="text-base font-black text-text-main">運動履歴</h2>
     </div>
 
     <% if @activity_logs.any? %>
-    <div class="space-y-3">
-      <%# 運動履歴カードをループで回す %>
-      <%= render @activity_logs %>
-    </div>
+      <div class="space-y-3">
+        <%= render @activity_logs %>
+      </div>
     <% else %>
       <div class="text-center py-16 text-text-secondary">
         <span class="material-symbols-outlined text-5xl mb-4 block text-primary/40">fitness_center</span>

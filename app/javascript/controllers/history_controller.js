@@ -44,6 +44,7 @@ export default class extends Controller {
       dot.classList.add(colorClass)
       dot.setAttribute("title", `${date}の運動: ${count}回`) //ホバー表示
       this.heatmapContainerTarget.appendChild(dot)
+
     })
   }
 
