@@ -33,17 +33,22 @@ class ActivityLogsController < ApplicationController
   end
 
   def index
+    @activity_logs = current_user.activity_logs.order(created_at: :desc).limit(5)
     # 7日間(日別)：月曜始まり
     this_monday = Date.current.beginning_of_week(:monday)
-    @daily_reports = ActivityReport.generate_daily(current_user, this_monday..(this_monday + 6.days))
+    @daily_reports = ActivityReport.generate_daily_reports(current_user, this_monday..(this_monday + 6.days)).map(&:to_hash)
 
     # 8週間（週別）：月〜日曜
     weekly_periods = (0..7).map { |i| i.weeks.ago.all_week(:monday) }.reverse
-    @weekly_reports = ActivityReport.generate_by_period(current_user, weekly_periods)
+    @weekly_reports = ActivityReport.generate_by_period(current_user, weekly_periods).map(&:to_hash)
 
     # 6か月（月別）：月単位
     monthly_periods = (0..5).map { |i| i.months.ago.all_month }.reverse
-    @monthly_reports = ActivityReport.generate_by_period(current_user, monthly_periods)
+    @monthly_reports = ActivityReport.generate_by_period(current_user, monthly_periods).map(&:to_hash)
+
+    # ヒートマップ（直近90日）
+    heatmap_range = (90.days.ago.to_date..Date.current)
+    @heatmap_reports = ActivityReport.generate_daily_reports(current_user, heatmap_range).map(&:to_hash)
   end
 
   private

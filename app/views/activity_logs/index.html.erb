@@ -6,10 +6,10 @@
 
 <main class="min-h-screen w-full max-w-5xl mx-auto px-6 py-10"
       data-controller="history"
-      data-history-daily-value="<%= @daily_reports.to_json(methods: [:total_duration_hours, :exercise_count, :date_label]) %>"
-      data-history-weekly-value="<%= @weekly_reports.to_json(methods: [:total_duration_hours, :exercise_count, :date_label]) %>"
-      data-history-monthly-value="<%= @monthly_reports.to_json(methods: [:total_duration_hours, :exercise_count, :date_label]) %>"
-      data-history-heatmap-value="<%= @heatmap_reports.to_json(methods: [:exercise_count]) %>">
+      data-history-daily-value="<%= @daily_reports.to_json %>"
+      data-history-weekly-value="<%= @weekly_reports.to_json %>"
+      data-history-monthly-value="<%= @monthly_reports.to_json %>"
+      data-history-heatmap-value="<%= @heatmap_reports.to_json %>">
 
   <%# 1. 常に表示：GitHub風の草（ヒートマップ） %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 mb-10 shadow-sm">
@@ -17,11 +17,16 @@
       <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
         <span class="material-symbols-outlined">grid_view</span>
       </div>
-      <h2 class="text-base font-black text-text-main tracking-tight">Activity Heatmap</h2>
+      <h2 class="text-base font-black text-text-main tracking-tight">運動回数ヒートマップ</h2>
     </div>
     <%# JSでここにドットを生成する %>
     <div data-history-target="heatmapContainer" class="flex flex-wrap gap-1.5 justify-center md:justify-start"></div>
-    <p class="text-[10px] text-text-secondary mt-4 text-right font-bold uppercase tracking-widest">Less <span class="inline-block w-2 h-2 bg-gray-100 rounded-sm mx-1"></span><span class="inline-block w-2 h-2 bg-primary/30 rounded-sm mx-1"></span><span class="inline-block w-2 h-2 bg-primary/60 rounded-sm mx-1"></span><span class="inline-block w-2 h-2 bg-primary rounded-sm mx-1"></span> More</p>
+      <p class="text-[10px] text-text-secondary mt-4 text-right font-bold uppercase tracking-widest">少ない 
+      <span class="inline-block w-2 h-2 bg-gray-100 rounded-sm mx-1"></span>
+      <span class="inline-block w-2 h-2 bg-primary/30 rounded-sm mx-1"></span>
+      <span class="inline-block w-2 h-2 bg-primary/60 rounded-sm mx-1"></span>
+      <span class="inline-block w-2 h-2 bg-primary rounded-sm mx-1"></span>多い
+      </p>
   </div>
 
   <%# 2. タブ切り替え（日・週・月） %>

@@ -22,28 +22,42 @@
 
   /*導入ページの動き用*/
   @keyframes bounce-slow {
-  0%, 100% { transform: translateY(-15%); }
-  50% { transform: translateY(0); }
+
+    0%,
+    100% {
+      transform: translateY(-15%);
+    }
+
+    50% {
+      transform: translateY(0);
+    }
   }
 }
 
-  @utility animate-bounce-slow {
-    animation: bounce-slow 2s ease-in-out infinite;
-  }
+@utility animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
 
-  @keyframes critical-pulse {
-  0%, 100% {
-    color: #ef4444; /* red-500 */
+@keyframes critical-pulse {
+
+  0%,
+  100% {
+    color: #ef4444;
+    /* red-500 */
     text-shadow: 0 0 0px rgba(239, 68, 68, 0);
     transform: scale(1);
   }
+
   50% {
-    color: #b91c1c; /* red-700 (濃い赤) */
-    text-shadow: 0 0 15px rgba(239, 68, 68, 0.8); /* 強く光る */
-    transform: scale(1.05); /* わずかに大きく */
+    color: #b91c1c;
+    /* red-700 (濃い赤) */
+    text-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+    /* 強く光る */
+    transform: scale(1.05);
+    /* わずかに大きく */
   }
 }
 
-  @utility animate-critical {
+@utility animate-critical {
   animation: critical-pulse 1.2s ease-in-out infinite;
-  }
+}

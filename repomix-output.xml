@@ -112,6 +112,7 @@ app/
       dropdown_controller.js
       exercise_timer_controller.js
       hello_controller.js
+      history_controller.js
       index.js
       mobile_menu_controller.js
       notification_controller.js
@@ -126,6 +127,7 @@ app/
     concerns/
       .keep
     activity_log.rb
+    activity_report.rb
     application_record.rb
     exercise.rb
     health_tip.rb
@@ -138,6 +140,8 @@ app/
     ogp_creator.rb
   views/
     activity_logs/
+      _activity_log.html.erb
+      index.backup.html.erb
       index.html.erb
       new.html.erb
     admin/
@@ -271,6 +275,7 @@ public/
   406-unsupported-browser.html
   422.html
   500.html
+  chime.mp3
   favicon.ico
   icon.png
   ogp.png
@@ -279,6 +284,8 @@ script/
   .keep
 spec/
   factories/
+    activity_logs.rb
+    activity_reports.rb
     exercises.rb
     health_tips.rb
     sitting_sessions.rb
@@ -290,6 +297,8 @@ spec/
   jobs/
     notify_job_spec.rb
   models/
+    activity_log_spec.rb
+    activity_report_spec.rb
     exercise_spec.rb
     health_tip_spec.rb
     sitting_session_spec.rb
@@ -841,6 +850,16 @@ class Users::UnlocksController < Devise::UnlocksController
 end
 </file>
 
+<file path="app/controllers/pages_controller.rb">
+class PagesController < ApplicationController
+  def terms
+  end
+
+  def privacy
+  end
+end
+</file>
+
 <file path="app/controllers/static_pages_controller.rb">
 class StaticPagesController < ApplicationController
   def top
@@ -860,6 +879,11 @@ end
 
 <file path="app/helpers/exercises_helper.rb">
 module ExercisesHelper
+end
+</file>
+
+<file path="app/helpers/pages_helper.rb">
+module PagesHelper
 end
 </file>
 
@@ -1311,9 +1335,338 @@ end
 <%= yield %>
 </file>
 
+<file path="app/views/pages/privacy.html.erb">
+<div class="min-h-screen bg-background-light text-text-main pb-20">
+  <main class="max-w-3xl mx-auto px-6 py-16">
+
+    <div class="mb-12 text-center">
+      <h1 class="text-4xl font-black text-text-main mb-3">プライバシーポリシー</h1>
+    </div>
+
+    <div class="space-y-10 text-base leading-relaxed">
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第1条（個人情報の定義）</h2>
+        <p class="text-text-secondary">本ポリシーにおける「個人情報」とは、個人情報保護法に定める個人情報を指し、氏名・メールアドレス等、特定の個人を識別できる情報をいいます。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第2条（収集する情報）</h2>
+        <p class="text-text-secondary">本サービスでは、以下の情報を収集します。</p>
+        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
+          <li>メールアドレス・ユーザー名（登録時）</li>
+          <li>座位時間・運動記録（サービス利用時）</li>
+          <li>プッシュ通知のエンドポイント情報（通知許可時）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第3条（情報の利用目的）</h2>
+        <p class="text-text-secondary">収集した情報は以下の目的で利用します。</p>
+        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
+          <li>本サービスの提供・運営</li>
+          <li>プッシュ通知の送信</li>
+          <li>利用状況の分析・サービス改善</li>
+          <li>お問い合わせへの対応</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第4条（第三者提供）</h2>
+        <p class="text-text-secondary">運営者は、以下の場合を除き、ユーザーの個人情報を第三者に提供しません。</p>
+        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
+          <li>ユーザーの同意がある場合</li>
+          <li>法令に基づく場合</li>
+          <li>人の生命・身体・財産の保護のために必要な場合</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第5条（利用する外部サービス）</h2>
+        <p class="text-text-secondary">本サービスでは以下の外部サービスを利用しており、各サービスのプライバシーポリシーが適用されます。</p>
+        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
+          <li>Cloudinary（画像管理）</li>
+          <li>Render（サーバーホスティング）</li>
+          <li>Neon（データベース）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第6条（個人情報の開示・訂正・削除）</h2>
+        <p class="text-text-secondary">ユーザーは、自身の個人情報の開示・訂正・削除を求めることができます。ご要望はお問い合わせよりご連絡ください。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第7条（プライバシーポリシーの変更）</h2>
+        <p class="text-text-secondary">本ポリシーの内容は、法令の変更やサービスの変更に伴い、予告なく変更することがあります。変更後のポリシーは本サービス上に掲示した時点で効力を生じます。</p>
+      </section>
+
+    </div>
+
+    <div class="mt-16 pt-8 border-t border-border-light flex justify-center gap-6 text-sm text-text-secondary">
+      <%= link_to "トップへ戻る", root_path, class: "hover:text-primary transition-colors" %>
+      <span>|</span>
+      <%= link_to "利用規約", terms_path, class: "hover:text-primary transition-colors" %>
+    </div>
+
+  </main>
+</div>
+</file>
+
+<file path="app/views/pages/terms.html.erb">
+<div class="min-h-screen bg-background-light text-text-main pb-20">
+  <main class="max-w-3xl mx-auto px-6 py-16">
+
+    <div class="mb-12 text-center">
+      <h1 class="text-4xl font-black text-text-main mb-3">利用規約</h1>
+    </div>
+
+    <div class="space-y-10 text-base leading-relaxed">
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第1条（適用）</h2>
+        <p class="text-text-secondary">本規約は、iStanding（以下「本サービス」）の利用に関する条件を定めるものです。ユーザーは本規約に同意した上で本サービスをご利用ください。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第2条（利用登録）</h2>
+        <p class="text-text-secondary">登録希望者が本規約に同意の上、所定の方法で利用登録を申請し、運営者がこれを承認した場合に利用登録が完了します。運営者は、以下の場合に利用登録を拒否することがあります。</p>
+        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
+          <li>虚偽の情報を申請した場合</li>
+          <li>本規約に違反したことがある者からの申請の場合</li>
+          <li>その他、運営者が不適切と判断した場合</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第3条（禁止事項）</h2>
+        <p class="text-text-secondary">ユーザーは以下の行為を行ってはなりません。</p>
+        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
+          <li>法令または公序良俗に違反する行為</li>
+          <li>犯罪行為に関連する行為</li>
+          <li>本サービスの運営を妨害する行為</li>
+          <li>他のユーザーに迷惑をかける行為</li>
+          <li>不正アクセスをする行為</li>
+          <li>その他、運営者が不適切と判断した行為</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第4条（本サービスの提供の停止等）</h2>
+        <p class="text-text-secondary">運営者は、以下の場合に事前通知なく本サービスの全部または一部の提供を停止・中断することがあります。</p>
+        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
+          <li>本サービスのシステムの保守・点検を行う場合</li>
+          <li>地震・火災・停電などの不可抗力により提供が困難な場合</li>
+          <li>その他、運営者が必要と判断した場合</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第5条（免責事項）</h2>
+        <p class="text-text-secondary">本サービスは健康習慣のサポートを目的としており、医療行為を提供するものではありません。本サービスの利用によって生じた損害について、運営者は一切の責任を負いません。また、本サービスに関して提供する情報の正確性・完全性を保証するものではありません。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第6条（サービス内容の変更等）</h2>
+        <p class="text-text-secondary">運営者は、ユーザーへの事前通知なく本サービスの内容を変更、または本サービスの提供を終了することができます。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第7条（利用規約の変更）</h2>
+        <p class="text-text-secondary">運営者は必要と判断した場合、ユーザーへの通知なく本規約を変更できます。変更後の規約は本サービス上に掲示した時点で効力を生じます。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-black text-text-main mb-3">第8条（準拠法・裁判管轄）</h2>
+        <p class="text-text-secondary">本規約の解釈にあたっては、日本法を準拠法とします。本サービスに関して紛争が生じた場合には、運営者の所在地を管轄する裁判所を専属的合意管轄とします。</p>
+      </section>
+
+    </div>
+
+    <div class="mt-16 pt-8 border-t border-border-light flex justify-center gap-6 text-sm text-text-secondary">
+      <%= link_to "トップへ戻る", root_path, class: "hover:text-primary transition-colors" %>
+      <span>|</span>
+      <%= link_to "プライバシーポリシー", privacy_path, class: "hover:text-primary transition-colors" %>
+    </div>
+
+  </main>
+</div>
+</file>
+
 <file path="app/views/sitting_sessions/show.html.erb">
 <h1>SittingSessions#show</h1>
 <p>Find me in app/views/sitting_sessions/show.html.erb</p>
+</file>
+
+<file path="app/views/static_pages/top.html.erb">
+<div class="min-h-screen bg-background-light text-text-main pb-20">
+
+  <main class="max-w-5xl mx-auto px-6 text-center">
+
+  <div class="text-center pt-16 mb-20">
+    <h1 class="text-4xl md:text-6xl font-black text-text-main tracking-tight leading-tight mb-6">
+      座りすぎは、<br>
+      <span class="relative inline-block">
+      <span class="relative z-10 text-primary">喫煙と同等</span>
+      <span class="absolute bottom-1 left-0 w-full h-3 bg-primary/15 rounded-full -z-0"></span>
+      </span>
+      のリスク
+    </h1>
+
+  <p class="text-lg md:text-xl text-text-secondary font-medium leading-relaxed max-w-xl mx-auto mb-8">
+    定期的に立ち上がるだけで、健康リスクは大きく変わります。<br>
+    iStanding が、あなたの習慣をサポートします。
+  </p>
+</div>
+
+    <%# How to use %>
+    <section class="mb-24">
+      <h2 class="text-3xl font-black text-primary uppercase tracking-[0.3em] mb-10">How to use</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+
+        <%# ステップ間の矢印（PC） %>
+        <div class="hidden md:flex absolute top-1/2 left-[33%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
+          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
+        </div>
+        <div class="hidden md:flex absolute top-1/2 left-[67%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
+          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
+        </div>
+
+        <%# STEP 1 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">01</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">timer</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-black mb-2">タイマーをセット</h3>
+            <p class="text-base text-text-secondary leading-relaxed">時間になると<br>プッシュ通知でお知らせ。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2">
+            <div class="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold">60分</div>
+            <span class="material-symbols-outlined text-primary/30 text-sm">arrow_forward</span>
+            <div class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">スタート ▶</div>
+          </div>
+        </div>
+
+        <%# STEP 2 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">02</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">notifications_active</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-black mb-2">通知で休憩のサイン</h3>
+            <p class="text-base text-text-secondary leading-relaxed">「休憩する」を押すと<br>運動メニューが表示されます。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3">
+            <div class="flex items-center gap-2 text-left">
+              <div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-sm">notifications</span>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-text-main">休憩の時間です！</p>
+                <p class="text-[10px] text-text-secondary">iStanding</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <%# STEP 3 %>
+        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
+          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">03</div>
+          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-5xl">fitness_center</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-black mb-2">最適な運動を実践</h3>
+            <p class="text-base text-text-secondary leading-relaxed">完了すると記録され、<br>グラフで継続を記録できます。</p>
+          </div>
+          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold">
+              <span class="material-symbols-outlined text-sm">self_improvement</span>ストレッチ
+            </div>
+            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold">
+              <span class="material-symbols-outlined text-sm">fitness_center</span>筋トレ
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="mb-24 bg-white/50 border border-white rounded-[3rem] p-10 md:p-16 shadow-sm">
+      <div class="flex flex-col md:flex-row items-center gap-12 text-left">
+        <div class="flex-1 space-y-6">
+          <div class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-md font-bold tracking-widest uppercase">Push Notification</div>
+          <h2 class="text-2xl font-bold leading-tight">ブラウザ通知をONにして<br>健康習慣を確実に。</h2>
+          <p class="text-lg text-text-secondary leading-relaxed">
+            このアプリは、ブラウザのプッシュ通知機能を利用します。ログイン後、通知の許可を求めるダイアログが表示されますので、「許可」を選択してください。
+            <br><span class="text-sm opacity-70">※スマートフォン・PCの両方に対応しています。</span>
+          </p>
+        </div>
+        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light animate-bounce-slow">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+              <span class="material-symbols-outlined text-sm">notifications</span>
+            </div>
+            <div class="flex-1">
+              <div class="h-2 w-20 bg-gray-200 rounded"></div>
+              <div class="h-1.5 w-12 bg-gray-100 rounded mt-1"></div>
+            </div>
+          </div>
+          <div class="font-bold text-sm mb-1">休憩の時間です！</div>
+          <div class="text-xs text-text-secondary italic">「立ち上がって肩甲骨を回しましょう」</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-24">
+      <h2 class="text-3xl font-black text-text-secondary uppercase tracking-[0.3em] mb-12">The Risks</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
+          <h3 class="font-bold mb-3 text-xl">健康リスクの増大</h3>
+          <p class="text-base text-text-secondary leading-relaxed">脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。</p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
+          <h3 class="font-bold mb-3 text-xl">集中力の低下</h3>
+          <p class="text-base text-text-secondary leading-relaxed">血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。</p>
+        </div>
+        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
+          <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
+          <h3 class="font-bold mb-3 text-xl">専門家による監修</h3>
+          <p class="text-base text-text-secondary leading-relaxed">理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。</p>
+        </div>
+      </div>
+    </section>
+
+    <%# CTA %>
+    <div class="mt-16 pb-20 flex flex-col items-center gap-6">
+      <%= link_to "登録して始める",
+        new_user_registration_path,
+        class: "inline-block w-full max-w-sm px-12 py-5 rounded-full bg-primary text-white text-xl font-bold hover:bg-primary-hover transition shadow-xl shadow-primary/30 active:scale-95" %>
+      <div class="flex items-center gap-4 w-full max-w-sm">
+        <div class="flex-1 h-px bg-border-light"></div>
+        <span class="text-sm text-text-secondary font-medium">または</span>
+        <div class="flex-1 h-px bg-border-light"></div>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <%= button_to "ゲストユーザーとして始める",
+            guest_login_path,
+            method: :post,
+            class: "inline-block w-full max-w-sm px-12 py-4 rounded-full border-2 border-border-light bg-white text-text-main text-lg font-bold hover:border-primary hover:text-primary transition active:scale-95 cursor-pointer" %>
+        <p class="flex items-center gap-1 text-sm text-text-secondary">
+          <span class="material-symbols-outlined text-base">info</span>
+          ゲストユーザーの場合は記録が保存されません
+        </p>
+      </div>
+    </div>
+
+  </main>
+</div>
 </file>
 
 <file path="bin/brakeman">
@@ -1606,6 +1959,18 @@ Rails.application.config.filter_parameters += [
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+</file>
+
+<file path="config/initializers/memory_logger.rb">
+if Rails.env.production?
+  Thread.new do
+    loop do
+      memory_mb = `cat /proc/self/status | grep VmRSS`.match(/(\d+)/)[1].to_i / 1024
+      Rails.logger.info "[MemoryMonitor] RSS: #{memory_mb} MB"
+      sleep 60 # 1分ごとに出力
+    end
+  end
+end
 </file>
 
 <file path="config/locales/devise.en.yml">
@@ -2155,6 +2520,14 @@ class CreateActivityLogs < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+  end
+end
+</file>
+
+<file path="db/migrate/20260311004030_drop_suggested_actions.rb">
+class DropSuggestedActions < ActiveRecord::Migration[8.1]
+  def change
+    drop_table :suggested_actions
   end
 end
 </file>
@@ -2983,6 +3356,45 @@ RSpec.describe User, type: :model do
 end
 </file>
 
+<file path="spec/requests/pages_spec.rb">
+require 'rails_helper'
+
+RSpec.describe "Pages", type: :request do
+  describe "GET /terms" do
+    it "returns http success" do
+      get "/pages/terms"
+      expect(response).to have_http_status(:success)
+    end
+  end
+
+  describe "GET /privacy" do
+    it "returns http success" do
+      get "/pages/privacy"
+      expect(response).to have_http_status(:success)
+    end
+  end
+end
+</file>
+
+<file path="spec/system/sitting_sessions_spec.rb">
+require 'rails_helper'
+
+RSpec.describe "SittingSessions", type: :system do
+  let!(:user) { create(:user) }
+  let!(:exercise) { create(:exercise, name: "肩甲骨ストレッチ") }
+
+  before do
+     driven_by(:rack_test) # JSなしで動かす
+
+    # ログイン済みの状態にする（共通化している場合はそのメソッドを呼ぶ）
+    visit new_user_session_path
+    fill_in "メールアドレス", with: user.email
+    fill_in "パスワード", with: user.password
+    click_button "ログイン"
+  end
+end
+</file>
+
 <file path="spec/rails_helper.rb">
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
@@ -3782,6 +4194,58 @@ assignees: ''
 ## このissueで実装しないもの
 </file>
 
+<file path="app/assets/stylesheets/application.tailwind.css">
+@import "tailwindcss";
+
+@theme {
+  /* フォント */
+  --font-sans: 'M PLUS Rounded 1c', sans-serif;
+
+  /* メイン（ペールグリーン） */
+  --color-primary: #6A9B76;
+  --color-primary-hover: #5A8A66;
+
+  /* 背景 */
+  --color-background-light: #F6F3EE;
+  --color-background-dark: #E3ECE6;
+
+  /* テキスト */
+  --color-text-main: #1E2D26;
+  --color-text-secondary: #4A5C52;
+
+  /* UI補助 */
+  --color-border-light: #B8C8BC;
+  --color-input-bg-light: #FFFFFF;
+
+  /*導入ページの動き用*/
+  @keyframes bounce-slow {
+  0%, 100% { transform: translateY(-15%); }
+  50% { transform: translateY(0); }
+  }
+}
+
+  @utility animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+  }
+
+  @keyframes critical-pulse {
+  0%, 100% {
+    color: #ef4444; /* red-500 */
+    text-shadow: 0 0 0px rgba(239, 68, 68, 0);
+    transform: scale(1);
+  }
+  50% {
+    color: #b91c1c; /* red-700 (濃い赤) */
+    text-shadow: 0 0 15px rgba(239, 68, 68, 0.8); /* 強く光る */
+    transform: scale(1.05); /* わずかに大きく */
+  }
+}
+
+  @utility animate-critical {
+  animation: critical-pulse 1.2s ease-in-out infinite;
+  }
+</file>
+
 <file path="app/controllers/ogp_images_controller.rb">
 class OgpImagesController < ApplicationController
   def show
@@ -3790,35 +4254,6 @@ class OgpImagesController < ApplicationController
     image = OgpCreator.build(text)
 
     send_data image.to_blob, type: "image/png", disposition: "inline"
-  end
-end
-</file>
-
-<file path="app/controllers/pages_controller.rb">
-class PagesController < ApplicationController
-  def terms
-  end
-
-  def privacy
-  end
-end
-</file>
-
-<file path="app/controllers/top_controller.rb">
-class TopController < ApplicationController
-  before_action :authenticate_user!
-
-  def index
-    # 1日の座位時間合計
-    @total_seconds = current_user.today_total_sitting_seconds
-    # 1日の運動回数
-    @exercise_count = current_user.today_exercise_count
-    # タイマーにnotify_atを渡すための変数
-    @active_session = current_user.sitting_sessions.active.last
-
-    if params[:reopen_modal] == "true"
-      @exercises = Exercise.order("RANDOM()").limit(3)
-    end
   end
 end
 </file>
@@ -3860,11 +4295,6 @@ module OgpImagesHelper
 end
 </file>
 
-<file path="app/helpers/pages_helper.rb">
-module PagesHelper
-end
-</file>
-
 <file path="app/helpers/top_helper.rb">
 module TopHelper
   def hp_color(hp)
@@ -3898,33 +4328,144 @@ export default class extends Controller {
 }
 </file>
 
-<file path="app/javascript/controllers/index.js">
-// This file is auto-generated by ./bin/rails stimulus:manifest:update
-// Run that command whenever you add a new controller or create them with
-// ./bin/rails generate stimulus controllerName
+<file path="app/javascript/controllers/history_controller.js">
+import { Controller } from "@hotwired/stimulus"
 
-import { application } from "./application"
+// Connects to data-controller="history"
+export default class extends Controller {
+  static targets = ["heatmapContainer", "dailyPane", "weeklyPane", "monthlyPane"]
+  static values = {
+    Daily: Array,
+    Weekly: Array,
+    Monthly: Array,
+    Heatmap: Array
+  }
+  connect() {
+    console.log("Connected")
+    console.log(this.dailyValue)
 
-import DamageGaugeController from "./damage_gauge_controller"
-application.register("damage-gauge", DamageGaugeController)
+    this.renderHeatmap()
 
-import DropdownController from "./dropdown_controller"
-application.register("dropdown", DropdownController)
+    this.renderCharts()
+  }
 
-import ExerciseTimerController from "./exercise_timer_controller"
-application.register("exercise-timer", ExerciseTimerController)
+  renderHeatmap() {
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
+    this.heatmapContainerTarget.innerHTML = ""
 
-import MobileMenuController from "./mobile_menu_controller"
-application.register("mobile-menu", MobileMenuController)
+    this.heatmapValue.forEach(report => {
 
-import NotificationController from "./notification_controller"
-application.register("notification", NotificationController)
+      const dot = document.createElement("div")
+      const count = report.exercise_count
+      // tailwindのクラス付与
+      dot.classList.add("w-3", "h-3", "rounded-sm", "transition-colors")
 
-import TimerController from "./timer_controller"
-application.register("timer", TimerController)
+      // 運動回数に応じた色
+      let colorClass = ""
+      switch (true) {
+        case count >= 7: colorClass = "bg-primary"; break;
+        case count >= 4: colorClass = "bg-primary/60"; break;
+        case count >= 1: colorClass = "bg-primary/30"; break;
+        default: colorClass = "bg-gray-100";
+      }
+
+      dot.classList.add(colorClass)
+      dot.title = `運動: ${count}回` //ホバー表示
+      this.heatmapContainerTarget.appendChild(dot)
+    })
+  }
+
+
+}
+</file>
+
+<file path="app/jobs/send_notification_job.rb">
+require "web-push"
+
+class SendNotificationJob < ApplicationJob
+  queue_as :default
+
+  def perform(sitting_session_id)
+    session = SittingSession.find_by(id: sitting_session_id)
+
+    return if session.nil?
+
+    # statusがactiveの時だけ通知
+    return unless session&.active?
+
+    user = session.user
+    return if user.endpoint.blank?
+
+    begin
+      WebPush.payload_send(
+        message: JSON.generate({
+          title: "休憩の時間です！",
+          body: "身体を動かしましょう！",
+          url: "/?session_id=#{sitting_session_id}"  # タブを閉じてもsession_idを探してmodalを開ける
+      }),
+        endpoint: user.endpoint,
+        p256dh: user.p256dh,
+        auth: user.auth,
+        vapid: {
+          public_key: Rails.application.credentials.dig(:webpush, :public_key),
+          private_key: Rails.application.credentials.dig(:webpush, :private_key),
+          subject: "mailto:okw.kzk@gmail.com"
+        }
+      )
+      session.update!(notified: true)
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
+
+      user.update(endpoint: nil, p256dh: nil, auth: nil)
+
+    rescue => e
+      Rails.logger.error "通信エラー: #{e.message}"
+
+    end
+  end
+end
+</file>
+
+<file path="app/models/sitting_session.rb">
+class SittingSession < ApplicationRecord
+  # タイマーの時間選択肢
+  SETTING_DURATIONS = [ 30, 45, 60, 90, 120 ].freeze
+  # 一日の座位時間上限(11時間を秒に換算)
+  SITTING_TIME_LIMIT = 11 * 60 * 60
+
+  belongs_to :user
+
+  has_many :activity_logs, dependent: :nullify
+
+  enum :status, { active: 0, completed: 1, cancelled: 2 }
+
+  before_create :cancel_active_sessions
+  before_validation :set_notification_time, if: :duration_changed?
+
+  # 座位時間の終了予定時刻を計算して保存
+  def set_notification_time
+    return if duration.blank?
+
+    self.start_at ||= Time.current
+
+    self.notify_at = self.start_at + duration.seconds
+    self.notified = false
+  end
+
+  scope :today, -> { where(created_at: Time.zone.now.all_day) }
+
+
+  def end_time
+    created_at + duration.minutes
+  end
+
+  private
+
+  def cancel_active_sessions
+    user.sitting_sessions.active.where.not(id: id).update_all(status: :cancelled)
+  end
+
+  validates :start_at, presence: true
+end
 </file>
 
 <file path="app/policies/application_policy.rb">
@@ -4006,6 +4547,203 @@ class OgpCreator
     image
   end
 end
+</file>
+
+<file path="app/views/activity_logs/_activity_log.html.erb">
+<%# 運動履歴のカード表示パーシャル %>
+<div class="flex items-center gap-4 p-5 bg-white/50 border border-white/60 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:bg-white/70 transition-all">
+    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shrink-0">
+      <span class="material-symbols-outlined text-xl">
+        <% if log.note.present? %>
+          <%# 自由運動（入力あり）の場合はノートアイコン %>
+          edit_note
+        <% else %>
+          <%# それ以外はカテゴリー別に分岐 %>
+          <%= log.exercise.category == "stretch" ? "self_improvement" : "fitness_center" %>
+        <% end %>
+      </span>
+    </div>
+    <div>
+      <p class="font-bold text-text-main text-base">
+        <% if log.exercise.category == "other" %>
+          <%= log.note.presence || "自由運動" %>
+        <% else %>
+          <%= log.exercise.name %>
+        <% end %>
+      </p>
+      <p class="text-xs text-text-secondary font-medium mt-0.5">
+        <%= log.created_at.in_time_zone("Tokyo").strftime("%m/%d %H:%M") %>
+      </p>
+      <p class="text-xs text-text-secondary mt-0.5">
+        <span class="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold border border-primary/20">
+          <%= { "stretch" => "ストレッチ", "training" => "トレーニング", "other" => "その他" }[log.exercise.category] %>
+        </span>
+      </p>
+    </div>
+</div>
+</file>
+
+<file path="app/views/activity_logs/index.backup.html.erb">
+<%# 背景 %>
+<div class="fixed inset-0 -z-10 overflow-hidden bg-background-dark">
+  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+</div>
+
+<main class="min-h-screen w-full max-w-5xl mx-auto px-6 py-10">
+
+  <%# ページタイトル %>
+  <div class="mb-10">
+    <div class="inline-flex items-center gap-2 text-primary mb-3">
+      <span class="material-symbols-outlined text-xl">insights</span>
+      <span class="font-bold tracking-[0.2em] uppercase text-sm">Your Activity</span>
+    </div>
+    <h1 class="text-4xl font-black text-text-main tracking-tight">履歴・グラフ</h1>
+    <p class="text-text-secondary mt-2 text-base">直近7日間のあなたの活動記録</p>
+  </div>
+
+  <%# グラフエリア %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+    <%# 座位時間グラフ %>
+    <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+          <span class="material-symbols-outlined">chair</span>
+        </div>
+        <div>
+          <h2 class="text-base font-black text-text-main">日別座位時間</h2>
+          <p class="text-xs text-text-secondary">上限 11時間</p>
+        </div>
+      </div>
+      <%= column_chart @daily_sitting,
+          max: 11,
+          colors: ["#6A9B76"],
+          suffix: "h",
+          thousands: ",",
+          round: 1,
+          height: "200px",
+          library: {
+            scales: {
+              y: { grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } },
+              x: { grid: { display: false }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } }
+            },
+            plugins: { legend: { display: false } }
+          } %>
+    </div>
+
+    <%# 運動回数グラフ %>
+    <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+          <span class="material-symbols-outlined">fitness_center</span>
+        </div>
+        <div>
+          <h2 class="text-base font-black text-text-main">日別運動回数</h2>
+          <p class="text-xs text-text-secondary">1日の運動セット数</p>
+        </div>
+      </div>
+      <%= area_chart @daily_exercises,
+          colors: ["#6A9B76"],
+          suffix: "回",
+          height: "200px",
+          library: {
+            scales: {
+              y: { grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: "#4A5C52", stepSize: 1, font: { family: "'M PLUS Rounded 1c'" } } },
+              x: { grid: { display: false }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } }
+            },
+            plugins: { legend: { display: false } }
+          } %>
+    </div>
+  </div>
+
+ <%# サマリーカード %>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
+    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">今週の運動</p>
+    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap"><%= @activity_logs.size %><span class="text-sm md:text-base font-bold text-text-secondary ml-1">回</span></p>
+  </div>
+
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
+    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">平均座位時間</p>
+    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
+      <%= @daily_sitting.values.sum.then { |t| t.zero? ? 0 : (t / [@daily_sitting.values.count { |v| v > 0 }, 1].max).round(1) } %>
+      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">h</span>
+    </p>
+  </div>
+
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
+    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">運動した日数</p>
+    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
+      <%= @daily_exercises.values.count { |v| v > 0 } %>
+      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">/ 7日</span>
+    </p>
+  </div>
+
+  <div class="bg-primary/20 backdrop-blur-xl border-2 border-primary/30 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
+    <p class="text-xs font-black text-primary uppercase tracking-widest mb-2">今日の運動</p>
+    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
+      <%= current_user.today_exercise_count %>
+      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">回</span>
+    </p>
+  </div>
+
+</div>
+  <%# 運動履歴リスト %>
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+        <span class="material-symbols-outlined">history</span>
+      </div>
+      <h2 class="text-base font-black text-text-main">運動履歴</h2>
+    </div>
+
+    <% if @activity_logs.empty? %>
+      <div class="text-center py-16 text-text-secondary">
+        <span class="material-symbols-outlined text-5xl mb-4 block text-primary/40">fitness_center</span>
+        <p class="font-bold text-lg">まだ記録がありません</p>
+        <p class="text-sm mt-1">運動を完了すると履歴が表示されます</p>
+      </div>
+    <% else %>
+      <div class="space-y-3">
+        <% @activity_logs.each do |log| %>
+  <div class="flex items-center gap-4 p-5 bg-white/50 border border-white/60 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:bg-white/70 transition-all">
+    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shrink-0">
+      <span class="material-symbols-outlined text-xl">
+        <% if log.note.present? %>
+          <%# 自由運動（入力あり）の場合はノートアイコン %>
+          edit_note
+        <% else %>
+          <%# それ以外はカテゴリー別に分岐 %>
+          <%= log.exercise.category == "stretch" ? "self_improvement" : "fitness_center" %>
+        <% end %>
+      </span>
+    </div>
+    <div>
+      <p class="font-bold text-text-main text-base">
+        <% if log.exercise.category == "other" %>
+          <%= log.note.presence || "自由運動" %>
+        <% else %>
+          <%= log.exercise.name %>
+        <% end %>
+      </p>
+      <p class="text-xs text-text-secondary font-medium mt-0.5">
+        <%= log.created_at.in_time_zone("Tokyo").strftime("%m/%d %H:%M") %>
+      </p>
+      <p class="text-xs text-text-secondary mt-0.5">
+        <span class="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold border border-primary/20">
+          <%= { "stretch" => "ストレッチ", "training" => "トレーニング", "other" => "その他" }[log.exercise.category] %>
+        </span>
+      </p>
+    </div>
+  </div>
+<% end %>
+      </div>
+    <% end %>
+  </div>
+
+</main>
 </file>
 
 <file path="app/views/devise/registrations/edit.html.erb">
@@ -4386,164 +5124,6 @@ end
 </div>
 </file>
 
-<file path="app/views/pages/privacy.html.erb">
-<div class="min-h-screen bg-background-light text-text-main pb-20">
-  <main class="max-w-3xl mx-auto px-6 py-16">
-
-    <div class="mb-12 text-center">
-      <h1 class="text-4xl font-black text-text-main mb-3">プライバシーポリシー</h1>
-    </div>
-
-    <div class="space-y-10 text-base leading-relaxed">
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第1条（個人情報の定義）</h2>
-        <p class="text-text-secondary">本ポリシーにおける「個人情報」とは、個人情報保護法に定める個人情報を指し、氏名・メールアドレス等、特定の個人を識別できる情報をいいます。</p>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第2条（収集する情報）</h2>
-        <p class="text-text-secondary">本サービスでは、以下の情報を収集します。</p>
-        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
-          <li>メールアドレス・ユーザー名（登録時）</li>
-          <li>座位時間・運動記録（サービス利用時）</li>
-          <li>プッシュ通知のエンドポイント情報（通知許可時）</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第3条（情報の利用目的）</h2>
-        <p class="text-text-secondary">収集した情報は以下の目的で利用します。</p>
-        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
-          <li>本サービスの提供・運営</li>
-          <li>プッシュ通知の送信</li>
-          <li>利用状況の分析・サービス改善</li>
-          <li>お問い合わせへの対応</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第4条（第三者提供）</h2>
-        <p class="text-text-secondary">運営者は、以下の場合を除き、ユーザーの個人情報を第三者に提供しません。</p>
-        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
-          <li>ユーザーの同意がある場合</li>
-          <li>法令に基づく場合</li>
-          <li>人の生命・身体・財産の保護のために必要な場合</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第5条（利用する外部サービス）</h2>
-        <p class="text-text-secondary">本サービスでは以下の外部サービスを利用しており、各サービスのプライバシーポリシーが適用されます。</p>
-        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
-          <li>Cloudinary（画像管理）</li>
-          <li>Render（サーバーホスティング）</li>
-          <li>Neon（データベース）</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第6条（個人情報の開示・訂正・削除）</h2>
-        <p class="text-text-secondary">ユーザーは、自身の個人情報の開示・訂正・削除を求めることができます。ご要望はお問い合わせよりご連絡ください。</p>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第7条（プライバシーポリシーの変更）</h2>
-        <p class="text-text-secondary">本ポリシーの内容は、法令の変更やサービスの変更に伴い、予告なく変更することがあります。変更後のポリシーは本サービス上に掲示した時点で効力を生じます。</p>
-      </section>
-
-    </div>
-
-    <div class="mt-16 pt-8 border-t border-border-light flex justify-center gap-6 text-sm text-text-secondary">
-      <%= link_to "トップへ戻る", root_path, class: "hover:text-primary transition-colors" %>
-      <span>|</span>
-      <%= link_to "利用規約", terms_path, class: "hover:text-primary transition-colors" %>
-    </div>
-
-  </main>
-</div>
-</file>
-
-<file path="app/views/pages/terms.html.erb">
-<div class="min-h-screen bg-background-light text-text-main pb-20">
-  <main class="max-w-3xl mx-auto px-6 py-16">
-
-    <div class="mb-12 text-center">
-      <h1 class="text-4xl font-black text-text-main mb-3">利用規約</h1>
-    </div>
-
-    <div class="space-y-10 text-base leading-relaxed">
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第1条（適用）</h2>
-        <p class="text-text-secondary">本規約は、iStanding（以下「本サービス」）の利用に関する条件を定めるものです。ユーザーは本規約に同意した上で本サービスをご利用ください。</p>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第2条（利用登録）</h2>
-        <p class="text-text-secondary">登録希望者が本規約に同意の上、所定の方法で利用登録を申請し、運営者がこれを承認した場合に利用登録が完了します。運営者は、以下の場合に利用登録を拒否することがあります。</p>
-        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
-          <li>虚偽の情報を申請した場合</li>
-          <li>本規約に違反したことがある者からの申請の場合</li>
-          <li>その他、運営者が不適切と判断した場合</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第3条（禁止事項）</h2>
-        <p class="text-text-secondary">ユーザーは以下の行為を行ってはなりません。</p>
-        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
-          <li>法令または公序良俗に違反する行為</li>
-          <li>犯罪行為に関連する行為</li>
-          <li>本サービスの運営を妨害する行為</li>
-          <li>他のユーザーに迷惑をかける行為</li>
-          <li>不正アクセスをする行為</li>
-          <li>その他、運営者が不適切と判断した行為</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第4条（本サービスの提供の停止等）</h2>
-        <p class="text-text-secondary">運営者は、以下の場合に事前通知なく本サービスの全部または一部の提供を停止・中断することがあります。</p>
-        <ul class="mt-3 space-y-2 text-text-secondary list-disc list-inside">
-          <li>本サービスのシステムの保守・点検を行う場合</li>
-          <li>地震・火災・停電などの不可抗力により提供が困難な場合</li>
-          <li>その他、運営者が必要と判断した場合</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第5条（免責事項）</h2>
-        <p class="text-text-secondary">本サービスは健康習慣のサポートを目的としており、医療行為を提供するものではありません。本サービスの利用によって生じた損害について、運営者は一切の責任を負いません。また、本サービスに関して提供する情報の正確性・完全性を保証するものではありません。</p>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第6条（サービス内容の変更等）</h2>
-        <p class="text-text-secondary">運営者は、ユーザーへの事前通知なく本サービスの内容を変更、または本サービスの提供を終了することができます。</p>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第7条（利用規約の変更）</h2>
-        <p class="text-text-secondary">運営者は必要と判断した場合、ユーザーへの通知なく本規約を変更できます。変更後の規約は本サービス上に掲示した時点で効力を生じます。</p>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-black text-text-main mb-3">第8条（準拠法・裁判管轄）</h2>
-        <p class="text-text-secondary">本規約の解釈にあたっては、日本法を準拠法とします。本サービスに関して紛争が生じた場合には、運営者の所在地を管轄する裁判所を専属的合意管轄とします。</p>
-      </section>
-
-    </div>
-
-    <div class="mt-16 pt-8 border-t border-border-light flex justify-center gap-6 text-sm text-text-secondary">
-      <%= link_to "トップへ戻る", root_path, class: "hover:text-primary transition-colors" %>
-      <span>|</span>
-      <%= link_to "プライバシーポリシー", privacy_path, class: "hover:text-primary transition-colors" %>
-    </div>
-
-  </main>
-</div>
-</file>
-
 <file path="app/views/pwa/manifest.json.erb">
 {
   "name": "iStanding",
@@ -4631,175 +5211,14 @@ self.addEventListener('notificationclick', function (event) {
 })
 </file>
 
-<file path="app/views/static_pages/top.html.erb">
-<div class="min-h-screen bg-background-light text-text-main pb-20">
+<file path="app/views/sitting_sessions/finish_current.turbo_stream.erb">
+<%= turbo_stream.update "modal_container" do %>
+  <%= render partial: "shared/modal", locals: { exercises: @exercises, sitting_session_id: @sitting_session.id } %>
+<% end %>
 
-  <main class="max-w-5xl mx-auto px-6 text-center">
-
-  <div class="text-center pt-16 mb-20">
-    <h1 class="text-4xl md:text-6xl font-black text-text-main tracking-tight leading-tight mb-6">
-      座りすぎは、<br>
-      <span class="relative inline-block">
-      <span class="relative z-10 text-primary">喫煙と同等</span>
-      <span class="absolute bottom-1 left-0 w-full h-3 bg-primary/15 rounded-full -z-0"></span>
-      </span>
-      のリスク
-    </h1>
-
-  <p class="text-lg md:text-xl text-text-secondary font-medium leading-relaxed max-w-xl mx-auto mb-8">
-    定期的に立ち上がるだけで、健康リスクは大きく変わります。<br>
-    iStanding が、あなたの習慣をサポートします。
-  </p>
-</div>
-
-    <%# How to use %>
-    <section class="mb-24">
-      <h2 class="text-3xl font-black text-primary uppercase tracking-[0.3em] mb-10">How to use</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-
-        <%# ステップ間の矢印（PC） %>
-        <div class="hidden md:flex absolute top-1/2 left-[33%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
-          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
-        </div>
-        <div class="hidden md:flex absolute top-1/2 left-[67%] -translate-y-1/2 -translate-x-1/2 z-20 items-center">
-          <span class="material-symbols-outlined text-primary/40 text-4xl">arrow_forward</span>
-        </div>
-
-        <%# STEP 1 %>
-        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
-          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">01</div>
-          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-5xl">timer</span>
-          </div>
-          <div>
-            <h3 class="text-xl font-black mb-2">タイマーをセット</h3>
-            <p class="text-base text-text-secondary leading-relaxed">時間になると<br>プッシュ通知でお知らせ。</p>
-          </div>
-          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2">
-            <div class="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold">60分</div>
-            <span class="material-symbols-outlined text-primary/30 text-sm">arrow_forward</span>
-            <div class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-md shadow-primary/20">スタート ▶</div>
-          </div>
-        </div>
-
-        <%# STEP 2 %>
-        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
-          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">02</div>
-          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-5xl">notifications_active</span>
-          </div>
-          <div>
-            <h3 class="text-xl font-black mb-2">通知で休憩のサイン</h3>
-            <p class="text-base text-text-secondary leading-relaxed">「休憩する」を押すと<br>運動メニューが表示されます。</p>
-          </div>
-          <div class="w-full bg-background-light rounded-2xl p-3">
-            <div class="flex items-center gap-2 text-left">
-              <div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-white text-sm">notifications</span>
-              </div>
-              <div>
-                <p class="text-xs font-bold text-text-main">休憩の時間です！</p>
-                <p class="text-[10px] text-text-secondary">iStanding</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <%# STEP 3 %>
-        <div class="relative bg-white/70 border border-white rounded-3xl p-8 shadow-sm flex flex-col items-center gap-5">
-          <div class="text-5xl font-black text-primary/20 absolute -top-6 left-1/2 -translate-x-1/2">03</div>
-          <div class="mt-4 w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-5xl">fitness_center</span>
-          </div>
-          <div>
-            <h3 class="text-xl font-black mb-2">最適な運動を実践</h3>
-            <p class="text-base text-text-secondary leading-relaxed">完了すると記録され、<br>グラフで継続を記録できます。</p>
-          </div>
-          <div class="w-full bg-background-light rounded-2xl p-3 flex items-center justify-center gap-2 flex-wrap">
-            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold">
-              <span class="material-symbols-outlined text-sm">self_improvement</span>ストレッチ
-            </div>
-            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold">
-              <span class="material-symbols-outlined text-sm">fitness_center</span>筋トレ
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="mb-24 bg-white/50 border border-white rounded-[3rem] p-10 md:p-16 shadow-sm">
-      <div class="flex flex-col md:flex-row items-center gap-12 text-left">
-        <div class="flex-1 space-y-6">
-          <div class="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-md font-bold tracking-widest uppercase">Push Notification</div>
-          <h2 class="text-2xl font-bold leading-tight">ブラウザ通知をONにして<br>健康習慣を確実に。</h2>
-          <p class="text-lg text-text-secondary leading-relaxed">
-            このアプリは、ブラウザのプッシュ通知機能を利用します。ログイン後、通知の許可を求めるダイアログが表示されますので、「許可」を選択してください。
-            <br><span class="text-sm opacity-70">※スマートフォン・PCの両方に対応しています。</span>
-          </p>
-        </div>
-        <div class="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-border-light animate-bounce-slow">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
-              <span class="material-symbols-outlined text-sm">notifications</span>
-            </div>
-            <div class="flex-1">
-              <div class="h-2 w-20 bg-gray-200 rounded"></div>
-              <div class="h-1.5 w-12 bg-gray-100 rounded mt-1"></div>
-            </div>
-          </div>
-          <div class="font-bold text-sm mb-1">休憩の時間です！</div>
-          <div class="text-xs text-text-secondary italic">「立ち上がって肩甲骨を回しましょう」</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-24">
-      <h2 class="text-3xl font-black text-text-secondary uppercase tracking-[0.3em] mb-12">The Risks</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">chair</span>
-          <h3 class="font-bold mb-3 text-xl">健康リスクの増大</h3>
-          <p class="text-base text-text-secondary leading-relaxed">脳梗塞やヘルニア等のリスクを高めるだけでなく、座りすぎは寿命に影響を与えるとされています。</p>
-        </div>
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">timer</span>
-          <h3 class="font-bold mb-3 text-xl">集中力の低下</h3>
-          <p class="text-base text-text-secondary leading-relaxed">血流が滞ることで脳への酸素供給が減り、作業効率が低下。定期的な離席が生産性を高めます。</p>
-        </div>
-        <div class="bg-input-bg-light border border-border-light rounded-2xl p-8">
-          <span class="material-symbols-outlined text-primary text-4xl mb-4">monitor_heart</span>
-          <h3 class="font-bold mb-3 text-xl">専門家による監修</h3>
-          <p class="text-base text-text-secondary leading-relaxed">理学療法士の知見に基づき、座りすぎ解消に最適な運動メニューを提案します。</p>
-        </div>
-      </div>
-    </section>
-
-    <%# CTA %>
-    <div class="mt-16 pb-20 flex flex-col items-center gap-6">
-      <%= link_to "登録して始める",
-        new_user_registration_path,
-        class: "inline-block w-full max-w-sm px-12 py-5 rounded-full bg-primary text-white text-xl font-bold hover:bg-primary-hover transition shadow-xl shadow-primary/30 active:scale-95" %>
-      <div class="flex items-center gap-4 w-full max-w-sm">
-        <div class="flex-1 h-px bg-border-light"></div>
-        <span class="text-sm text-text-secondary font-medium">または</span>
-        <div class="flex-1 h-px bg-border-light"></div>
-      </div>
-      <div class="flex flex-col items-center gap-2">
-        <%= button_to "ゲストユーザーとして始める",
-            guest_login_path,
-            method: :post,
-            class: "inline-block w-full max-w-sm px-12 py-4 rounded-full border-2 border-border-light bg-white text-text-main text-lg font-bold hover:border-primary hover:text-primary transition active:scale-95 cursor-pointer" %>
-        <p class="flex items-center gap-1 text-sm text-text-secondary">
-          <span class="material-symbols-outlined text-base">info</span>
-          ゲストユーザーの場合は記録が保存されません
-        </p>
-      </div>
-    </div>
-
-  </main>
-</div>
+<%= turbo_stream.update "hp_card" do%>
+  <%= render partial: "shared/hp_card"%>
+<% end %>
 </file>
 
 <file path="config/initializers/meta_tags.rb">
@@ -4937,14 +5356,6 @@ cloudinary:
 #   mirrors: [ amazon, google, microsoft ]
 </file>
 
-<file path="db/migrate/20260311004030_drop_suggested_actions.rb">
-class DropSuggestedActions < ActiveRecord::Migration[8.1]
-  def change
-    drop_table :suggested_actions
-  end
-end
-</file>
-
 <file path="db/migrate/20260313125835_add_admin_to_users.rb">
 class AddAdminToUsers < ActiveRecord::Migration[8.1]
   def change
@@ -5035,22 +5446,6 @@ class AddNoteAndDurationMinutesToActivityLogs < ActiveRecord::Migration[8.1]
   def change
     add_column :activity_logs, :note, :text
     add_column :activity_logs, :duration_minutes, :integer
-  end
-end
-</file>
-
-<file path="db/migrate/20260401024910_remove_active_from_exercises.rb">
-class RemoveActiveFromExercises < ActiveRecord::Migration[8.1]
-  def change
-    remove_column :exercises, :active, :boolean
-  end
-end
-</file>
-
-<file path="db/migrate/20260401025018_add_active_to_exercises.rb">
-class AddActiveToExercises < ActiveRecord::Migration[8.1]
-  def change
-    add_column :exercises, :active, :boolean, default: true, null: false
   end
 end
 </file>
@@ -5224,6 +5619,15 @@ end
 puts "完了！"
 </file>
 
+<file path="spec/factories/activity_logs.rb">
+FactoryBot.define do
+  factory :activity_log do
+    association :user
+    association :exercise
+  end
+end
+</file>
+
 <file path="spec/factories/health_tips.rb">
 FactoryBot.define do
   factory :health_tip do
@@ -5249,6 +5653,14 @@ RSpec.describe OgpImagesHelper, type: :helper do
 end
 </file>
 
+<file path="spec/models/activity_log_spec.rb">
+require 'rails_helper'
+
+RSpec.describe ActivityLog, type: :model do
+  pending "add some examples to (or delete) #{__FILE__}"
+end
+</file>
+
 <file path="spec/models/health_tip_spec.rb">
 require 'rails_helper'
 
@@ -5263,26 +5675,6 @@ require 'rails_helper'
 RSpec.describe "OgpImages", type: :request do
   describe "GET /index" do
     pending "add some examples (or delete) #{__FILE__}"
-  end
-end
-</file>
-
-<file path="spec/requests/pages_spec.rb">
-require 'rails_helper'
-
-RSpec.describe "Pages", type: :request do
-  describe "GET /terms" do
-    it "returns http success" do
-      get "/pages/terms"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe "GET /privacy" do
-    it "returns http success" do
-      get "/pages/privacy"
-      expect(response).to have_http_status(:success)
-    end
   end
 end
 </file>
@@ -5355,6 +5747,226 @@ RSpec.describe "exercises/update.html.erb", type: :view do
 end
 </file>
 
+<file path="README.md">
+# 卒業制作
+
+「iStanding」
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/81be41f9-31b3-46e7-8f55-32b0193c19cd" alt="iStanding OGP" width="600">
+</p>
+
+## サービス概要
+
+デスクワーカーの「座りすぎ」を防ぐタイマーアプリ。
+
+医学的根拠に基づいた通知タイミングと効果的な行動提案で健康習慣をサポート。
+
+通知機能や座位時間の可視化により、健康的な習慣を無理なく継続できます。
+
+サービスURL: https://istanding.jp
+
+## このサービスへの思い・作りたい理由
+
+理学療法士として整形外科で働く中で、腰痛や首の痛みを訴える患者様から「デスクワークで一日中座っています」という言葉を何度も耳にしてきました。日本は座位時間が世界トップレベルで、WHO や厚生労働省も座りすぎによる肥満、心筋梗塞、脳梗塞、ヘルニア、高血圧、糖尿病などのリスクを警告しています。
+
+0 次医療(予防医療)の推進が叫ばれる今、最も必要なのは「わかっているけどできない」を「自然とできる」に変えることです。多くの方が座りすぎの害を知りながらも、「めんどくさい」「まだ大丈夫」「忘れてしまう」「何をしたらいいかわからない」という理由で行動に移せていません。
+
+このアプリは、理学療法士としての専門知識を活かし、デスクワーカーが無理なく座りすぎを防ぎ、健康的な習慣を継続できるようサポートします。
+
+**参考文献**：
+
+- [Sitting Time and All-Cause Mortality Risk in 222,497 Australian Adults](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810)
+- [Sedentary time and its association with risk for disease incidence, mortality, and hospitalization in adults](https://pubmed.ncbi.nlm.nih.gov/21767731/)
+
+## ユーザー層について
+
+**メインターゲット**：デスクワークが多い 20〜40 代の会社員・フリーランス
+
+この層を対象にした理由：
+
+1 日 8 時間以上座って仕事をする人が多く、座りすぎによる健康リスクが高い
+仕事に集中すると立ち上がることを忘れがちで、客観的なアラートが必要
+SNS を日常的に使用しており、達成実績のシェアによるモチベーション維持が期待できる
+スマートフォンや PC を常時使用しているため、アプリの導入・利用ハードルが低い
+健康意識が高まる年代で、予防的な健康管理に関心がある
+
+## サービスの利用イメージ
+
+1. **作業中のサポート**：設定した間隔（例：60 分）で座りすぎアラートが通知される
+2. **休憩時間の内容提案**：休憩アクションを提案（ストレッチ、歩く、立ち作業など）
+3. **1 日の振り返り**：座位時間の推移や休憩回数をグラフで確認
+4. **リマインドによる継続性**：自発的でなく受動的にアプリの利用を促す
+5. **健康コラムによる啓発**：医学的な情報をエビデンスに基づき掲載
+
+**得られる価値**：
+
+- 座りすぎによる健康リスクの軽減（肩こり、腰痛、生活習慣病予防）
+- データの可視化による行動変容の実感、健康意識の向上
+
+## ユーザーの獲得について
+
+- **SNS 拡散**
+
+X(旧 Twitter)での達成実績シェア機能を実装
+「#座りすぎ防止」「#デスクワーク改善」などのハッシュタグで拡散
+シェアされた投稿から新規ユーザーが流入する仕組み
+
+- **健康系コミュニティへのアプローチ**
+
+産業医、産業理学療法など、企業の健康増進に携わるコミュニティへのアプローチ
+
+その後、企業内の社員への普及というレバレッジが期待できる可能性
+
+- **エンジニアコミュニティ（Qiita、Zenn など）での紹介**
+
+デスクワーカーのコミュニティでの展開
+
+- **コンテンツマーケティング**
+
+座りすぎのリスクや改善方法に関する記事を SEO 対策を用いて Web サイトで発信
+
+YMYL, E-E-A-T への留意が必要になる
+実際の利用者の事例なども紹介
+
+## サービスの差別化ポイント・推しポイント
+
+### **類似サービスとの差別化**
+
+**既存のストレッチアプリとの違い**：
+
+- 「ストレッチの継続」ではなく「座位時間の削減」にフォーカス
+- 休憩の種類を強制せず、歩く・立ち作業など柔軟な休憩方法を記録可能
+- 座位時間の可視化により、行動変容を客観的に確認できる
+
+**ポモドーロアプリとの違い**：
+
+- 単なるポモドーロではなく、休憩時間にすべきことを提案、誘導
+- デイリーチャレンジ、ダメージ可視化によるゲーミフィケーション要素
+- SNS シェア機能による社会的なモチベーション維持
+
+### **推しポイント**
+
+1. **行動変容の可視化**：座位時間の推移グラフで改善を実感できる
+2. **柔軟な休憩スタイル**：ストレッチに限定せず、自分に合った休憩方法を選択可能
+3. **小さな成功体験の積み重ね**：毎日のチャレンジ達成で継続しやすい設計
+
+## 機能一覧
+
+### 実装済み
+
+1. ユーザー登録・ログイン機能（Devise、ゲストログイン対応）
+2. 座位時間アラート機能（Solid Queue + Web Push）
+
+- 1分・60分・90分からタイマー時間を選択
+- ブラウザを閉じていてもプッシュ通知が届く
+- 通知クリックで運動提案モーダルが自動表示
+
+3. 運動提案モーダル
+
+- 理学療法士監修の運動を3つランダム提案
+- ストレッチ・筋トレ・ウォーキングのカテゴリ別表示
+
+4. ダッシュボード
+
+- 今日の総座位時間・運動回数・進捗率を表示
+- 週次の座位時間グラフ・運動回数グラフ（Chartkick + Chart.js）
+
+5. 運動記録・履歴（運動完了を記録、履歴一覧で確認可能）
+
+### 実装予定
+
+1. SNSログイン（Google・GitHub認証）
+2. PWA 化（ホーム画面への追加、オフライン対応）
+3. ゲーミフィケーション（座位時間でキャラクターがダメージを受ける表現）
+4. 連続記録ストリーク表示
+5. タイマー時間のスライダー選択
+6. 健康TIPS のランダム表示
+7. admin 用 CRUD（運動メニューの追加・編集）
+8. 動的 OGP
+
+## 使用する技術スタック
+
+| カテゴリ       | 技術                         | 採用理由                                                                         |
+| -------------- | ---------------------------- | -------------------------------------------------------------------------------- |
+| バックエンド   | Ruby on Rails 8.1 / Ruby 4.0 | Solid Queue等Rails 8新機能を活用しインフラをシンプルに保つ                       |
+| フロントエンド | Hotwire（Turbo + Stimulus）  | タイマーのリアルタイム更新・モーダル表示をSPA的なUXでシンプルに実装              |
+| フロントエンド | Tailwind CSS v4              | 高速な開発とモダンなUIの実現                                                     |
+| データベース   | Neon（PostgreSQL）           | サーバーレスPostgreSQL。Render DBは90日で期限切れになるため採用                  |
+| 認証           | Devise                       | メール認証・ゲストログイン対応。ドキュメントが豊富                               |
+| インフラ       | Render                       | 無料枠でのデプロイが可能、設定がシンプル                                         |
+| 画像管理       | Cloudinary                   | 運動メニューの説明画像をアップロード・管理                                       |
+| 通知           | Web Push API + web-push gem  | ブラウザプッシュ通知の実装                                                       |
+| ジョブ管理     | Solid Queue                  | Redis + Sidekiqの代わりにRails 8デフォルト機能を採用。任意の時刻に通知を予約送信 |
+| グラフ         | Chartkick + Chart.js         | 週次の座位時間・運動回数グラフを表示                                             |
+| テスト         | RSpec                        | 単体テスト・統合テスト                                                           |
+
+## **画面遷移図**
+
+画面遷移図[Figma](https://www.figma.com/design/JKk9gF7VlIXwZ6NmctJhtm/iStandiing?node-id=3-9&t=kKzcKVxdmVC17r2o-1)
+
+## **ER 図**
+
+```mermaid
+erDiagram
+    users {
+        bigint id PK
+        string username
+        string email
+        string encrypted_password
+        string endpoint
+        string p256dh
+        string auth
+        string reset_password_token
+        string provider
+        string uid
+        boolean admin
+        integer hp
+        datetime reset_password_sent_at
+        datetime remember_created_at
+        datetime created_at
+        datetime updated_at
+    }
+
+    sitting_sessions {
+        bigint id PK
+        bigint user_id FK
+        integer duration
+        integer status
+        datetime start_at
+        datetime notify_at
+        boolean notified
+        datetime created_at
+        datetime updated_at
+    }
+
+    exercises {
+        bigint id PK
+        string name
+        text benefits
+        text instructions
+        integer category
+        string cloudinary_public_id
+        datetime created_at
+        datetime updated_at
+    }
+
+    activity_logs {
+        bigint id PK
+        bigint user_id FK
+        bigint exercise_id FK
+        bigint sitting_session_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    users ||--o{ sitting_sessions : "has many"
+    users ||--o{ activity_logs : "has many"
+    sitting_sessions ||--o{ activity_logs : "has many"
+    exercises ||--o{ activity_logs : "has many"
+```
+</file>
+
 <file path="app/controllers/users/omniauth_callbacks_controller.rb">
 # frozen_string_literal: true
 
@@ -5403,81 +6015,36 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 end
 </file>
 
-<file path="app/controllers/application_controller.rb">
-class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+<file path="app/javascript/controllers/index.js">
+// This file is auto-generated by ./bin/rails stimulus:manifest:update
+// Run that command whenever you add a new controller or create them with
+// ./bin/rails generate stimulus controllerName
 
-  before_action :set_default_meta_tags
+import { application } from "./application"
 
-  include Pundit::Authorization
+import DamageGaugeController from "./damage_gauge_controller"
+application.register("damage-gauge", DamageGaugeController)
 
-  def set_default_meta_tags
-    set_meta_tags(
-      og: {
-        title: "iStanding - 座りすぎを防ぐタイマーアプリ",
-        description: "座りすぎは喫煙と同等のリスク。定期的な休憩習慣をサポートします。",
-        image: "https://istanding.jp/ogp.png"
-      },
-      twitter: {
-        card: "summary_large_image",
-        image: "https://istanding.jp/ogp.png"
-      }
-    )
-  end
+import DropdownController from "./dropdown_controller"
+application.register("dropdown", DropdownController)
 
-  protected
-  # ログイン後のタイマー画面への遷移を共通化
-  def after_sign_in_path_for(resource)
-    root_path
-  end
-end
-</file>
+import ExerciseTimerController from "./exercise_timer_controller"
+application.register("exercise-timer", ExerciseTimerController)
 
-<file path="app/jobs/send_notification_job.rb">
-require "web-push"
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
 
-class SendNotificationJob < ApplicationJob
-  queue_as :default
+import HistoryController from "./history_controller"
+application.register("history", HistoryController)
 
-  def perform(sitting_session_id)
-    session = SittingSession.find_by(id: sitting_session_id)
+import MobileMenuController from "./mobile_menu_controller"
+application.register("mobile-menu", MobileMenuController)
 
-    return if session.nil?
+import NotificationController from "./notification_controller"
+application.register("notification", NotificationController)
 
-    # statusがactiveの時だけ通知
-    return unless session&.active?
-
-    user = session.user
-    return if user.endpoint.blank?
-
-    begin
-      WebPush.payload_send(
-        message: JSON.generate({
-          title: "休憩の時間です！",
-          body: "身体を動かしましょう！",
-          url: "/?session_id=#{sitting_session_id}"  # タブを閉じてもsession_idを探してmodalを開ける
-      }),
-        endpoint: user.endpoint,
-        p256dh: user.p256dh,
-        auth: user.auth,
-        vapid: {
-          public_key: Rails.application.credentials.dig(:webpush, :public_key),
-          private_key: Rails.application.credentials.dig(:webpush, :private_key),
-          subject: "mailto:okw.kzk@gmail.com"
-        }
-      )
-      session.update!(notified: true)
-    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
-
-      user.update(endpoint: nil, p256dh: nil, auth: nil)
-
-    rescue => e
-      Rails.logger.error "通信エラー: #{e.message}"
-
-    end
-  end
-end
+import TimerController from "./timer_controller"
+application.register("timer", TimerController)
 </file>
 
 <file path="app/policies/exercise_policy.rb">
@@ -5666,16 +6233,6 @@ end
 </div>
 </file>
 
-<file path="app/views/sitting_sessions/finish_current.turbo_stream.erb">
-<%= turbo_stream.update "modal_container" do %>
-  <%= render partial: "shared/modal", locals: { exercises: @exercises, sitting_session_id: @sitting_session.id } %>
-<% end %>
-
-<%= turbo_stream.update "hp_card" do%>
-  <%= render partial: "shared/hp_card"%>
-<% end %>
-</file>
-
 <file path="config/environments/development.rb">
 require "active_support/core_ext/integer/time"
 
@@ -5762,6 +6319,114 @@ Rails.application.configure do
   config.hosts << "nontolerably-unequiangular-bernardine.ngrok-free.dev"
 
   routes.default_url_options = { host: "nontolerably-unequiangular-bernardine.ngrok-free.dev", protocol: "https" }
+end
+</file>
+
+<file path="config/environments/production.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
+
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
+
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
+  config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :cloudinary
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # config.assume_ssl = true
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "warn")
+
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+
+  config.cache_store = :solid_cache_store
+
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Ignore bad email addresses and do not raise email delivery errors.
+  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  # config.action_mailer.raise_delivery_errors = false
+
+  # resendでパスワードリセットを送る
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.default_url_options = { host: "istanding.jp", protocol: "https" }
+
+  config.action_mailer.smtp_settings = {
+    address:              "smtp.resend.com",
+    port:                 465,
+    user_name:            "resend",
+    password:             ENV["RESEND_API_KEY"],
+    authentication:       "plain",
+    tls:                  true,
+    enable_starttls_auto: false
+  }
+
+  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # config.action_mailer.smtp_settings = {
+  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
+  #   password: Rails.application.credentials.dig(:smtp, :password),
+  #   address: "smtp.example.com",
+  #   port: 587,
+  #   authentication: :plain
+  # }
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  config.active_record.attributes_for_inspect = [ :id ]
+
+  config.hosts << "istanding.jp"      # 独自ドメイン
+  config.hosts << "www.istanding.jp"  # サブドメイン
+
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  # config.hosts = [
+  #   "example.com",     # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
+  #
+  # Skip DNS rebinding protection for the default health check endpoint.
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end
 </file>
 
@@ -6089,18 +6754,6 @@ Devise.setup do |config|
 end
 </file>
 
-<file path="config/initializers/memory_logger.rb">
-if Rails.env.production?
-  Thread.new do
-    loop do
-      memory_mb = `cat /proc/self/status | grep VmRSS`.match(/(\d+)/)[1].to_i / 1024
-      Rails.logger.info "[MemoryMonitor] RSS: #{memory_mb} MB"
-      sleep 60 # 1分ごとに出力
-    end
-  end
-end
-</file>
-
 <file path="db/migrate/20260312032432_add_omniauth_to_users.rb">
 class AddOmniauthToUsers < ActiveRecord::Migration[8.1]
   def change
@@ -6129,6 +6782,24 @@ class RestoreUniqueIndexOnProviderUid < ActiveRecord::Migration[8.1]
 end
 </file>
 
+<file path="db/migrate/20260401025018_add_active_to_exercises.rb">
+class AddActiveToExercises < ActiveRecord::Migration[8.1]
+  def change
+    # カラムがまだ存在しない時だけ追加する
+    unless column_exists?(:exercises, :active)
+      add_column :exercises, :active, :boolean, default: true, null: false
+    end
+  end
+end
+</file>
+
+<file path="spec/factories/activity_reports.rb">
+FactoryBot.define do
+  factory :activity_report do
+  end
+end
+</file>
+
 <file path="spec/helpers/admin/exercises_helper_spec.rb">
 require 'rails_helper'
 
@@ -6145,6 +6816,61 @@ require 'rails_helper'
 # RSpec.describe Admin::ExercisesHelper, type: :helper do
 #   pending "add some examples to (or delete) #{__FILE__}"
 # end
+</file>
+
+<file path="spec/models/activity_report_spec.rb">
+require 'rails_helper'
+
+RSpec.describe ActivityReport, type: :model do
+  let(:user) { create(:user) }
+  let(:period) { Time.zone.now.all_day } # 今日一日
+
+  before do
+    # 30分(1800秒)のセッションを2つ
+    create(:sitting_session, user: user, duration: 1800, created_at: Time.zone.now)
+    create(:sitting_session, user: user, duration: 1800, created_at: Time.zone.now)
+  end
+
+  it "指定された期間の合計座位時間を時間単位で正しく表示すること" do
+    # ログを期間で絞り込んで準備
+    logs = user.sitting_sessions.where(created_at: period)
+
+    # ActivityReportを作成
+    report = ActivityReport.new(period, logs)
+
+    # 合計が1.0時間(3600秒)になっているか
+    expect(report.total_duration_hours).to eq 1.0
+  end
+
+  it "期間内のユニークな活動日数をカウントすること" do
+    # 同日に2つのセッション
+    create(:sitting_session, user: user, created_at: Time.zone.now)
+    create(:sitting_session, user: user, created_at: Time.zone.now)
+
+    sessions = user.sitting_sessions.where(created_at: period)
+    report = ActivityReport.new(period, sessions)
+
+    expect(report.active_days_count).to eq 1
+  end
+
+  it "ログが0の時、平均座位時間に0.0を返すこと" do
+    empty_logs = user.sitting_sessions.none
+    report = ActivityReport.new(period, empty_logs)
+
+    expect(report.average_duration_hours).to eq 0.0
+  end
+
+  it "期間内の運動回数を返すこと" do
+    # テストデータを2つ作成
+    create(:activity_log, user: user, created_at: period.begin)
+    create(:activity_log, user: user, created_at: period.end)
+
+    logs = user.activity_logs.where(created_at: period)
+    report = ActivityReport.new(period, SittingSession.none, logs)
+
+    expect(report.exercise_count).to eq 2
+  end
+end
 </file>
 
 <file path="spec/policies/exercise_policy_spec.rb">
@@ -6177,352 +6903,128 @@ require 'rails_helper'
 # end
 </file>
 
-<file path="spec/system/sitting_sessions_spec.rb">
-require 'rails_helper'
+<file path="app/controllers/application_controller.rb">
+class ApplicationController < ActionController::Base
+  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
+  allow_browser versions: :modern
 
-RSpec.describe "SittingSessions", type: :system do
-  let!(:user) { create(:user) }
-  let!(:exercise) { create(:exercise, name: "肩甲骨ストレッチ") }
+  before_action :set_default_meta_tags
 
-  before do
-     driven_by(:rack_test) # JSなしで動かす
+  include Pundit::Authorization
 
-    # ログイン済みの状態にする（共通化している場合はそのメソッドを呼ぶ）
-    visit new_user_session_path
-    fill_in "メールアドレス", with: user.email
-    fill_in "パスワード", with: user.password
-    click_button "ログイン"
+  def set_default_meta_tags
+    set_meta_tags(
+      og: {
+        title: "iStanding - 座りすぎを防ぐタイマーアプリ",
+        description: "座りすぎは喫煙と同等のリスク。定期的な休憩習慣をサポートします。",
+        image: "https://istanding.jp/ogp.png"
+      },
+      twitter: {
+        card: "summary_large_image",
+        image: "https://istanding.jp/ogp.png"
+      }
+    )
+  end
+
+  protected
+  # ログイン後のタイマー画面への遷移を共通化
+  def after_sign_in_path_for(resource)
+    root_path
+  end
+
+  def require_login
+    unless user_signed_in?
+      redirect_to root_path
+    end
   end
 end
 </file>
 
-<file path="app/assets/stylesheets/application.tailwind.css">
-@import "tailwindcss";
+<file path="app/controllers/top_controller.rb">
+class TopController < ApplicationController
+  before_action :authenticate_user!
 
-@theme {
-  /* フォント */
-  --font-sans: 'M PLUS Rounded 1c', sans-serif;
-
-  /* メイン（ペールグリーン） */
-  --color-primary: #6A9B76;
-  --color-primary-hover: #5A8A66;
-
-  /* 背景 */
-  --color-background-light: #F6F3EE;
-  --color-background-dark: #E3ECE6;
-
-  /* テキスト */
-  --color-text-main: #1E2D26;
-  --color-text-secondary: #4A5C52;
-
-  /* UI補助 */
-  --color-border-light: #B8C8BC;
-  --color-input-bg-light: #FFFFFF;
-
-  /*導入ページの動き用*/
-  @keyframes bounce-slow {
-  0%, 100% { transform: translateY(-15%); }
-  50% { transform: translateY(0); }
-  }
-}
-
-  @utility animate-bounce-slow {
-    animation: bounce-slow 2s ease-in-out infinite;
-  }
-
-  @keyframes critical-pulse {
-  0%, 100% {
-    color: #ef4444; /* red-500 */
-    text-shadow: 0 0 0px rgba(239, 68, 68, 0);
-    transform: scale(1);
-  }
-  50% {
-    color: #b91c1c; /* red-700 (濃い赤) */
-    text-shadow: 0 0 15px rgba(239, 68, 68, 0.8); /* 強く光る */
-    transform: scale(1.05); /* わずかに大きく */
-  }
-}
-
-  @utility animate-critical {
-  animation: critical-pulse 1.2s ease-in-out infinite;
-  }
-</file>
-
-<file path="app/controllers/exercises_controller.rb">
-class ExercisesController < ApplicationController
   def index
-  end
+    # 1日の座位時間合計
+    @total_seconds = current_user.sitting_sessions.today.sum(:duration)
+    # 1日の運動回数
+    @exercise_count = current_user.activity_logs.today.count
+    # タイマーにnotify_atを渡すための変数
+    @active_session = current_user.sitting_sessions.active.last
+    # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
+    @other_exercise = Exercise.find_by(category: :other)
 
-  def show
-    @exercise = Exercise.find(params[:id])
-    @tips_index, @health_tip = HealthTip.random_tips
-
-    @ogp_url = ogp_image_url(index: @tips_index)
-
-    set_meta_tags og: {
-      title: "iStanding - 座りすぎを防ぐタイマーアプリ",
-      image: @ogp_url,
-      type: "article"
-    },
-    twitter: {
-      card: "summary_large_image",
-      image: @ogp_url
-    }
-  end
-
-  def random
-    @exercise = Exercise.order("RANDOM()").first
-    redirect_to exercise_path(@exercise)
+    if params[:reopen_modal] == "true"
+      @exercises = Exercise.order("RANDOM()").limit(3)
+    end
   end
 end
 </file>
 
-<file path="app/models/activity_log.rb">
-class ActivityLog < ApplicationRecord
-  belongs_to :user
-  belongs_to :exercise
-  belongs_to :sitting_session, optional: true
+<file path="app/models/activity_report.rb">
+class ActivityReport
+  include ActiveModel::Model
+  include ActiveModel::Serialization
+  attr_reader :period, :sitting_sessions, :activity_logs
 
-  # 自由運動の場合のバリデーション(categoryがother）
-  with_options if: :free_exercise_log? do
-    validates :note, presence:  true, length: { maximum: 50 }
-    validates :duration_minutes, presence: true, numericality: { only_integer: true, greater_than: 0 }
+  def initialize(period, sitting_sessions = SittingSession.none, activity_logs = ActivityLog.none)
+    @period = period
+    @sitting_sessions = sitting_sessions
+    @activity_logs = activity_logs
   end
 
-  scope :today, -> { where(created_at: Time.zone.now.all_day) }
-
-  # 運動記録を作成時にHP回復を実行
-  before_create :apply_hp_recovery
-
-  private
-
-  # userの回復ロジックを使う
-  def apply_hp_recovery
-    user.recover(calculate_recovery_amount)
+  def total_duration_hours
+    # 秒を時間に変換して小数点第一位まで表示
+    (sitting_sessions.sum(:duration) / 3600.0).round(1)
   end
 
-  def calculate_recovery_amount
-    # 自由運動の際の回復量を設定（コンセプト上まとめて行っても回復量は増えない）
-    if free_exercise_log?
-      if duration_minutes <= 20
-        duration_minutes
-      else
-        # 20分以上まとめて運動しても回復量は比例しない
-        (20 + (duration_minutes - 20) * 0.2).round
-      end
+  # 運動回数をカウント
+  def exercise_count
+    activity_logs.count
+  end
+
+  # 活動日数をカウント
+  def active_days_count
+    session_dates = sitting_sessions.pluck(:created_at).map(&:to_date)
+    log_dates = activity_logs.pluck(:created_at).map(&:to_date)
+    (session_dates + log_dates).uniq.count
+  end
+
+  # 平均座位時間を計算
+  def average_duration_hours
+    return 0.0 if active_days_count.zero?
+
+    (total_duration_hours / active_days_count).round(1)
+  end
+
+  
+
+  # 日別レポートをまとめて生成するクラスメソッド
+  def self.generate_daily_reports(user, date_range)
+    # N+1クエリを避けるために期間ないのデータを一気に取得
+    all_sessions = user.sitting_sessions.where(created_at: date_range).group_by { |s| s.created_at.to_date }
+    all_logs = user.activity_logs.where(created_at: date_range).group_by { |l| l.created_at.to_date }
+
+    date_range.map do |date|
+      new(
+        date.all_day,
+        all_sessions[date] || SittingSession.none,
+        all_logs[date] || ActivityLog.none
+      )
     end
   end
 
-  def free_exercise_log?
-    exercise&.category == "other"
+  # 週別や月別のレポートを作成するクラスメソッド
+  def self.generate_by_period(user, periods)
+    periods.map do |range|
+      new(
+        range,
+        user.sitting_sessions.where(created_at: range),
+        user.activity_logs.where(created_at: range)
+      )
+    end
   end
 end
-</file>
-
-<file path="app/models/sitting_session.rb">
-class SittingSession < ApplicationRecord
-  # タイマーの時間選択肢
-  SETTING_DURATIONS = [ 30, 45, 60, 90, 120 ].freeze
-  # 一日の座位時間上限(11時間を秒に換算)
-  SITTING_TIME_LIMIT = 11 * 60 * 60
-
-  belongs_to :user
-
-  has_many :activity_logs, dependent: :nullify
-
-  enum :status, { active: 0, completed: 1, cancelled: 2 }
-
-  before_create :cancel_active_sessions
-  before_validation :set_notification_time, if: :duration_changed?
-
-  # 座位時間の終了予定時刻を計算して保存
-  def set_notification_time
-    return if duration.blank?
-
-    self.start_at ||= Time.current
-
-    self.notify_at = self.start_at + duration.seconds
-    self.notified = false
-  end
-
-  scope :today, -> { where(created_at: Time.zone.now.all_day) }
-
-
-  def end_time
-    created_at + duration.minutes
-  end
-
-  private
-
-  def cancel_active_sessions
-    user.sitting_sessions.active.where.not(id: id).update_all(status: :cancelled)
-  end
-
-  validates :start_at, presence: true
-end
-</file>
-
-<file path="app/views/activity_logs/index.html.erb">
-<%# 背景 %>
-<div class="fixed inset-0 -z-10 overflow-hidden bg-background-dark">
-  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
-</div>
-
-<main class="min-h-screen w-full max-w-5xl mx-auto px-6 py-10">
-
-  <%# ページタイトル %>
-  <div class="mb-10">
-    <div class="inline-flex items-center gap-2 text-primary mb-3">
-      <span class="material-symbols-outlined text-xl">insights</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-sm">Your Activity</span>
-    </div>
-    <h1 class="text-4xl font-black text-text-main tracking-tight">履歴・グラフ</h1>
-    <p class="text-text-secondary mt-2 text-base">直近7日間のあなたの活動記録</p>
-  </div>
-
-  <%# グラフエリア %>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-
-    <%# 座位時間グラフ %>
-    <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
-          <span class="material-symbols-outlined">chair</span>
-        </div>
-        <div>
-          <h2 class="text-base font-black text-text-main">日別座位時間</h2>
-          <p class="text-xs text-text-secondary">上限 11時間</p>
-        </div>
-      </div>
-      <%= column_chart @daily_sitting,
-          max: 11,
-          colors: ["#6A9B76"],
-          suffix: "h",
-          thousands: ",",
-          round: 1,
-          height: "200px",
-          library: {
-            scales: {
-              y: { grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } },
-              x: { grid: { display: false }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } }
-            },
-            plugins: { legend: { display: false } }
-          } %>
-    </div>
-
-    <%# 運動回数グラフ %>
-    <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
-          <span class="material-symbols-outlined">fitness_center</span>
-        </div>
-        <div>
-          <h2 class="text-base font-black text-text-main">日別運動回数</h2>
-          <p class="text-xs text-text-secondary">1日の運動セット数</p>
-        </div>
-      </div>
-      <%= area_chart @daily_exercises,
-          colors: ["#6A9B76"],
-          suffix: "回",
-          height: "200px",
-          library: {
-            scales: {
-              y: { grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: "#4A5C52", stepSize: 1, font: { family: "'M PLUS Rounded 1c'" } } },
-              x: { grid: { display: false }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } }
-            },
-            plugins: { legend: { display: false } }
-          } %>
-    </div>
-  </div>
-
- <%# サマリーカード %>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">今週の運動</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap"><%= @activity_logs.size %><span class="text-sm md:text-base font-bold text-text-secondary ml-1">回</span></p>
-  </div>
-
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">平均座位時間</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
-      <%= @daily_sitting.values.sum.then { |t| t.zero? ? 0 : (t / [@daily_sitting.values.count { |v| v > 0 }, 1].max).round(1) } %>
-      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">h</span>
-    </p>
-  </div>
-
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">運動した日数</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
-      <%= @daily_exercises.values.count { |v| v > 0 } %>
-      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">/ 7日</span>
-    </p>
-  </div>
-
-  <div class="bg-primary/20 backdrop-blur-xl border-2 border-primary/30 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-primary uppercase tracking-widest mb-2">今日の運動</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
-      <%= current_user.today_exercise_count %>
-      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">回</span>
-    </p>
-  </div>
-
-</div>
-  <%# 運動履歴リスト %>
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-    <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
-        <span class="material-symbols-outlined">history</span>
-      </div>
-      <h2 class="text-base font-black text-text-main">運動履歴</h2>
-    </div>
-
-    <% if @activity_logs.empty? %>
-      <div class="text-center py-16 text-text-secondary">
-        <span class="material-symbols-outlined text-5xl mb-4 block text-primary/40">fitness_center</span>
-        <p class="font-bold text-lg">まだ記録がありません</p>
-        <p class="text-sm mt-1">運動を完了すると履歴が表示されます</p>
-      </div>
-    <% else %>
-      <div class="space-y-3">
-        <% @activity_logs.each do |log| %>
-  <div class="flex items-center gap-4 p-5 bg-white/50 border border-white/60 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:bg-white/70 transition-all">
-    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shrink-0">
-      <span class="material-symbols-outlined text-xl">
-        <% if log.note.present? %>
-          <%# 自由運動（入力あり）の場合はノートアイコン %>
-          edit_note
-        <% else %>
-          <%# それ以外はカテゴリー別に分岐 %>
-          <%= log.exercise.category == "stretch" ? "self_improvement" : "fitness_center" %>
-        <% end %>
-      </span>
-    </div>
-    <div>
-      <p class="font-bold text-text-main text-base">
-        <% if log.exercise.category == "other" %>
-          <%= log.note.presence || "自由運動" %>
-        <% else %>
-          <%= log.exercise.name %>
-        <% end %>
-      </p>
-      <p class="text-xs text-text-secondary font-medium mt-0.5">
-        <%= log.created_at.in_time_zone("Tokyo").strftime("%m/%d %H:%M") %>
-      </p>
-      <p class="text-xs text-text-secondary mt-0.5">
-        <span class="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold border border-primary/20">
-          <%= { "stretch" => "ストレッチ", "training" => "トレーニング", "other" => "その他" }[log.exercise.category] %>
-        </span>
-      </p>
-    </div>
-  </div>
-<% end %>
-      </div>
-    <% end %>
-  </div>
-
-</main>
 </file>
 
 <file path="app/views/admin/exercises/index.html.erb">
@@ -6574,6 +7076,17 @@ end
 </div>
 </file>
 
+<file path="db/migrate/20260401024910_remove_active_from_exercises.rb">
+class RemoveActiveFromExercises < ActiveRecord::Migration[8.1]
+  def change
+    # column_exists? を使って、カラムがある時だけ削除するようにガードを入れる
+    if column_exists?(:exercises, :active)
+      remove_column :exercises, :active, :boolean
+    end
+  end
+end
+</file>
+
 <file path="spec/requests/admin/exercises_spec.rb">
 # require 'rails_helper'
 
@@ -6620,226 +7133,6 @@ end
 #     end
 #   end
 # end
-</file>
-
-<file path="README.md">
-# 卒業制作
-
-「iStanding」
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/81be41f9-31b3-46e7-8f55-32b0193c19cd" alt="iStanding OGP" width="600">
-</p>
-
-## サービス概要
-
-デスクワーカーの「座りすぎ」を防ぐタイマーアプリ。
-
-医学的根拠に基づいた通知タイミングと効果的な行動提案で健康習慣をサポート。
-
-通知機能や座位時間の可視化により、健康的な習慣を無理なく継続できます。
-
-サービスURL: https://istanding.jp
-
-## このサービスへの思い・作りたい理由
-
-理学療法士として整形外科で働く中で、腰痛や首の痛みを訴える患者様から「デスクワークで一日中座っています」という言葉を何度も耳にしてきました。日本は座位時間が世界トップレベルで、WHO や厚生労働省も座りすぎによる肥満、心筋梗塞、脳梗塞、ヘルニア、高血圧、糖尿病などのリスクを警告しています。
-
-0 次医療(予防医療)の推進が叫ばれる今、最も必要なのは「わかっているけどできない」を「自然とできる」に変えることです。多くの方が座りすぎの害を知りながらも、「めんどくさい」「まだ大丈夫」「忘れてしまう」「何をしたらいいかわからない」という理由で行動に移せていません。
-
-このアプリは、理学療法士としての専門知識を活かし、デスクワーカーが無理なく座りすぎを防ぎ、健康的な習慣を継続できるようサポートします。
-
-**参考文献**：
-
-- [Sitting Time and All-Cause Mortality Risk in 222,497 Australian Adults](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810)
-- [Sedentary time and its association with risk for disease incidence, mortality, and hospitalization in adults](https://pubmed.ncbi.nlm.nih.gov/21767731/)
-
-## ユーザー層について
-
-**メインターゲット**：デスクワークが多い 20〜40 代の会社員・フリーランス
-
-この層を対象にした理由：
-
-1 日 8 時間以上座って仕事をする人が多く、座りすぎによる健康リスクが高い
-仕事に集中すると立ち上がることを忘れがちで、客観的なアラートが必要
-SNS を日常的に使用しており、達成実績のシェアによるモチベーション維持が期待できる
-スマートフォンや PC を常時使用しているため、アプリの導入・利用ハードルが低い
-健康意識が高まる年代で、予防的な健康管理に関心がある
-
-## サービスの利用イメージ
-
-1. **作業中のサポート**：設定した間隔（例：60 分）で座りすぎアラートが通知される
-2. **休憩時間の内容提案**：休憩アクションを提案（ストレッチ、歩く、立ち作業など）
-3. **1 日の振り返り**：座位時間の推移や休憩回数をグラフで確認
-4. **リマインドによる継続性**：自発的でなく受動的にアプリの利用を促す
-5. **健康コラムによる啓発**：医学的な情報をエビデンスに基づき掲載
-
-**得られる価値**：
-
-- 座りすぎによる健康リスクの軽減（肩こり、腰痛、生活習慣病予防）
-- データの可視化による行動変容の実感、健康意識の向上
-
-## ユーザーの獲得について
-
-- **SNS 拡散**
-
-X(旧 Twitter)での達成実績シェア機能を実装
-「#座りすぎ防止」「#デスクワーク改善」などのハッシュタグで拡散
-シェアされた投稿から新規ユーザーが流入する仕組み
-
-- **健康系コミュニティへのアプローチ**
-
-産業医、産業理学療法など、企業の健康増進に携わるコミュニティへのアプローチ
-
-その後、企業内の社員への普及というレバレッジが期待できる可能性
-
-- **エンジニアコミュニティ（Qiita、Zenn など）での紹介**
-
-デスクワーカーのコミュニティでの展開
-
-- **コンテンツマーケティング**
-
-座りすぎのリスクや改善方法に関する記事を SEO 対策を用いて Web サイトで発信
-
-YMYL, E-E-A-T への留意が必要になる
-実際の利用者の事例なども紹介
-
-## サービスの差別化ポイント・推しポイント
-
-### **類似サービスとの差別化**
-
-**既存のストレッチアプリとの違い**：
-
-- 「ストレッチの継続」ではなく「座位時間の削減」にフォーカス
-- 休憩の種類を強制せず、歩く・立ち作業など柔軟な休憩方法を記録可能
-- 座位時間の可視化により、行動変容を客観的に確認できる
-
-**ポモドーロアプリとの違い**：
-
-- 単なるポモドーロではなく、休憩時間にすべきことを提案、誘導
-- デイリーチャレンジ、ダメージ可視化によるゲーミフィケーション要素
-- SNS シェア機能による社会的なモチベーション維持
-
-### **推しポイント**
-
-1. **行動変容の可視化**：座位時間の推移グラフで改善を実感できる
-2. **柔軟な休憩スタイル**：ストレッチに限定せず、自分に合った休憩方法を選択可能
-3. **小さな成功体験の積み重ね**：毎日のチャレンジ達成で継続しやすい設計
-
-## 機能一覧
-
-### 実装済み
-
-1. ユーザー登録・ログイン機能（Devise、ゲストログイン対応）
-2. 座位時間アラート機能（Solid Queue + Web Push）
-
-- 1分・60分・90分からタイマー時間を選択
-- ブラウザを閉じていてもプッシュ通知が届く
-- 通知クリックで運動提案モーダルが自動表示
-
-3. 運動提案モーダル
-
-- 理学療法士監修の運動を3つランダム提案
-- ストレッチ・筋トレ・ウォーキングのカテゴリ別表示
-
-4. ダッシュボード
-
-- 今日の総座位時間・運動回数・進捗率を表示
-- 週次の座位時間グラフ・運動回数グラフ（Chartkick + Chart.js）
-
-5. 運動記録・履歴（運動完了を記録、履歴一覧で確認可能）
-
-### 実装予定
-
-1. SNSログイン（Google・GitHub認証）
-2. PWA 化（ホーム画面への追加、オフライン対応）
-3. ゲーミフィケーション（座位時間でキャラクターがダメージを受ける表現）
-4. 連続記録ストリーク表示
-5. タイマー時間のスライダー選択
-6. 健康TIPS のランダム表示
-7. admin 用 CRUD（運動メニューの追加・編集）
-8. 動的 OGP
-
-## 使用する技術スタック
-
-| カテゴリ       | 技術                         | 採用理由                                                                         |
-| -------------- | ---------------------------- | -------------------------------------------------------------------------------- |
-| バックエンド   | Ruby on Rails 8.1 / Ruby 4.0 | Solid Queue等Rails 8新機能を活用しインフラをシンプルに保つ                       |
-| フロントエンド | Hotwire（Turbo + Stimulus）  | タイマーのリアルタイム更新・モーダル表示をSPA的なUXでシンプルに実装              |
-| フロントエンド | Tailwind CSS v4              | 高速な開発とモダンなUIの実現                                                     |
-| データベース   | Neon（PostgreSQL）           | サーバーレスPostgreSQL。Render DBは90日で期限切れになるため採用                  |
-| 認証           | Devise                       | メール認証・ゲストログイン対応。ドキュメントが豊富                               |
-| インフラ       | Render                       | 無料枠でのデプロイが可能、設定がシンプル                                         |
-| 画像管理       | Cloudinary                   | 運動メニューの説明画像をアップロード・管理                                       |
-| 通知           | Web Push API + web-push gem  | ブラウザプッシュ通知の実装                                                       |
-| ジョブ管理     | Solid Queue                  | Redis + Sidekiqの代わりにRails 8デフォルト機能を採用。任意の時刻に通知を予約送信 |
-| グラフ         | Chartkick + Chart.js         | 週次の座位時間・運動回数グラフを表示                                             |
-| テスト         | RSpec                        | 単体テスト・統合テスト                                                           |
-
-## **画面遷移図**
-
-画面遷移図[Figma](https://www.figma.com/design/JKk9gF7VlIXwZ6NmctJhtm/iStandiing?node-id=3-9&t=kKzcKVxdmVC17r2o-1)
-
-## **ER 図**
-
-```mermaid
-erDiagram
-    users {
-        bigint id PK
-        string username
-        string email
-        string encrypted_password
-        string endpoint
-        string p256dh
-        string auth
-        string reset_password_token
-        string provider
-        string uid
-        boolean admin
-        integer hp
-        datetime reset_password_sent_at
-        datetime remember_created_at
-        datetime created_at
-        datetime updated_at
-    }
-
-    sitting_sessions {
-        bigint id PK
-        bigint user_id FK
-        integer duration
-        integer status
-        datetime start_at
-        datetime notify_at
-        boolean notified
-        datetime created_at
-        datetime updated_at
-    }
-
-    exercises {
-        bigint id PK
-        string name
-        text benefits
-        text instructions
-        integer category
-        string cloudinary_public_id
-        datetime created_at
-        datetime updated_at
-    }
-
-    activity_logs {
-        bigint id PK
-        bigint user_id FK
-        bigint exercise_id FK
-        bigint sitting_session_id FK
-        datetime created_at
-        datetime updated_at
-    }
-
-    users ||--o{ sitting_sessions : "has many"
-    users ||--o{ activity_logs : "has many"
-    sitting_sessions ||--o{ activity_logs : "has many"
-    exercises ||--o{ activity_logs : "has many"
-```
 </file>
 
 <file path="app/controllers/admin/exercises_controller.rb">
@@ -6984,730 +7277,78 @@ class Users::RegistrationsController < Devise::RegistrationsController
 end
 </file>
 
-<file path="app/controllers/activity_logs_controller.rb">
-class ActivityLogsController < ApplicationController
-  def new
-    @exercise = Exercise.find(params[:exercise_id])
-    @activity_log = current_user.activity_logs.build(exercise: @exercise)
+<file path="app/controllers/exercises_controller.rb">
+class ExercisesController < ApplicationController
+  def index
   end
 
-  def create
-    @activity_log = current_user.activity_logs.build(activity_log_params)
+  def show
+    @exercise = Exercise.find(params[:id])
+    @tips_index, @health_tip = HealthTip.random_tips
 
-    # 自由運動を選択したが時間が殻の場合は新規作成にリダイレクト
-    if @activity_log.exercise.category == "other" && @activity_log.duration_minutes.nil?
-      redirect_to new_activity_log_path(exercise_id: @activity_log.exercise_id)
-      return
-    end
+    @ogp_url = ogp_image_url(index: @tips_index)
 
-    if @activity_log.save
-      # modelのコールバック（before_create）でHP回復している
-      @activity_log.sitting_session&.completed!
-      redirect_to root_path, notice: "運動を記録しました！", status: :see_other
-    else
-      # 　自由運動のバリデーション落ちは内容を保持
-      if @activity_log.exercise.category == "other"
-        @exercise = @activity_log.exercise
-        render :new, status: :unprocessable_entity
+    set_meta_tags og: {
+      title: "iStanding - 座りすぎを防ぐタイマーアプリ",
+      image: @ogp_url,
+      type: "article"
+    },
+    twitter: {
+      card: "summary_large_image",
+      image: @ogp_url
+    }
+  end
+
+  def random
+    @exercise = Exercise.active.order("RANDOM()").first
+    redirect_to exercise_path(@exercise)
+  end
+end
+</file>
+
+<file path="app/models/activity_log.rb">
+class ActivityLog < ApplicationRecord
+  belongs_to :user
+  belongs_to :exercise
+  belongs_to :sitting_session, optional: true
+
+  # 自由運動の場合のバリデーション(categoryがother）
+  with_options if: :free_exercise_log? do
+    validates :note, presence:  true, length: { maximum: 50 }
+    validates :duration_minutes, presence: true, numericality: { only_integer: true, greater_than: 0 }
+  end
+
+  scope :today, -> { where(created_at: Time.zone.now.all_day) }
+
+  # 運動記録を作成時にHP回復を実行
+  after_create :apply_hp_recovery
+
+  private
+
+  # userの回復ロジックを使う
+  def apply_hp_recovery
+    # 回復が0以下でもnilを返さないガード節
+    amount = calculate_recovery_amount
+    return if amount.nil? || amount <= 0
+
+    user.recover(calculate_recovery_amount)
+  end
+
+  def calculate_recovery_amount
+    # 自由運動の際の回復量を設定（コンセプト上まとめて行っても回復量は増えない）
+    if free_exercise_log?
+      if duration_minutes <= 20
+        duration_minutes
       else
-      # 通常の運動を選択した場合はリダイレクト
-      redirect_back fallback_location: root_path,
-                    alert: "記録に失敗しました: #{@activity_log.errors.full_messages.join(', ')}"
+        # 20分以上まとめて運動しても回復量は比例しない
+        (20 + (duration_minutes - 20) * 0.2).round
       end
     end
   end
 
-  def index
-    @daily_sitting = current_user.daily_sitting_hours(days: 7)
-    @daily_exercises = current_user.daily_exercise_counts(days: 7)
-    @activity_logs = current_user.activity_logs
-                                 .includes(:exercise)
-                                 .order(created_at: :desc)
-                                 .limit(5)
+  def free_exercise_log?
+    exercise&.category == "other"
   end
-
-  private
-
-  def activity_log_params
-    params.require(:activity_log).permit(:exercise_id, :sitting_session_id, :note, :duration_minutes)
-  end
-end
-</file>
-
-<file path="config/environments/production.rb">
-require "active_support/core_ext/integer/time"
-
-Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
-  # Code is not reloaded between requests.
-  config.enable_reloading = false
-
-  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
-  config.eager_load = true
-
-  # Full error reports are disabled.
-  config.consider_all_requests_local = false
-
-  # Turn on fragment caching in view templates.
-  config.action_controller.perform_caching = true
-
-  # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
-
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :cloudinary
-
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
-
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-
-  # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
-
-  # Change to "debug" to log everything (including potentially personally-identifiable information!).
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "warn")
-
-  # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
-
-  # Don't log any deprecations.
-  config.active_support.report_deprecations = false
-
-
-  config.cache_store = :solid_cache_store
-
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
-
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
-
-  # resendでパスワードリセットを送る
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.default_url_options = { host: "istanding.jp", protocol: "https" }
-
-  config.action_mailer.smtp_settings = {
-    address:              "smtp.resend.com",
-    port:                 465,
-    user_name:            "resend",
-    password:             ENV["RESEND_API_KEY"],
-    authentication:       "plain",
-    tls:                  true,
-    enable_starttls_auto: false
-  }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
-
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
-  config.i18n.fallbacks = true
-
-  # Do not dump schema after migrations.
-  config.active_record.dump_schema_after_migration = false
-
-  # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
-
-  config.hosts << "istanding.jp"      # 独自ドメイン
-  config.hosts << "www.istanding.jp"  # サブドメイン
-
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-end
-</file>
-
-<file path="app/javascript/controllers/timer_controller.js">
-import { Controller } from "@hotwired/stimulus"
-import { Turbo } from "@hotwired/turbo-rails"
-
-const AUTO_CLOSE_MS = 600000; // 10分
-
-export default class extends Controller {
-    static targets = ["display", "circle", "startButton", "runningButton", "errorMessage"]
-    static values = { notifyAt: String }
-
-    connect() {
-        this.remainingTime = 0
-        this.selectedSeconds = 0
-        this.timer = null
-        this.isModalOpen = false
-        this.autoCloseTimer = null // 自動閉鎖用タイマー
-
-        if (this.hasCircleTarget) {
-            const radius = this.circleTarget.r.baseVal.value
-            this.circumference = 2 * Math.PI * radius
-            this.circleTarget.style.strokeDasharray = `${this.circumference} ${this.circumference}`
-            this.circleTarget.style.strokeDashoffset = 0
-        }
-
-        // リロード時はnotifyAtから残り時間を取得
-        if (this.hasNotifyAtValue && this.notifyAtValue) {
-            const notifyAt = new Date(this.notifyAtValue)
-            this.remainingTime = Math.floor((notifyAt - new Date()) / 1000)
-
-            this.startButtonTarget.classList.add("hidden")
-            this.runningButtonTargets.forEach(button => button.classList.remove("hidden"))
-
-            this.updateCircle()
-            this.updateDisplay()
-            this.runTimer()
-        }
-
-        // パターン1: 新規タブで開いた場合（URLパラメータ）
-        const params = new URLSearchParams(window.location.search)
-        if (params.get('session_id')) {
-            window.history.replaceState({}, document.title, window.location.pathname)
-            this.finish()
-        }
-
-        // パターン2: 既存タブがあった場合（postMessage）
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            if (event.data?.type === 'SHOW_MODAL') {
-                this.finish()
-            }
-        })
-    }
-
-    setTime(event) {
-        const minutes = event.params.minutes
-        this.selectedSeconds = minutes * 60
-        this.remainingTime = this.selectedSeconds
-
-        // 選択状態の切り替え
-        document.querySelectorAll('.duration-button').forEach(btn => {
-            btn.classList.remove('bg-primary', 'text-white', 'shadow-md')
-            btn.classList.add('text-text-secondary')
-        })
-        event.currentTarget.classList.add('bg-primary', 'text-white', 'shadow-md')
-        event.currentTarget.classList.remove('text-text-secondary')
-
-        this.updateDisplay()
-        this.updateCircle()
-    }
-
-    async start() {
-
-        if (this.selectedSeconds === 0) {
-            this.errorMessageTarget.classList.remove("hidden")
-            return
-        }
-
-        const response = await fetch("/sitting_sessions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                sitting_session: { duration: this.selectedSeconds }
-            })
-        })
-
-        const data = await response.json()
-        this.notifyAtValue = data.notify_at
-
-        this.resetState() // 全てをクリアしてから開始
-        this.startTime = new Date()
-        this.updateDisplay()
-        this.updateCircle()
-        this.runTimer()
-
-        //スタートボタンを消して休憩ボタンを表示
-        this.startButtonTarget.classList.add("hidden")
-
-        this.runningButtonTargets.forEach(button => {
-            button.classList.remove("hidden")
-        })
-
-        this.errorMessageTarget.classList.add("hidden")
-    }
-
-    runTimer() {
-        this.timer = setInterval(() => {
-            if (!this.timer) return
-
-            const notifyAt = new Date(this.notifyAtValue)
-            this.remainingTime = Math.floor((notifyAt - new Date()) / 1000)
-
-            this.updateDisplay()
-            this.updateCircle()
-
-            if (this.remainingTime <= 0) {
-                this.stop()
-                this.finish()
-            }
-        }, 1000)
-    }
-
-    updateCircle() {
-        if (!this.hasCircleTarget) return
-
-        // 1分間(60秒)で1週する
-        const currentSecondInMinutes = this.remainingTime % 60
-        const displaySeconds = (currentSecondInMinutes === 0 && this.remainingTime > 0) ? 60 : currentSecondInMinutes
-
-        const offset = this.circumference * (1 - displaySeconds / 60)
-
-        this.circleTarget.style.strokeDashoffset = offset
-    }
-
-    stop() {
-        if (this.timer) {
-            clearInterval(this.timer)
-            this.timer = null
-        }
-    }
-
-    async reset() {
-        this.stop()
-        this.clearAutoCloseTimer()
-        this.remainingTime = 0
-        this.isModalOpen = false
-        this.updateDisplay()
-        this.clearModalUI()
-        this.updateCircle()
-
-        await fetch("/sitting_sessions/reset_current", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            }
-        })
-
-        //休憩ボタンを消してスタートボタンを表示
-        this.runningButtonTargets.forEach(button => {
-            button.classList.add("hidden")
-        })
-        this.startButtonTarget.classList.remove("hidden")
-    }
-
-    resetState() {
-        this.stop()
-        this.clearAutoCloseTimer()
-        this.isModalOpen = false
-        this.clearModalUI()
-    }
-
-    showSessionModal() {
-        if (this.isModalOpen) return
-        this.isModalOpen = true
-
-
-        // 放置対策：一定時間後に自動で閉じる
-        this.autoCloseTimer = setTimeout(() => {
-            if (this.isModalOpen) this.closeModal()
-        }, AUTO_CLOSE_MS)
-    }
-
-    async finish() {
-        this.stop()
-        this.clearAutoCloseTimer()
-        this.remainingTime = 0
-        this.updateDisplay()
-        this.clearModalUI()
-        this.updateCircle()
-
-        //休憩ボタンを消してスタートボタンを表示
-        this.runningButtonTargets.forEach(button => {
-            button.classList.add("hidden")
-        })
-        this.startButtonTarget.classList.remove("hidden")
-
-        const response = await fetch("/sitting_sessions/finish_current", {
-            method: "PATCH",
-            headers: {
-                "Accept": "text/vnd.turbo-stream.html",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            }
-        })
-
-        if (response.ok) {
-            //Railsから返ってきた turbo_stream（モーダル表示）を実行
-            const streamMessage = await response.text()
-            Turbo.renderStreamMessage(streamMessage)
-
-            this.resetState()
-        }
-    }
-
-    closeModal() {
-        this.resetState()
-        this.clearModalUI()
-    }
-
-    clearModalUI() {
-        const container = document.getElementById('modal_container')
-        if (container) container.innerHTML = ''
-    }
-
-    clearAutoCloseTimer() {
-        if (this.autoCloseTimer) {
-            clearTimeout(this.autoCloseTimer)
-            this.autoCloseTimer = null
-        }
-    }
-
-    updateDisplay() {
-        const m = Math.floor(this.remainingTime / 60)
-        const s = this.remainingTime % 60
-        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    }
-}
-</file>
-
-<file path="app/models/health_tip.rb">
-class HealthTip
-  # 健康TIPのデータ。ActiveRecordは継承していないのでテーブルなしのモデル
-  TIPS = [
-    <<~TIP,
-      ドイツでは「ぎっくり腰」のことを
-      その急激な痛みから「魔女の一撃」と呼ぶ
-    TIP
-    <<~TIP,
-      椎間板の水分量が変化するため
-      夜の方が身長が1〜2cm低くなる
-      身長は朝に測ろう
-    TIP
-    <<~TIP,
-      筋肉痛の正確なメカニズムは
-      現代も解明されていない「謎」の現象
-      筋膜が痛い説が出てきている
-    TIP
-    <<~TIP,
-      人間の血管をすべてつなげると約10万km
-      地球2周半もの長さになる計算
-      長過ぎて想像もつかない
-    TIP
-    <<~TIP,
-      「貧乏ゆすり」は医学的にジグリングと呼び
-      足の血流を改善し股関節にも良い影響を与える
-      ただし周囲の目は気になる
-    TIP
-    <<~TIP,
-      握力は全身の筋力のバロメーター
-      握力が強い人ほど長生きする傾向があるらしい
-      さあ今すぐ筋トレだ
-    TIP
-    <<~TIP,
-      骨は体重の刺激を与えないと弱くなる
-      歩くことは骨の強化に不可欠です
-      特に女性は骨が弱くなりやすい
-    TIP
-    <<~TIP,
-      1時間座り続けると寿命が約22分縮む説がある
-      座りすぎは「第2の喫煙」とも呼ばれます
-      長生きするなら「禁煙と禁椅子」
-    TIP
-    <<~TIP,
-      成人の体の約60%は水分
-      柔軟性と代謝のため、こまめな水分摂取が大事
-      あ、お酒は水に入りません
-    TIP
-    <<~TIP,
-      寝る90分前にお風呂に入ると、体温が下がる頃に
-      自然な眠気が訪れ寝つきが良くなります
-      パソコンは閉じて睡眠は計画的に
-    TIP
-    <<~TIP,
-      起きた直後に朝日を浴びることで体内時計がリセット
-      約15時間後の良質な睡眠につながります
-      起きたらまずはカーテンを開けよう
-    TIP
-    <<~TIP,
-      休日も平日と同じ時間に起きることが重要
-      「ソーシャル・ジェットラグ（社会的時差ぼけ）」
-      により不調の原因に
-    TIP
-    <<~TIP,
-      食事の最初にタンパク質（肉や魚）を摂ると、
-      血糖値の急上昇を抑えることができる
-      つまり太りにくい
-    TIP
-    <<~TIP,
-      特別な運動をしない場合、筋肉量は30代以降に
-      年間約1%ずつ減少していくと言われています
-      今すぐ筋トレだ
-    TIP
-    <<~TIP,
-      鼻呼吸をすると一酸化窒素を産生し、
-      殺菌効果や酸素吸収効率を高めます
-      つまり風邪をひきにくい
-    TIP
-    <<~TIP,
-      一定のリズムで歩くことは「脳の掃除」になる
-      セロトニンの分泌を促し、メンタルを整える
-      落ち込んでるなら歩くしかない
-    TIP
-    <<~TIP,
-      ふくらはぎの筋肉は「第2の心臓」と呼ばれる
-      下半身の血液を心臓へ押し戻すポンプの役割をする
-      今、座ってたら「ふくらはぎ」動いてますか？
-    TIP
-    <<~TIP,
-      猫背になると肺が圧迫され、酸素効率が低下
-      姿勢を正すだけで呼吸は深くなる
-      深呼吸するならまずは胸を張ろう
-    TIP
-    <<~TIP,
-      頭を30度前に傾けるだけで、
-      首には通常の約6倍の負荷がかかる
-      いわゆるストレートネックは常に筋トレ中
-    TIP
-    <<~TIP
-      笑うことで表情筋が動き、幸せホルモンを放出
-      ストレスを軽減させる効果がある
-      笑いながら仕事すれば楽しくなるかも
-    TIP
-  ].freeze
-
-  def self.random_tips
-    index = rand(TIPS.length)
-    text = TIPS[index]
-    [ index, text ]
-  end
-end
-</file>
-
-<file path="app/models/user.rb">
-class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [ :google_oauth2 ]
-
-  has_many :sitting_sessions, dependent: :destroy
-  has_many :activity_logs, dependent: :destroy
-  has_many :exercises, through: :activity_logs
-
-  # 　一日の座位時間合計
-  def today_total_sitting_seconds
-    sitting_sessions.today.sum(:duration)
-  end
-
-  # 今日の運動回数
-  def today_exercise_count
-    activity_logs.today.count
-  end
-
-  # 座位時間の集計
-  def daily_sitting_hours(days: 7)
-    sitting_sessions
-    .where(start_at: days.days.ago.beginning_of_day..)
-    .where(status: :completed)
-    .group_by_day(:created_at, last: days, time_zone: "Tokyo")
-    .sum(:duration)
-    .transform_keys { |date| date.strftime("%-m/%-d") }  # キーを月/日に変換
-    .transform_values { |seconds| [ (seconds / 3600.0).round(1), SittingSession::SITTING_TIME_LIMIT / 3600.0 ].min }
-  end
-
-  # 運動回数の集計
-  def daily_exercise_counts(days: 7)
-    activity_logs
-    .where(created_at: days.days.ago.beginning_of_day..)
-    .group_by_day(:created_at, last: days, time_zone: "Tokyo")
-    .count
-  end
-
-  # ダメージゲージの計算
-  def take_damage(duration)
-    damage = (duration / 3600.0 * 10).round # 1時間で10ダメージ
-    update(hp: [ hp - damage, 0 ].max)  # 0未満にならないように
-  end
-
-  def recover(amount = 10)
-    update(hp: [ hp + amount, 100 ].min) # 101以上にならないように
-  end
-
-
-  # ゲストログインの実装
-  def self.guest
-    find_or_create_by!(email: "guest@example.com") do |user|
-      user.password = SecureRandom.urlsafe_base64
-      user.username = "ゲストユーザー"
-    end
-  end
-
-def self.from_omniauth(auth)
-  user = where(provider: auth.provider, uid: auth.uid)
-           .or(where(email: auth.info.email))
-           .first_or_create do |u|
-             u.email = auth.info.email
-             u.password = Devise.friendly_token[0, 20]
-             u.username = auth.info.name
-             u.provider = auth.provider
-             u.uid = auth.uid
-           end
-
-  # 既存ユーザーの場合もprovider/uidを更新
-  user.update(provider: auth.provider, uid: auth.uid) unless user.provider.present?
-  user
-end
-
-  validates :email, presence: true, uniqueness: true
-  validates :password, presence: true, length: { minimum: 6 }, if: -> { password.present? }
-  validates :hp, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
-end
-</file>
-
-<file path="app/views/shared/_hp_card.html.erb">
-<%# HPバー %>
-<div class="mb-2"
-     data-controller="damage-gauge"
-     data-damage-gauge-hp-value="<%= current_user.hp %>">
-    <div class="flex justify-between items-center mb-2">
-        <h3 class="text-lg font-black text-text-secondary uppercase tracking-[0.2em]">HP</h3>
-        <span class="text-lg font-black text-text-main"
-              data-damage-gauge-target="hpText">
-            <%= current_user.hp %> / 100
-        </span>
-    </div>
-    <%# 5段階メモリ付きゲージ %>
-    <div class="relative h-6 w-full bg-border-light/40 rounded-full overflow-hidden border border-white/50">
-        <div class="h-full rounded-full transition-all duration-[1500ms] ease-out"
-            data-damage-gauge-target="gauge"
-            style="width: 0%; background-color: <%= hp_color(current_user.hp) %>;">
-        </div>
-        <%# 5段階のメモリ %>    
-        <div class="absolute inset-0 flex pointer-events-none">
-            <div class="flex-1 border-r-2 border-white/60"></div>
-            <div class="flex-1 border-r-2 border-white/60"></div>
-            <div class="flex-1 border-r-2 border-white/60"></div>
-            <div class="flex-1 border-r-2 border-white/60"></div>
-            <div class="flex-1"></div>
-        </div>
-    </div>
-   <div class="<%= current_user.hp <= 40 ? '' : 'hidden' %> mt-4 px-4">
-        <p class="text-center text-xs md:text-md font-black tracking-widest animate-critical">
-            ⚠️ 座りすぎです！今すぐ運動して回復！！
-        </p>
-    </div>
-</div>
-</file>
-
-<file path="Gemfile">
-source "https://rubygems.org"
-
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.3"
-# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem "propshaft"
-# Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
-# Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
-# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
-gem "jsbundling-rails"
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
-# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
-gem "cssbundling-rails"
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
-
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem "solid_cache"
-gem "solid_queue"
-gem "solid_cable"
-
-# Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
-
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
-
-# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
-gem "thruster", require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
-
-# ユーザー認証
-gem "devise"
-gem "devise-i18n"
-
-# Google認証
-gem "omniauth-google-oauth2"
-gem "omniauth-rails_csrf_protection"
-
-# 画像CDN
-gem "cloudinary"
-
-gem "web-push"
-
-gem "chartkick"
-
-# 日付の穴埋めに使用
-gem "groupdate"
-# admin用
-gem "pundit"
-# 　OGP
-gem "meta-tags"
-gem "mini_magick"
-
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
-
-  # テスト用
-  gem "rspec-rails"
-  gem "factory_bot_rails"
-end
-
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
 end
 </file>
 
@@ -7723,6 +7364,81 @@ class Exercise < ApplicationRecord
   # 表示する運動を分けるフラグ
   scope :active, -> { where(active: true) }
 end
+</file>
+
+<file path="app/views/activity_logs/index.html.erb">
+<%# 背景 %>
+<div class="fixed inset-0 -z-10 overflow-hidden bg-background-dark">
+  <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
+</div>
+
+<main class="min-h-screen w-full max-w-5xl mx-auto px-6 py-10"
+      data-controller="history"
+      data-history-daily-value="<%= @daily_reports.to_json(methods: [:total_duration_hours, :exercise_count, :date_label]) %>"
+      data-history-weekly-value="<%= @weekly_reports.to_json(methods: [:total_duration_hours, :exercise_count, :date_label]) %>"
+      data-history-monthly-value="<%= @monthly_reports.to_json(methods: [:total_duration_hours, :exercise_count, :date_label]) %>"
+      data-history-heatmap-value="<%= @heatmap_reports.to_json(methods: [:exercise_count]) %>">
+
+  <%# 1. 常に表示：GitHub風の草（ヒートマップ） %>
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 mb-10 shadow-sm">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+        <span class="material-symbols-outlined">grid_view</span>
+      </div>
+      <h2 class="text-base font-black text-text-main tracking-tight">Activity Heatmap</h2>
+    </div>
+    <%# JSでここにドットを生成する %>
+    <div data-history-target="heatmapContainer" class="flex flex-wrap gap-1.5 justify-center md:justify-start"></div>
+    <p class="text-[10px] text-text-secondary mt-4 text-right font-bold uppercase tracking-widest">Less <span class="inline-block w-2 h-2 bg-gray-100 rounded-sm mx-1"></span><span class="inline-block w-2 h-2 bg-primary/30 rounded-sm mx-1"></span><span class="inline-block w-2 h-2 bg-primary/60 rounded-sm mx-1"></span><span class="inline-block w-2 h-2 bg-primary rounded-sm mx-1"></span> More</p>
+  </div>
+
+  <%# 2. タブ切り替え（日・週・月） %>
+  <div class="flex bg-white/40 backdrop-blur-xl p-1.5 rounded-2xl mb-8 border border-white/60 w-fit">
+    <button data-action="click->history#switch" data-history-target="tab" data-tab="daily" class="px-8 py-2.5 rounded-xl text-sm font-black bg-white shadow-sm transition-all">日別</button>
+    <button data-action="click->history#switch" data-history-target="tab" data-tab="weekly" class="px-8 py-2.5 rounded-xl text-sm font-black text-text-secondary hover:text-text-main transition-all">週別</button>
+    <button data-action="click->history#switch" data-history-target="tab" data-tab="monthly" class="px-8 py-2.5 rounded-xl text-sm font-black text-text-secondary hover:text-text-main transition-all">月別</button>
+  </div>
+
+  <%# 3. 切り替え表示されるグラフエリア %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+    <%# 座位時間パネル %>
+    <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
+      <div data-history-target="dailyPane">
+        <canvas id="dailySittingChart"></canvas>
+      </div>
+      <div data-history-target="weeklyPane" class="hidden">
+        <canvas id="weeklySittingChart"></canvas>
+      </div>
+      <div data-history-target="monthlyPane" class="hidden">
+        <canvas id="monthlySittingChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <%# 運動履歴リスト %>
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+    <div class="flex items-center gap-3 mb-6">
+    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+      <span class="material-symbols-outlined">history</span>
+    </div>
+    	<h2 class="text-base font-black text-text-main">運動履歴</h2>
+    </div>
+
+    <% if @activity_logs.any? %>
+    <div class="space-y-3">
+      <%# 運動履歴カードをループで回す %>
+      <%= render @activity_logs %>
+    </div>
+    <% else %>
+      <div class="text-center py-16 text-text-secondary">
+        <span class="material-symbols-outlined text-5xl mb-4 block text-primary/40">fitness_center</span>
+        <p class="font-bold text-lg">まだ記録がありません</p>
+        <p class="text-sm mt-1">運動を完了すると履歴が表示されます</p>
+      </div>
+    <% end %>
+  </div>
+</main>
 </file>
 
 <file path="app/views/layouts/application.html.erb">
@@ -7950,6 +7666,634 @@ end
 </html>
 </file>
 
+<file path="app/controllers/activity_logs_controller.rb">
+class ActivityLogsController < ApplicationController
+  before_action :require_login
+
+  def new
+    @exercise = Exercise.find(params[:exercise_id])
+    @activity_log = current_user.activity_logs.build(exercise: @exercise)
+  end
+
+  def create
+    @activity_log = current_user.activity_logs.build(activity_log_params)
+
+    # 自由運動を選択したが時間が殻の場合は新規作成にリダイレクト
+    if @activity_log.exercise.category == "other" && @activity_log.duration_minutes.nil?
+      redirect_to new_activity_log_path(exercise_id: @activity_log.exercise_id)
+      return
+    end
+
+    if @activity_log.save
+      # modelのコールバック（before_create）でHP回復している
+      @activity_log.sitting_session&.completed!
+      redirect_to root_path, notice: "運動を記録しました！", status: :see_other
+    else
+      # 　自由運動のバリデーション落ちは内容を保持
+      if @activity_log.exercise.category == "other"
+        @exercise = @activity_log.exercise
+        render :new, status: :unprocessable_entity
+      else
+      # 通常の運動を選択した場合はリダイレクト
+      redirect_back fallback_location: root_path,
+                    alert: "記録に失敗しました: #{@activity_log.errors.full_messages.join(', ')}"
+      end
+    end
+  end
+
+  def index
+    # 7日間(日別)：月曜始まり
+    this_monday = Date.current.beginning_of_week(:monday)
+    @daily_reports = ActivityReport.generate_daily_reports(current_user, this_monday..(this_monday + 6.days))
+
+    # 8週間（週別）：月〜日曜
+    weekly_periods = (0..7).map { |i| i.weeks.ago.all_week(:monday) }.reverse
+    @weekly_reports = ActivityReport.generate_by_period(current_user, weekly_periods)
+
+    # 6か月（月別）：月単位
+    monthly_periods = (0..5).map { |i| i.months.ago.all_month }.reverse
+    @monthly_reports = ActivityReport.generate_by_period(current_user, monthly_periods)
+
+    # ヒートマップ（直近90日）
+    heatmap_range = (90.days.ago.to_date..Date.current)
+    @heatmap_reports = ActivityReport.generate_daily_reports(current_user, heatmap_range)
+  end
+
+  private
+
+  def activity_log_params
+    params.require(:activity_log).permit(:exercise_id, :sitting_session_id, :note, :duration_minutes)
+  end
+end
+</file>
+
+<file path="app/models/health_tip.rb">
+class HealthTip
+  # 健康TIPのデータ。ActiveRecordは継承していないのでテーブルなしのモデル
+  TIPS = [
+    <<~TIP,
+      ドイツでは「ぎっくり腰」のことを
+      その急激な痛みから「魔女の一撃」と呼ぶ
+    TIP
+    <<~TIP,
+      椎間板の水分量が変化するため
+      夜の方が身長が1〜2cm低くなる
+      身長は朝に測ろう
+    TIP
+    <<~TIP,
+      筋肉痛の正確なメカニズムは
+      現代も解明されていない「謎」の現象
+      筋膜が痛い説が出てきている
+    TIP
+    <<~TIP,
+      人間の血管をすべてつなげると約10万km
+      地球2周半もの長さになる計算
+      長過ぎて想像もつかない
+    TIP
+    <<~TIP,
+      「貧乏ゆすり」は医学的にジグリングと呼び
+      足の血流を改善し股関節にも良い影響を与える
+      ただし周囲の目は気になる
+    TIP
+    <<~TIP,
+      握力は全身の筋力のバロメーター
+      握力が強い人ほど長生きする傾向があるらしい
+      さあ今すぐ筋トレだ
+    TIP
+    <<~TIP,
+      骨は体重の刺激を与えないと弱くなる
+      歩くことは骨の強化に不可欠です
+      特に女性は骨が弱くなりやすい
+    TIP
+    <<~TIP,
+      1時間座り続けると寿命が約22分縮む説がある
+      座りすぎは「第2の喫煙」とも呼ばれます
+      長生きするなら「禁煙と禁椅子」
+    TIP
+    <<~TIP,
+      成人の体の約60%は水分
+      柔軟性と代謝のため、こまめな水分摂取が大事
+      あ、お酒は水に入りません
+    TIP
+    <<~TIP,
+      寝る90分前にお風呂に入ると、体温が下がる頃に
+      自然な眠気が訪れ寝つきが良くなります
+      パソコンは閉じて睡眠は計画的に
+    TIP
+    <<~TIP,
+      起きた直後に朝日を浴びることで体内時計がリセット
+      約15時間後の良質な睡眠につながります
+      起きたらまずはカーテンを開けよう
+    TIP
+    <<~TIP,
+      休日も平日と同じ時間に起きることが重要
+      「ソーシャル・ジェットラグ（社会的時差ぼけ）」
+      により不調の原因に
+    TIP
+    <<~TIP,
+      食事の最初にタンパク質（肉や魚）を摂ると、
+      血糖値の急上昇を抑えることができる
+      つまり太りにくい
+    TIP
+    <<~TIP,
+      特別な運動をしない場合、筋肉量は30代以降に
+      年間約1%ずつ減少していくと言われています
+      今すぐ筋トレだ
+    TIP
+    <<~TIP,
+      鼻呼吸をすると一酸化窒素を産生し、
+      殺菌効果や酸素吸収効率を高めます
+      つまり風邪をひきにくい
+    TIP
+    <<~TIP,
+      一定のリズムで歩くことは「脳の掃除」になる
+      セロトニンの分泌を促し、メンタルを整える
+      落ち込んでるなら歩くしかない
+    TIP
+    <<~TIP,
+      ふくらはぎの筋肉は「第2の心臓」と呼ばれる
+      下半身の血液を心臓へ押し戻すポンプの役割をする
+      今、座ってたら「ふくらはぎ」動いてますか？
+    TIP
+    <<~TIP,
+      猫背になると肺が圧迫され、酸素効率が低下
+      姿勢を正すだけで呼吸は深くなる
+      深呼吸するならまずは胸を張ろう
+    TIP
+    <<~TIP,
+      頭を30度前に傾けるだけで、
+      首には通常の約6倍の負荷がかかる
+      いわゆるストレートネックは常に筋トレ中
+    TIP
+    <<~TIP
+      笑うことで表情筋が動き、幸せホルモンを放出
+      ストレスを軽減させる効果がある
+      笑いながら仕事すれば楽しくなるかも
+    TIP
+  ].freeze
+
+  def self.random_tips
+    index = rand(TIPS.length)
+    text = TIPS[index]
+    [ index, text ]
+  end
+end
+</file>
+
+<file path="app/views/shared/_hp_card.html.erb">
+<%# HPバー %>
+<div class="mb-2"
+     data-controller="damage-gauge"
+     data-damage-gauge-hp-value="<%= current_user.hp %>">
+    <div class="flex justify-between items-center mb-2">
+        <h3 class="text-lg font-black text-text-secondary uppercase tracking-[0.2em]">HP</h3>
+        <span class="text-lg font-black text-text-main"
+              data-damage-gauge-target="hpText">
+            <%= current_user.hp %> / 100
+        </span>
+    </div>
+    <%# 5段階メモリ付きゲージ %>
+    <div class="relative h-6 w-full bg-border-light/40 rounded-full overflow-hidden border border-white/50">
+        <div class="h-full rounded-full transition-all duration-[1500ms] ease-out"
+            data-damage-gauge-target="gauge"
+            style="width: 0%; background-color: <%= hp_color(current_user.hp) %>;">
+        </div>
+        <%# 5段階のメモリ %>    
+        <div class="absolute inset-0 flex pointer-events-none">
+            <div class="flex-1 border-r-2 border-white/60"></div>
+            <div class="flex-1 border-r-2 border-white/60"></div>
+            <div class="flex-1 border-r-2 border-white/60"></div>
+            <div class="flex-1 border-r-2 border-white/60"></div>
+            <div class="flex-1"></div>
+        </div>
+    </div>
+   <div class="<%= current_user.hp <= 40 ? '' : 'hidden' %> mt-4 px-4">
+        <p class="text-center text-xs md:text-md font-black tracking-widest animate-critical">
+            ⚠️ 座りすぎです！今すぐ運動して回復！！
+        </p>
+    </div>
+</div>
+</file>
+
+<file path="Gemfile">
+source "https://rubygems.org"
+
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 8.1.3"
+# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
+gem "propshaft"
+# Use postgresql as the database for Active Record
+gem "pg", "~> 1.1"
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", ">= 5.0"
+# Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
+gem "jsbundling-rails"
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem "stimulus-rails"
+# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
+gem "cssbundling-rails"
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem "jbuilder"
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem "solid_cache"
+gem "solid_queue"
+gem "solid_cable"
+
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
+
+# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
+gem "kamal", require: false
+
+# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+gem "thruster", require: false
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "image_processing", "~> 1.2"
+
+# ユーザー認証
+gem "devise"
+gem "devise-i18n"
+
+# Google認証
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
+
+# 画像CDN
+gem "cloudinary"
+
+gem "web-push"
+
+gem "chartkick"
+
+# 日付の穴埋めに使用
+gem "groupdate"
+# admin用
+gem "pundit"
+# 　OGP
+gem "meta-tags"
+gem "mini_magick"
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
+  gem "bundler-audit", require: false
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+
+  # テスト用
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+end
+
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+</file>
+
+<file path="app/javascript/controllers/timer_controller.js">
+import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
+
+const AUTO_CLOSE_MS = 600000; // 10分
+
+export default class extends Controller {
+    static targets = ["display", "circle", "startButton", "runningButton", "errorMessage", "mute"]
+    static values = { notifyAt: String, audioUrl: String }
+
+    connect() {
+        this.remainingTime = 0
+        this.selectedSeconds = 0
+        this.timer = null
+        this.isModalOpen = false
+        this.autoCloseTimer = null // 自動閉鎖用タイマー
+
+        // 通知音を設定
+        if (this.audioUrlValue) {
+            this.audio = new Audio(this.audioUrlValue)
+            this.audio.preload = "auto"
+        }
+
+        if (this.hasCircleTarget) {
+            const radius = this.circleTarget.r.baseVal.value
+            this.circumference = 2 * Math.PI * radius
+            this.circleTarget.style.strokeDasharray = `${this.circumference} ${this.circumference}`
+            this.circleTarget.style.strokeDashoffset = 0
+        }
+
+        // リロード時はnotifyAtから残り時間を取得
+        if (this.hasNotifyAtValue && this.notifyAtValue) {
+            const notifyAt = new Date(this.notifyAtValue)
+            this.remainingTime = Math.floor((notifyAt - new Date()) / 1000)
+
+            this.startButtonTarget.classList.add("hidden")
+            this.runningButtonTargets.forEach(button => button.classList.remove("hidden"))
+
+            this.updateCircle()
+            this.updateDisplay()
+            this.runTimer()
+        }
+
+        // パターン1: 新規タブで開いた場合（URLパラメータ）
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('session_id')) {
+            window.history.replaceState({}, document.title, window.location.pathname)
+            this.finish()
+        }
+
+        // パターン2: 既存タブがあった場合（postMessage）
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data?.type === 'SHOW_MODAL') {
+                this.finish()
+            }
+        })
+    }
+
+    setTime(event) {
+        const minutes = event.params.minutes
+        this.selectedSeconds = minutes * 60
+        this.remainingTime = this.selectedSeconds
+
+        // 選択状態の切り替え
+        document.querySelectorAll('.duration-button').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white', 'shadow-md')
+            btn.classList.add('text-text-secondary')
+        })
+        event.currentTarget.classList.add('bg-primary', 'text-white', 'shadow-md')
+        event.currentTarget.classList.remove('text-text-secondary')
+
+        this.updateDisplay()
+        this.updateCircle()
+    }
+
+    async start() {
+
+        if (this.selectedSeconds === 0) {
+            this.errorMessageTarget.classList.remove("hidden")
+            return
+        }
+
+        const response = await fetch("/sitting_sessions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                sitting_session: { duration: this.selectedSeconds }
+            })
+        })
+
+        const data = await response.json()
+        this.notifyAtValue = data.notify_at
+
+        this.resetState() // 全てをクリアしてから開始
+        this.startTime = new Date()
+        this.updateDisplay()
+        this.updateCircle()
+        this.runTimer()
+
+        //スタートボタンを消して休憩ボタンを表示
+        this.startButtonTarget.classList.add("hidden")
+
+        this.runningButtonTargets.forEach(button => {
+            button.classList.remove("hidden")
+        })
+
+        this.errorMessageTarget.classList.add("hidden")
+
+        //オートプレイ制限解除のための空回し
+        if (this.audio) {
+            this.audio.volume = 0
+            this.audio.play().then(() => {
+                //再生できたらポーズして最初に戻る
+                this.audio.pause()
+                this.audio.currentTime = 0
+            }).catch(error => {
+                console.warn("Audioの初期設定エラー:", error)
+            })
+        }
+    }
+
+    runTimer() {
+        this.timer = setInterval(() => {
+            if (!this.timer) return
+
+            const notifyAt = new Date(this.notifyAtValue)
+            this.remainingTime = Math.floor((notifyAt - new Date()) / 1000)
+
+            this.updateDisplay()
+            this.updateCircle()
+
+            if (this.remainingTime <= 0) {
+                this.stop()
+                this.finish()
+            }
+        }, 1000)
+    }
+
+    updateCircle() {
+        if (!this.hasCircleTarget) return
+
+        // 1分間(60秒)で1週する
+        const currentSecondInMinutes = this.remainingTime % 60
+        const displaySeconds = (currentSecondInMinutes === 0 && this.remainingTime > 0) ? 60 : currentSecondInMinutes
+
+        const offset = this.circumference * (1 - displaySeconds / 60)
+
+        this.circleTarget.style.strokeDashoffset = offset
+    }
+
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer)
+            this.timer = null
+        }
+    }
+
+    async reset() {
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.remainingTime = 0
+        this.isModalOpen = false
+        this.updateDisplay()
+        this.clearModalUI()
+        this.updateCircle()
+
+        await fetch("/sitting_sessions/reset_current", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+
+        //休憩ボタンを消してスタートボタンを表示
+        this.runningButtonTargets.forEach(button => {
+            button.classList.add("hidden")
+        })
+        this.startButtonTarget.classList.remove("hidden")
+    }
+
+    resetState() {
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.isModalOpen = false
+        this.clearModalUI()
+    }
+
+    showSessionModal() {
+        if (this.isModalOpen) return
+        this.isModalOpen = true
+
+
+        // 放置対策：一定時間後に自動で閉じる
+        this.autoCloseTimer = setTimeout(() => {
+            if (this.isModalOpen) this.closeModal()
+        }, AUTO_CLOSE_MS)
+    }
+
+    async finish() {
+        this.stop()
+        this.clearAutoCloseTimer()
+        this.remainingTime = 0
+        this.updateDisplay()
+        this.clearModalUI()
+        this.updateCircle()
+
+        //通知音を鳴らす
+        if (this.audio && this.muteTarget.checked) {
+            this.audio.volume = 1.0
+            this.audio.currentTime = 0
+            this.audio.play().catch(error => {
+                console.error("Audio再生エラー:", error)
+            })
+        }
+
+        //休憩ボタンを消してスタートボタンを表示
+        this.runningButtonTargets.forEach(button => {
+            button.classList.add("hidden")
+        })
+        this.startButtonTarget.classList.remove("hidden")
+
+        const response = await fetch("/sitting_sessions/finish_current", {
+            method: "PATCH",
+            headers: {
+                "Accept": "text/vnd.turbo-stream.html",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+
+        if (response.ok) {
+            //Railsから返ってきた turbo_stream（モーダル表示）を実行
+            const streamMessage = await response.text()
+            Turbo.renderStreamMessage(streamMessage)
+
+            this.resetState()
+        }
+    }
+
+    closeModal() {
+        this.resetState()
+        this.clearModalUI()
+    }
+
+    clearModalUI() {
+        const container = document.getElementById('modal_container')
+        if (container) container.innerHTML = ''
+    }
+
+    clearAutoCloseTimer() {
+        if (this.autoCloseTimer) {
+            clearTimeout(this.autoCloseTimer)
+            this.autoCloseTimer = null
+        }
+    }
+
+    updateDisplay() {
+        const m = Math.floor(this.remainingTime / 60)
+        const s = this.remainingTime % 60
+        this.displayTarget.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    }
+}
+</file>
+
+<file path="app/models/user.rb">
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [ :google_oauth2 ]
+
+  has_many :sitting_sessions, dependent: :destroy
+  has_many :activity_logs, dependent: :destroy
+  has_many :exercises, through: :activity_logs
+
+  # ダメージゲージの計算
+  def take_damage(duration)
+    damage = (duration / 3600.0 * 10).round # 1時間で10ダメージ
+    update(hp: [ hp - damage, 0 ].max)  # 0未満にならないように
+  end
+
+  def recover(amount = 10)
+    update(hp: [ hp + amount, 100 ].min) # 101以上にならないように
+  end
+
+
+  # ゲストログインの実装
+  def self.guest
+    find_or_create_by!(email: "guest@example.com") do |user|
+      user.password = SecureRandom.urlsafe_base64
+      user.username = "ゲストユーザー"
+    end
+  end
+
+def self.from_omniauth(auth)
+  user = where(provider: auth.provider, uid: auth.uid)
+           .or(where(email: auth.info.email))
+           .first_or_create do |u|
+             u.email = auth.info.email
+             u.password = Devise.friendly_token[0, 20]
+             u.username = auth.info.name
+             u.provider = auth.provider
+             u.uid = auth.uid
+           end
+
+  # 既存ユーザーの場合もprovider/uidを更新
+  user.update(provider: auth.provider, uid: auth.uid) unless user.provider.present?
+  user
+end
+
+  validates :email, presence: true, uniqueness: true
+  validates :password, presence: true, length: { minimum: 6 }, if: -> { password.present? }
+  validates :hp, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
+end
+</file>
+
 <file path="app/views/exercises/show.html.erb">
 <%# 背景 %>
 <div class="fixed inset-0 -z-10 overflow-hidden bg-background-dark">
@@ -8127,67 +8471,82 @@ end
 </div>
 </file>
 
-<file path="app/views/shared/_modal.html.erb">
-<%# app/views/shared/_modal.html.erb %>
-<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-  <div class="bg-white/90 backdrop-blur-xl border-2 border-white/60 shadow-[0_20px_60px_rgba(0,0,0,0.15)] rounded-[2rem] md:rounded-[3rem] max-w-6xl w-full p-6 md:p-12 transform animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
+<file path="app/controllers/sitting_sessions_controller.rb">
+class SittingSessionsController < ApplicationController
+  before_action :authenticate_user!
 
-    <div class="text-center mb-6 md:mb-10">
-      <span class="inline-block px-4 py-1.5 bg-primary/20 text-primary text-sm font-bold tracking-widest rounded-full border border-primary/30 mb-3">COMPLETE</span>
-      <h3 class="text-2xl md:text-4xl font-black text-text-main tracking-tight">お疲れさまです！</h3>
-      <p class="text-text-secondary mt-2 text-sm md:text-lg font-medium">少し体を動かして、リフレッシュしましょう🎵</p>
-    </div>
+  def new
+  end
 
-    <%# 3つ横並びのグリッド %>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-      <% @exercises.active.each do |exercise| %>
-        <%= link_to exercise_path(exercise, reopen_modal: true, sitting_session_id: sitting_session_id),
-            class: "group relative block overflow-hidden rounded-xl md:rounded-[2rem] border-2 border-white/50 hover:border-primary/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_32px_rgba(106,155,118,0.25)] transition-all duration-500 active:scale-95" do %>
+  def create
+    minutes = params.dig(:sitting_session, :duration).to_i
+    @sitting_session = current_user.sitting_sessions.build(
+      duration: minutes,
+      status: :active
+    )
 
-          <%# 画像エリア %>
-          <div class="aspect-[16/9] md:aspect-[4/5] relative">
-            <% if exercise.image.attached? %>
-              <%= image_tag exercise.image,
-                  class: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" %>
-            <% else %>
-              <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">No Image</div>
-            <% end %>
+    if @sitting_session.save
 
-            <%# オーバーレイ %>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-2 md:p-6">
-              <div class="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <div class="text-white font-black text-md md:text-lg leading-tight"><%= exercise.name %></div>
-                <div class="mt-1 md:mt-2 hidden md:flex items-center text-primary-light text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  START NOW
-                </div>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
+      # タイマー終了時に通知jobを予約する
+      SendNotificationJob.set(wait_until: @sitting_session.notify_at)
+                          .perform_later(@sitting_session.id)
+      # notify_atをJSに渡す
+      render json: { notify_at: @sitting_session.notify_at.iso8601 }
+    end
+  end
 
-    <%= link_to new_activity_log_path(exercise_id: @other_exercise.id, sitting_session_id: @sitting_session&.id), 
-        class: "flex flex-col items-center p-4 bg-background-light border border-border-light rounded-2xl hover:bg-background-dark transition-all active:scale-95",
-        data: { turbo: false } do %>
-      <span class="material-symbols-outlined text-3xl text-primary mb-1">
-        more_horiz
-      </span>
-      <span class="text-xs font-bold text-text-secondary">
-        その他
-      </span>
-    <% end %>
-    
-    <div class="text-center mt-6 md:mt-10">
-      <button
-          type="button"
-          class="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-primary transition-colors cursor-pointer tracking-widest bg-white/30 backdrop-blur-sm border border-white/60 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:bg-white/50 hover:border-white"
-          data-action="click->timer#closeModal">
-        今はスキップして戻る →
-      </button>
-    </div>
-  </div>
-</div>
+  # タイマー終了時にduration更新とステータス変更
+  def finish_current
+    @sitting_session = current_user.sitting_sessions.active.last
+    return head :not_found unless @sitting_session
+
+    # 休憩するで早期に終了したらdurationを更新
+    @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
+
+    # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
+    @other_exercise = Exercise.find_by(category: :other)
+
+    # ダメージを計算
+    current_user.take_damage(@sitting_session.duration)
+
+    # 休憩するボタンで終了した時に通知を送らないようにする
+    @sitting_session.completed!
+
+    # N+1を防ぐために一回のアクセスで3つの画像を取得
+    @exercises = Exercise.order("RANDOM()").limit(3).includes(image_attachment: :blob)
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
+  # リセットボタン用
+  def reset_current
+    @sitting_session = current_user.sitting_sessions.active.last
+    return head :not_found unless @sitting_session
+
+    @sitting_session.cancelled!
+  end
+
+  def subscribe
+    auth_key = params[:subscription][:keys]
+
+    if current_user.update(
+      endpoint: params[:subscription][:endpoint],
+      p256dh: auth_key[:p256dh],
+      auth: auth_key[:auth]
+    )
+      head :ok
+    else
+      head :unprocessable_entity
+    end
+  end
+
+  private
+
+  def session_params
+    params.require(:sitting_session).permit(:duration, :start_at)
+  end
+end
 </file>
 
 <file path="db/schema.rb">
@@ -8428,81 +8787,121 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_01_025018) do
 end
 </file>
 
-<file path="app/controllers/sitting_sessions_controller.rb">
-class SittingSessionsController < ApplicationController
-  before_action :authenticate_user!
+<file path="app/views/shared/_modal.html.erb">
+<%# app/views/shared/_modal.html.erb %>
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+  <div class="bg-white/90 backdrop-blur-xl border-2 border-white/60 shadow-[0_20px_60px_rgba(0,0,0,0.15)] rounded-[2rem] md:rounded-[3rem] max-w-6xl w-full p-6 md:p-12 transform animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
 
-  def new
+    <div class="text-center mb-6 md:mb-10">
+      <span class="inline-block px-4 py-1.5 bg-primary/20 text-primary text-sm font-bold tracking-widest rounded-full border border-primary/30 mb-3">COMPLETE</span>
+      <h3 class="text-2xl md:text-4xl font-black text-text-main tracking-tight">お疲れさまです！</h3>
+      <p class="text-text-secondary mt-2 text-sm md:text-lg font-medium">少し体を動かして、リフレッシュしましょう🎵</p>
+    </div>
+
+    <%# 3つ横並びのグリッド %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+      <% @exercises.active.each do |exercise| %>
+        <%= link_to exercise_path(exercise, reopen_modal: true, sitting_session_id: sitting_session_id),
+            class: "group relative block overflow-hidden rounded-xl md:rounded-[2rem] border-2 border-white/50 hover:border-primary/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_32px_rgba(106,155,118,0.25)] transition-all duration-500 active:scale-95" do %>
+
+          <%# 画像エリア %>
+          <div class="aspect-[16/9] md:aspect-[4/5] relative">
+            <% if exercise.image.attached? %>
+              <%= image_tag exercise.image,
+                  class: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" %>
+            <% else %>
+              <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">No Image</div>
+            <% end %>
+
+            <%# オーバーレイ %>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-2 md:p-6">
+              <div class="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <div class="text-white font-black text-md md:text-lg leading-tight"><%= exercise.name %></div>
+                <div class="mt-1 md:mt-2 hidden md:flex items-center text-primary-light text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  START NOW
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%= link_to new_activity_log_path(exercise_id: @other_exercise.id, sitting_session_id: @sitting_session&.id), 
+        class: "flex flex-col items-center mt-6 p-4 bg-background-dark border border-border-light rounded-2xl hover:bg-primary hover:text-white transition-all active:scale-95",
+        data: { turbo: false } do %>
+      
+      <span class="text-md font-bold">
+        自分のことは自分で決める！
+      </span>
+    <% end %>
+    
+    <div class="text-center mt-6 md:mt-10">
+      <button
+          type="button"
+          class="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-primary transition-colors cursor-pointer tracking-widest bg-white/30 backdrop-blur-sm border border-white/60 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:bg-white/50 hover:border-white"
+          data-action="click->timer#closeModal">
+        今はスキップして戻る →
+      </button>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="config/routes.rb">
+Rails.application.routes.draw do
+  # 運動管理画面
+  namespace :admin do
+    resources :exercises
   end
 
-  def create
-    minutes = params.dig(:sitting_session, :duration).to_i
-    @sitting_session = current_user.sitting_sessions.build(
-      duration: minutes,
-      status: :active
-    )
+  get "pages/terms"
+  get "pages/privacy"
+  # ログイン時のroot
+  authenticated :user do
+    root "top#index", as: :authenticated_root
+  end
+  # 未ログイン時のroot
+  unauthenticated do
+    root "static_pages#top"
+  end
 
-    if @sitting_session.save
-
-      # タイマー終了時に通知jobを予約する
-      SendNotificationJob.set(wait_until: @sitting_session.notify_at)
-                          .perform_later(@sitting_session.id)
-      # notify_atをJSに渡す
-      render json: { notify_at: @sitting_session.notify_at.iso8601 }
+  resources :sitting_sessions, only: %i[new create show ] do
+    collection do
+      post :subscribe
+      patch :finish_current
+      delete :reset_current
     end
   end
 
-  # タイマー終了時にduration更新とステータス変更
-  def finish_current
-    @sitting_session = current_user.sitting_sessions.active.last
-    return head :not_found unless @sitting_session
-
-    # 休憩するで早期に終了したらdurationを更新
-    @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
-
-     # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
-    @other_exercise = Exercise.find_by(category: :other)
-
-    # ダメージを計算
-    current_user.take_damage(@sitting_session.duration)
-
-    # 休憩するボタンで終了した時に通知を送らないようにする
-    @sitting_session.completed!
-
-    # N+1を防ぐために一回のアクセスで3つの画像を取得
-    @exercises = Exercise.order("RANDOM()").limit(3).includes(image_attachment: :blob)
-    respond_to do |format|
-      format.turbo_stream
+  resources :exercises, only: %i[index show ] do
+    collection do
+      post :random
     end
   end
 
-  # リセットボタン用
-  def reset_current
-    @sitting_session = current_user.sitting_sessions.active.last
-    return head :not_found unless @sitting_session
+  resources :activity_logs, only: %i[create index new]
 
-    @sitting_session.cancelled!
-  end
+  devise_for :users, controllers: {
+    omniauth_callbacks: "users/omniauth_callbacks",
+    registrations: "users/registrations"
+  }
 
-  def subscribe
-    auth_key = params[:subscription][:keys]
+  # ゲストログイン
+  post "guest_login", to: "users/guest_sessions#create"
 
-    if current_user.update(
-      endpoint: params[:subscription][:endpoint],
-      p256dh: auth_key[:p256dh],
-      auth: auth_key[:auth]
-    )
-      head :ok
-    else
-      head :unprocessable_entity
-    end
-  end
+  # 利用規約、プライバシーポリシー
+  get "terms", to: "pages#terms"
+  get "privacy", to: "pages#privacy"
 
-  private
+  # OGP
+  get "ogp/:index", to: "ogp_images#show", as: :ogp_image, constraints: { text: /[^\/]+/ } # スラッシュ以外は許可
 
-  def session_params
-    params.require(:sitting_session).permit(:duration, :start_at)
-  end
+  # PWA
+  get "/manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
+  get "/service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
+
+  get "up" => "rails/health#show", as: :rails_health_check
 end
 </file>
 
@@ -8510,7 +8909,8 @@ end
 <div class="min-h-screen bg-background-dark p-4 md:p-6 overflow-x-hidden"
     data-controller="notification timer"
     data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>"
-    data-timer-notify-at-value="<%= @active_session&.notify_at&.iso8601 %>">
+    data-timer-notify-at-value="<%= @active_session&.notify_at&.iso8601 %>"
+    data-timer-audio-url-value="/chime.mp3">
 
   <%# メインコンテナ: lg:flex-row で横並び、items-start で上揃えに調整 %>
   <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-12 transition-all duration-500">
@@ -8570,7 +8970,7 @@ end
           data-timer-target="startButton">
           スタート
         </button>
-
+        
         <button type="button"
           data-timer-target="runningButton"
           data-action="click->timer#finish"
@@ -8584,6 +8984,17 @@ end
           class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-white text-primary ring-2 ring-primary shadow-lg hover:bg-primary/10 transition-all active:scale-95 cursor-pointer hidden w-full max-w-[240px]">
           リセット
         </button>
+      </div>
+      <%# 通知音トグル %>
+      <div class="flex items-center space-x-2 mt-4">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" 
+                 checked 
+                 data-timer-target="mute" 
+                 class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          <span class="ml-3 text-sm font-medium text-gray-900">終了時に通知音を鳴らす</span>
+        </label>
       </div>
     </div> <%# タイマーカードの閉じタグ %>
 
@@ -8659,63 +9070,6 @@ end
     <% end %>
   </div>
 </div>
-</file>
-
-<file path="config/routes.rb">
-Rails.application.routes.draw do
-  # 運動管理画面
-  namespace :admin do
-    resources :exercises
-  end
-
-  get "pages/terms"
-  get "pages/privacy"
-  # ログイン時のroot
-  authenticated :user do
-    root "top#index", as: :authenticated_root
-  end
-  # 未ログイン時のroot
-  unauthenticated do
-    root "static_pages#top"
-  end
-
-  resources :sitting_sessions, only: %i[new create show ] do
-    collection do
-      post :subscribe
-      patch :finish_current
-      delete :reset_current
-    end
-  end
-
-  resources :exercises, only: %i[index show ] do
-    collection do
-      post :random
-    end
-  end
-
-  resources :activity_logs, only: %i[create index new]
-
-  devise_for :users, controllers: {
-    omniauth_callbacks: "users/omniauth_callbacks",
-    registrations: "users/registrations"
-  }
-
-  # ゲストログイン
-  post "guest_login", to: "users/guest_sessions#create"
-
-  # 利用規約、プライバシーポリシー
-  get "terms", to: "pages#terms"
-  get "privacy", to: "pages#privacy"
-
-  # OGP
-  get "ogp/:index", to: "ogp_images#show", as: :ogp_image, constraints: { text: /[^\/]+/ } # スラッシュ以外は許可
-
-  # PWA
-  get "/manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
-  get "/service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
-
-  get "up" => "rails/health#show", as: :rails_health_check
-end
 </file>
 
 </files>
