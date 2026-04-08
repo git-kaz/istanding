@@ -1,5 +1,5 @@
 class ActivityReport
-  attr_reader :period, :total_duration_hours, :exercise_count, :active_days_count, :average_duration_hours
+  attr_reader :period, :total_duration_hours, :exercise_count, :active_days_count, :average_duration_hours, :date_label
 
   # 全てハッシュ化するために計算結果はインスタンスに保存
   def initialize(period, sessions, logs)
@@ -87,7 +87,6 @@ class ActivityReport
     }
   end
 
-  private
   # データ範囲のラベルを生成
   def date_label
     # 日別なら4/8, 週別なら4/1~の様に返す

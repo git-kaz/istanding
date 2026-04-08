@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="history"
 export default class extends Controller {
-  static targets = ["heatmapContainer", "dailyPane", "weeklyPane", "monthlyPane"]
+  static targets = ["heatmapContainer", "dailyPane", "weeklyPane", "monthlyPane", "tab"]
   static values = {
     daily: Array,
     weekly: Array,
@@ -10,14 +10,10 @@ export default class extends Controller {
     heatmap: Array
   }
   connect() {
-    console.log("Daily Value:", this.dailyValue)
-    console.log("Heatmap Value:", this.heatmapValue)
 
     if (this.hasHeatmapValue) {
       this.renderHeatmap()
     }
-
-    this.renderCharts()
   }
 
   renderHeatmap() {
@@ -48,5 +44,23 @@ export default class extends Controller {
     })
   }
 
+  switch(event) {
+    const tab = event.currentTarget.dataset.tab
+    this.showPane(tab)
+  }
 
+  showPane(tab) {
+    const panes = ["daily", "weekly", "monthly"]
+    panes.forEach(p => {
+      const isTarget = p === tab
+      this[`${p}PaneTargets`].forEach(el => el.classList.toggle("hidden", !isTarget))
+    })
+
+    this.tabTargets.forEach(t => {
+      const isActive = t.dataset.tab === tab
+      t.classList.toggle("bg-white", isActive)
+      t.classList.toggle("shadow-sm", isActive)
+      t.classList.toggle("text-text-secondary", !isActive)
+    })
+  }
 }
