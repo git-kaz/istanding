@@ -12,10 +12,10 @@ RSpec.describe ActivityReport, type: :model do
 
   it "指定された期間の合計座位時間を時間単位で正しく表示すること" do
     # ログを期間で絞り込んで準備
-    logs = user.sitting_sessions.where(created_at: period)
+    sessions = user.sitting_sessions.where(created_at: period)
 
     # ActivityReportを作成
-    report = ActivityReport.new(period, logs)
+    report = ActivityReport.new(period, sessions, ActivityLog.none)
 
     # 合計が1.0時間(3600秒)になっているか
     expect(report.total_duration_hours).to eq 1.0
@@ -27,14 +27,14 @@ RSpec.describe ActivityReport, type: :model do
     create(:sitting_session, user: user, created_at: Time.zone.now)
 
     sessions = user.sitting_sessions.where(created_at: period)
-    report = ActivityReport.new(period, sessions)
+    report = ActivityReport.new(period, sessions, ActivityLog.none)
 
     expect(report.active_days_count).to eq 1
   end
 
   it "ログが0の時、平均座位時間に0.0を返すこと" do
     empty_logs = user.sitting_sessions.none
-    report = ActivityReport.new(period, empty_logs)
+    report = ActivityReport.new(period, empty_logs, ActivityLog.none)
 
     expect(report.average_duration_hours).to eq 0.0
   end
