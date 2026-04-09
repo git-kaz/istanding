@@ -33,7 +33,7 @@ class ActivityLogsController < ApplicationController
   end
 
   def index
-    @activity_logs = current_user.activity_logs.order(created_at: :desc).limit(5)
+    @activity_logs = current_user.activity_logs.includes(:exercise).order(created_at: :desc).limit(5)
     # 7日間(日別)：月曜始まり
     this_monday = Date.current.beginning_of_week(:monday).end_of_day
     @daily_reports = ActivityReport.generate_daily_reports(current_user, this_monday..(this_monday + 6.days)).map(&:to_hash)
