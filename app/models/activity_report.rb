@@ -55,9 +55,7 @@ class ActivityReport
   # 連続日数を計算する（ストリーク）
   def self.calculate_streak(user)
     # 全ての活動日を新しい順で取得
-    session_dates = user.sitting_sessions.pluck(:created_at).map(&:to_date)
-    log_dates = user.activity_logs.pluck(:created_at).map(&:to_date)
-    active_dates = (session_dates + log_dates).uniq.sort.reverse
+    active_dates = user.activity_logs.pluck(:created_at).map(&:to_date).uniq.sort.reverse
 
     return 0 if active_dates.empty?
 

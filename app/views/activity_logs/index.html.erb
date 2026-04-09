@@ -11,6 +11,12 @@
       data-history-monthly-value="<%= @monthly_reports.to_json %>"
       data-history-heatmap-value="<%= @heatmap_reports.to_json %>">
 
+  <div class="my-4">
+        <%= link_to :back, class: "text-text-secondary hover:text-primary font-bold text-lg inline-flex items-center gap-1 transition-colors" do %>
+          <span class="material-symbols-outlined text-base">arrow_back</span>
+          戻る
+        <% end %>
+      </div>
   <%# 1. アクティビティセクション %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 mb-10 shadow-sm">
     <div class="flex items-center gap-3 mb-8">
@@ -84,14 +90,14 @@
   </div>
 
   <%# 3. グラフエリア %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
 
     
   
   <%# 左側：合計座位時間 %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
-    <h3 class="text-sm font-black text-text-main mb-6 flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-primary"></span> 合計座位時間と運動回数
+    <h3 class="text-md font-black text-text-main mb-6 flex items-center gap-2">
+      合計座位時間と運動回数
     </h3>
   
     <div data-history-target="dailyPane">
@@ -109,7 +115,7 @@
 
   <%# 右側：平均座位時間 %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
-    <h3 class="text-sm font-black text-text-main mb-6 flex items-center gap-2">
+    <h3 class="text-md font-black text-text-main mb-6 flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-secondary"></span> 平均座位時間 (分)
     </h3>
 
@@ -118,6 +124,7 @@
     </div>
     <div data-history-target="weeklyPane" class="hidden">
       <%= average_duration_chart(@weekly_reports) %>
+    </div>
     <div data-history-target="monthlyPane" class="hidden">
       <%= average_duration_chart(@monthly_reports) %>
     </div>
