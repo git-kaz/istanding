@@ -4,107 +4,134 @@
   <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full"></div>
 </div>
 
-<main class="min-h-screen w-full max-w-5xl mx-auto px-6 py-10">
+<main class="min-h-screen w-full max-w-5xl mx-auto px-6 py-10"
+      data-controller="history"
+      data-history-daily-value="<%= @daily_reports.to_json %>"
+      data-history-weekly-value="<%= @weekly_reports.to_json %>"
+      data-history-monthly-value="<%= @monthly_reports.to_json %>"
+      data-history-heatmap-value="<%= @heatmap_reports.to_json %>">
 
-  <%# ページタイトル %>
-  <div class="mb-10">
-    <div class="inline-flex items-center gap-2 text-primary mb-3">
-      <span class="material-symbols-outlined text-xl">insights</span>
-      <span class="font-bold tracking-[0.2em] uppercase text-sm">Your Activity</span>
+  <div class="my-4">
+        <%= link_to :back, class: "text-text-secondary hover:text-primary font-bold text-lg inline-flex items-center gap-1 transition-colors" do %>
+          <span class="material-symbols-outlined text-base">arrow_back</span>
+          戻る
+        <% end %>
+      </div>
+  <%# 1. アクティビティセクション %>
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 mb-10 shadow-sm">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+        <span class="material-symbols-outlined text-xl">grid_view</span>
+      </div>
+      <h2 class="text-base font-black text-text-main tracking-tight">運動して草を生やそう</h2>
     </div>
-    <h1 class="text-4xl font-black text-text-main tracking-tight">履歴・グラフ</h1>
-    <p class="text-text-secondary mt-2 text-base">直近7日間のあなたの活動記録</p>
-  </div>
 
-  <%# グラフエリア %>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+    <%# 常に横並びを維持するコンテナ (sm:以上でflex-row) %>
+    <div class="flex flex-col sm:flex-row gap-6 items-stretch">
+      
+      <%# A. ヒートマップ：メインエリア %>
+      <div class="flex-1 bg-white/30 rounded-3xl p-6 border border-white/40 overflow-hidden">
+        <div class="flex items-start">
+          <div class="flex flex-col gap-1.5 text-[10px] text-text-secondary pr-3 font-bold py-0 shrink-0">
+            <span class="h-4 flex items-center">月</span>
+            <span class="h-4 invisible">火</span>
+            <span class="h-4 flex items-center">水</span>
+            <span class="h-4 invisible">木</span>
+            <span class="h-4 flex items-center">金</span>
+            <span class="h-4 invisible">土</span>
+            <span class="h-4 flex items-center text-red-400/80">日</span>
+          </div>
 
-    <%# 座位時間グラフ %>
-    <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
-          <span class="material-symbols-outlined">chair</span>
+          <div class="overflow-x-auto pb-2 scrollbar-hide">
+            <div data-history-target="heatmapContainer" class="flex flex-col flex-wrap gap-1.5 h-40 content-start justify-start w-fit">
+              <%# JSで生成 %>
+            </div>
+          </div>
         </div>
-        <div>
-          <h2 class="text-base font-black text-text-main">日別座位時間</h2>
-          <p class="text-xs text-text-secondary">上限 11時間</p>
+        
+        <div class="mt-4 flex justify-start items-center gap-1.5">
+          <p class="text-[9px] text-text-secondary font-bold uppercase tracking-widest">少ない</p>
+          <div class="flex gap-1">
+            <span class="w-2.5 h-2.5 bg-slate-200/40 border border-slate-300 rounded-sm"></span>
+            <span class="w-2.5 h-2.5 bg-primary/30 border border-primary/30 rounded-sm"></span>
+            <span class="w-2.5 h-2.5 bg-primary/60 border border-primary/40 rounded-sm"></span>
+            <span class="w-2.5 h-2.5 bg-primary border border-primary/50 rounded-sm"></span>
+          </div>
+          <p class="text-[9px] text-text-secondary font-bold uppercase tracking-widest">多い</p>
         </div>
       </div>
-      <%= column_chart @daily_sitting,
-          max: 11,
-          colors: ["#6A9B76"],
-          suffix: "h",
-          thousands: ",",
-          round: 1,
-          height: "200px",
-          library: {
-            scales: {
-              y: { grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } },
-              x: { grid: { display: false }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } }
-            },
-            plugins: { legend: { display: false } }
-          } %>
-    </div>
 
-    <%# 運動回数グラフ %>
-    <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
-          <span class="material-symbols-outlined">fitness_center</span>
-        </div>
-        <div>
-          <h2 class="text-base font-black text-text-main">日別運動回数</h2>
-          <p class="text-xs text-text-secondary">1日の運動セット数</p>
+      <%# B. 数値カード：ストリーク %>
+      <div class="flex-1 sm:flex-none sm:w-40 bg-white/50 rounded-3xl p-6 border border-white/60 flex flex-col justify-center items-center text-center shadow-inner">
+        <p class="text-md font-black text-text-secondary uppercase tracking-[0.15em] mb-2">継続日数</p>
+        <div class="flex flex-col items-center">
+          <span class="text-5xl font-black text-primary drop-shadow-sm"><%= @current_streak %></span>
+          <span class="text-md font-bold text-primary/70 uppercase mt-1">日</span>
         </div>
       </div>
-      <%= area_chart @daily_exercises,
-          colors: ["#6A9B76"],
-          suffix: "回",
-          height: "200px",
-          library: {
-            scales: {
-              y: { grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: "#4A5C52", stepSize: 1, font: { family: "'M PLUS Rounded 1c'" } } },
-              x: { grid: { display: false }, ticks: { color: "#4A5C52", font: { family: "'M PLUS Rounded 1c'" } } }
-            },
-            plugins: { legend: { display: false } }
-          } %>
+
+      <%# C. 数値カード：今月の回数 %>
+      <div class="flex-1 sm:flex-none sm:w-40 bg-white/50 rounded-3xl p-6 border border-white/60 flex flex-col justify-center items-center text-center shadow-inner">
+        <p class="text-md font-black text-text-secondary uppercase tracking-[0.15em] mb-2">今月の運動</p>
+        <div class="flex flex-col items-center">
+          <span class="text-5xl font-black text-text-main drop-shadow-sm"><%= @this_month_count %></span>
+          <span class="text-md font-bold text-text-secondary uppercase mt-1">回</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
- <%# サマリーカード %>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">今週の運動</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap"><%= @activity_logs.size %><span class="text-sm md:text-base font-bold text-text-secondary ml-1">回</span></p>
+  <%# 2. タブ切り替え %>
+  <div class="flex bg-white/40 backdrop-blur-xl p-1.5 rounded-2xl mb-8 border border-white/60 w-fit">
+    <button data-action="click->history#switch" data-history-target="tab" data-tab="daily" class="px-8 py-2.5 rounded-xl text-sm font-black bg-white shadow-sm transition-all">日別</button>
+    <button data-action="click->history#switch" data-history-target="tab" data-tab="weekly" class="px-8 py-2.5 rounded-xl text-sm font-black text-text-secondary hover:text-text-main transition-all">週別</button>
+    <button data-action="click->history#switch" data-history-target="tab" data-tab="monthly" class="px-8 py-2.5 rounded-xl text-sm font-black text-text-secondary hover:text-text-main transition-all">月別</button>
   </div>
 
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">平均座位時間</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
-      <%= @daily_sitting.values.sum.then { |t| t.zero? ? 0 : (t / [@daily_sitting.values.count { |v| v > 0 }, 1].max).round(1) } %>
-      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">h</span>
-    </p>
+  <%# 3. グラフエリア %>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+
+    
+  
+  <%# 左側：合計座位時間 %>
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
+    <h3 class="text-md font-black text-text-main mb-6 flex items-center gap-2">
+      合計座位時間と運動回数
+    </h3>
+  
+    <div data-history-target="dailyPane">
+      <%= activity_mixed_chart(@daily_reports) %>
+    </div>
+
+    <div data-history-target="weeklyPane" class="hidden">
+      <%= activity_mixed_chart(@weekly_reports) %>
+    </div>
+
+    <div data-history-target="monthlyPane" class="hidden">
+      <%= activity_mixed_chart(@monthly_reports) %>
+    </div>
   </div>
 
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">運動した日数</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
-      <%= @daily_exercises.values.count { |v| v > 0 } %>
-      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">/ 7日</span>
-    </p>
-  </div>
+  <%# 右側：平均座位時間 %>
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
+    <h3 class="text-md font-black text-text-main mb-6 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> 平均座位時間 (分)
+    </h3>
 
-  <div class="bg-primary/20 backdrop-blur-xl border-2 border-primary/30 rounded-[2rem] p-4 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
-    <p class="text-xs font-black text-primary uppercase tracking-widest mb-2">今日の運動</p>
-    <p class="text-2xl md:text-4xl font-black text-text-main whitespace-nowrap">
-      <%= current_user.today_exercise_count %>
-      <span class="text-sm md:text-base font-bold text-text-secondary ml-1">回</span>
-    </p>
+    <div data-history-target="dailyPane">
+      <%= average_duration_chart(@daily_reports) %>
+    </div>
+    <div data-history-target="weeklyPane" class="hidden">
+      <%= average_duration_chart(@weekly_reports) %>
+    </div>
+    <div data-history-target="monthlyPane" class="hidden">
+      <%= average_duration_chart(@monthly_reports) %>
+    </div>
   </div>
-
 </div>
-  <%# 運動履歴リスト %>
+
+  <%# 4. 運動履歴リスト %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
@@ -113,48 +140,16 @@
       <h2 class="text-base font-black text-text-main">運動履歴</h2>
     </div>
 
-    <% if @activity_logs.empty? %>
+    <% if @activity_logs.any? %>
+      <div class="space-y-3">
+        <%= render @activity_logs %>
+      </div>
+    <% else %>
       <div class="text-center py-16 text-text-secondary">
         <span class="material-symbols-outlined text-5xl mb-4 block text-primary/40">fitness_center</span>
         <p class="font-bold text-lg">まだ記録がありません</p>
         <p class="text-sm mt-1">運動を完了すると履歴が表示されます</p>
       </div>
-    <% else %>
-      <div class="space-y-3">
-        <% @activity_logs.each do |log| %>
-  <div class="flex items-center gap-4 p-5 bg-white/50 border border-white/60 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:bg-white/70 transition-all">
-    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20 shrink-0">
-      <span class="material-symbols-outlined text-xl">
-        <% if log.note.present? %>
-          <%# 自由運動（入力あり）の場合はノートアイコン %>
-          edit_note
-        <% else %>
-          <%# それ以外はカテゴリー別に分岐 %>
-          <%= log.exercise.category == "stretch" ? "self_improvement" : "fitness_center" %>
-        <% end %>
-      </span>
-    </div>
-    <div>
-      <p class="font-bold text-text-main text-base">
-        <% if log.exercise.category == "other" %>
-          <%= log.note.presence || "自由運動" %>
-        <% else %>
-          <%= log.exercise.name %>
-        <% end %>
-      </p>
-      <p class="text-xs text-text-secondary font-medium mt-0.5">
-        <%= log.created_at.in_time_zone("Tokyo").strftime("%m/%d %H:%M") %>
-      </p>
-      <p class="text-xs text-text-secondary mt-0.5">
-        <span class="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold border border-primary/20">
-          <%= { "stretch" => "ストレッチ", "training" => "トレーニング", "other" => "その他" }[log.exercise.category] %>
-        </span>
-      </p>
-    </div>
-  </div>
-<% end %>
-      </div>
     <% end %>
   </div>
-
 </main>

@@ -9,35 +9,6 @@ class User < ApplicationRecord
   has_many :activity_logs, dependent: :destroy
   has_many :exercises, through: :activity_logs
 
-  # 　一日の座位時間合計
-  def today_total_sitting_seconds
-    sitting_sessions.today.sum(:duration)
-  end
-
-  # 今日の運動回数
-  def today_exercise_count
-    activity_logs.today.count
-  end
-
-  # 座位時間の集計
-  def daily_sitting_hours(days: 7)
-    sitting_sessions
-    .where(start_at: days.days.ago.beginning_of_day..)
-    .where(status: :completed)
-    .group_by_day(:created_at, last: days, time_zone: "Tokyo")
-    .sum(:duration)
-    .transform_keys { |date| date.strftime("%-m/%-d") }  # キーを月/日に変換
-    .transform_values { |seconds| [ (seconds / 3600.0).round(1), SittingSession::SITTING_TIME_LIMIT / 3600.0 ].min }
-  end
-
-  # 運動回数の集計
-  def daily_exercise_counts(days: 7)
-    activity_logs
-    .where(created_at: days.days.ago.beginning_of_day..)
-    .group_by_day(:created_at, last: days, time_zone: "Tokyo")
-    .count
-  end
-
   # ダメージゲージの計算
   def take_damage(duration)
     damage = (duration / 3600.0 * 10).round # 1時間で10ダメージ

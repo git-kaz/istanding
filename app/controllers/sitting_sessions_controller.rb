@@ -5,9 +5,9 @@ class SittingSessionsController < ApplicationController
   end
 
   def create
-    minutes = params.dig(:sitting_session, :duration).to_i
+    duration_seconds = params.dig(:sitting_session, :duration).to_i
     @sitting_session = current_user.sitting_sessions.build(
-      duration: minutes,
+      duration: duration_seconds,
       status: :active
     )
 

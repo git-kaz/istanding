@@ -14,10 +14,10 @@ RSpec.describe SendNotificationJob, type: :job do
     it "セッションの終了時にジョブが予約されること" do
       sitting_session = create(:sitting_session, user: user, start_at: Time.current, duration: 30)
       expect {
-        SendNotificationJob.set(wait_until: sitting_session.end_time).perform_later(sitting_session.id)
+        SendNotificationJob.set(wait_until: sitting_session.notify_at).perform_later(sitting_session.id)
       }.to have_enqueued_job(SendNotificationJob)
       .with(sitting_session.id)
-      .at(sitting_session.end_time)
+      .at(sitting_session.notify_at)
     end
   end
 end

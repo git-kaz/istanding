@@ -16,6 +16,9 @@ application.register("exercise-timer", ExerciseTimerController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import HistoryController from "./history_controller"
+application.register("history", HistoryController)
+
 import MobileMenuController from "./mobile_menu_controller"
 application.register("mobile-menu", MobileMenuController)
 

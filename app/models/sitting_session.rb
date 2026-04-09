@@ -19,16 +19,11 @@ class SittingSession < ApplicationRecord
 
     self.start_at ||= Time.current
 
-    self.notify_at = self.start_at + duration.seconds
+    self.notify_at = self.start_at + duration
     self.notified = false
   end
 
   scope :today, -> { where(created_at: Time.zone.now.all_day) }
-
-
-  def end_time
-    created_at + duration.minutes
-  end
 
   private
 
