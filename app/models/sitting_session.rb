@@ -1,6 +1,6 @@
 class SittingSession < ApplicationRecord
   # タイマーの時間選択肢
-  SETTING_DURATIONS = [ 30, 45, 60, 90, 120 ].freeze
+  SETTING_DURATIONS = [ 30, 45, 60, 90, 1 ].freeze
   # 一日の座位時間上限(11時間を秒に換算)
   SITTING_TIME_LIMIT = 11 * 60 * 60
 
