@@ -44,14 +44,23 @@ class ActivityReport
 
   # 週別や月別のレポートを作成するクラスメソッド
   def self.generate_by_period(user, periods)
+    # 　全期間をまとめて取得
+    full_range = periods.first.begin..periods.last.end
+    all_sessions = user.sitting_sessions.where(created_at: full_range)
+                       .group_by { |s| periods.find { |r| r.cover?(s.created_at) } }
+    all_logs = user.activity_logs.where(created_at: full_range)
+                        .group_by { |l| periods.find { |r| r.cover?(l.created_at) } }
+
+    # 各periodのデータを振り分けてレポートを生成
     periods.map do |range|
       new(
         range,
-        user.sitting_sessions.where(created_at: range),
-        user.activity_logs.where(created_at: range)
-      )
+        all_sessions[range] || [],
+        all_logs[range] || []
+        )
     end
   end
+
   # 連続日数を計算する（ストリーク）
   def self.calculate_streak(user)
     # 全ての活動日を新しい順で取得
