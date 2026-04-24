@@ -26,7 +26,7 @@ class ActivityReport
 
   # 日別レポートをまとめて生成するクラスメソッド
   def self.generate_daily_reports(user, date_range)
-    # N+1クエリを避けるために期間ないのデータを一気に取得
+    # N+1クエリを避けるために期間内のデータを一気に取得
     all_sessions = user.sitting_sessions.where(created_at: date_range).group_by { |s| s.created_at.to_date }
     all_logs = user.activity_logs.where(created_at: date_range).group_by { |l| l.created_at.to_date }
 
@@ -44,18 +44,31 @@ class ActivityReport
 
   # 週別や月別のレポートを作成するクラスメソッド
   def self.generate_by_period(user, periods)
+    # 　全期間をまとめて取得
+    full_range = periods.first.begin..periods.last.end
+    all_sessions = user.sitting_sessions.where(created_at: full_range)
+                       .group_by { |s| periods.find { |r| r.cover?(s.created_at) } }
+    all_logs = user.activity_logs.where(created_at: full_range)
+                        .group_by { |l| periods.find { |r| r.cover?(l.created_at) } }
+
+    # 各periodのデータを振り分けてレポートを生成
     periods.map do |range|
       new(
         range,
-        user.sitting_sessions.where(created_at: range),
-        user.activity_logs.where(created_at: range)
-      )
+        all_sessions[range] || [],
+        all_logs[range] || []
+        )
     end
   end
+
   # 連続日数を計算する（ストリーク）
   def self.calculate_streak(user)
-    # 全ての活動日を新しい順で取得
-    active_dates = user.activity_logs.pluck(:created_at).map(&:to_date).uniq.sort.reverse
+    # 全ての活動日を新しい順で取得して日付に変換
+    active_dates = user.activity_logs
+                   .select("DATE(created_at) as date")
+                   .distinct
+                   .order("DATE(created_at) DESC")
+                   .map(&:date)
 
     return 0 if active_dates.empty?
 

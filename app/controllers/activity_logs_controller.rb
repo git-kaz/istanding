@@ -49,13 +49,19 @@ class ActivityLogsController < ApplicationController
     # ヒートマップ（直近140日）
     base_date = 140.days.ago.to_date.beginning_of_week(:monday)
     heatmap_range = (base_date..Date.current.end_of_day)
-    @heatmap_reports = ActivityReport.generate_daily_reports(current_user, heatmap_range).map(&:to_hash)
+    heatmap_data = ActivityReport.generate_daily_reports(current_user, heatmap_range)
+
+    # 運動回数取得のためにハッシュ化を後から行う
+    @heatmap_reports = heatmap_data.map(&:to_hash)
+
+    # 　今月の運動回数
+    @this_month_count = heatmap_data
+                        .select { |r| Time.current.all_month.cover?(r.period.begin) }
+                        .sum(&:exercise_count)
+
 
     # ストリーク（連続日数）
     @current_streak = ActivityReport.calculate_streak(current_user)
-
-    # 　今月の運動回数
-    @this_month_count = current_user.activity_logs.where(created_at: Time.current.all_month).count
   end
 
   private
