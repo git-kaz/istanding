@@ -48,11 +48,11 @@ export default class extends Controller {
         }
 
         // パターン2: 既存タブがあった場合（postMessage）
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            if (event.data?.type === 'SHOW_MODAL') {
-                this.finish()
-            }
-        })
+        // navigator.serviceWorker.addEventListener('message', (event) => {
+        //     if (event.data?.type === 'SHOW_MODAL') {
+        //         this.finish()
+        //     }
+        // })
     }
 
     setTime(event) {
