@@ -48,11 +48,11 @@ export default class extends Controller {
         }
 
         // パターン2: 既存タブがあった場合（postMessage）
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            if (event.data?.type === 'SHOW_MODAL') {
-                this.finish()
-            }
-        })
+        // navigator.serviceWorker.addEventListener('message', (event) => {
+        //     if (event.data?.type === 'SHOW_MODAL') {
+        //         this.finish()
+        //     }
+        // })
     }
 
     setTime(event) {
@@ -199,7 +199,8 @@ export default class extends Controller {
         }, AUTO_CLOSE_MS)
     }
 
-    async finish() {
+    async finish(event) {
+        const manual = event?.params?.manual ?? false
         this.stop()
         this.clearAutoCloseTimer()
         this.remainingTime = 0
@@ -228,7 +229,8 @@ export default class extends Controller {
                 "Accept": "text/vnd.turbo-stream.html",
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            }
+            },
+            body: JSON.stringify({ manual: manual })
         })
 
         if (response.ok) {
