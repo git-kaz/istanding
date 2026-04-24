@@ -199,7 +199,8 @@ export default class extends Controller {
         }, AUTO_CLOSE_MS)
     }
 
-    async finish() {
+    async finish(event) {
+        const manual = event?.params?.manual ?? false
         this.stop()
         this.clearAutoCloseTimer()
         this.remainingTime = 0
@@ -228,7 +229,8 @@ export default class extends Controller {
                 "Accept": "text/vnd.turbo-stream.html",
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            }
+            },
+            body: JSON.stringify({ manual: manual })
         })
 
         if (response.ok) {

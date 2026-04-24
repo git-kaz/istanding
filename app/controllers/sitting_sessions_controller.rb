@@ -14,8 +14,11 @@ class SittingSessionsController < ApplicationController
     if @sitting_session.save
 
       # タイマー終了時に通知jobを予約する
-      SendNotificationJob.set(wait_until: @sitting_session.notify_at)
+      job = SendNotificationJob.set(wait_until: @sitting_session.notify_at)
                           .perform_later(@sitting_session.id)
+      Rails.logger.info "=== job_id: #{job.job_id} ==="
+      @sitting_session.update(job_id: job.job_id)
+      Rails.logger.info "=== saved job_id: #{@sitting_session.reload.job_id} ==="
       # notify_atをJSに渡す
       render json: { notify_at: @sitting_session.notify_at.iso8601 }
     end
@@ -26,8 +29,11 @@ class SittingSessionsController < ApplicationController
     @sitting_session = current_user.sitting_sessions.active.last
     return head :not_found unless @sitting_session
 
-    # 休憩するで早期に終了したらdurationを更新
+    # 休憩するで早期に終了したらdurationを更新し、通知もキャンセル
     @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
+
+    job = SolidQueue::Job.find_by(active_job_id: @sitting_session.job_id)
+    job&.discard if params[:manual].present?
 
     # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
     @other_exercise = Exercise.find_by(category: :other)
@@ -50,6 +56,7 @@ class SittingSessionsController < ApplicationController
     @sitting_session = current_user.sitting_sessions.active.last
     return head :not_found unless @sitting_session
 
+    SolidQueue::Job.find_by(active_job_id: @sitting_session.job_id)&.discard
     @sitting_session.cancelled!
   end
 
