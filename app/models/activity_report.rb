@@ -26,7 +26,7 @@ class ActivityReport
 
   # 日別レポートをまとめて生成するクラスメソッド
   def self.generate_daily_reports(user, date_range)
-    # N+1クエリを避けるために期間ないのデータを一気に取得
+    # N+1クエリを避けるために期間内のデータを一気に取得
     all_sessions = user.sitting_sessions.where(created_at: date_range).group_by { |s| s.created_at.to_date }
     all_logs = user.activity_logs.where(created_at: date_range).group_by { |l| l.created_at.to_date }
 
