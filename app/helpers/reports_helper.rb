@@ -50,24 +50,4 @@ module ReportsHelper
     }
   end
 
-  # 平均座位時間のグラフ作成
-  def average_duration_chart(reports)
-    # 平均座位時間の最大を取得してメモリのスケールを調整
-    max_average_duration = reports.map { |r| r[:average_duration_hours].to_f }.max || 0
-    average_duration_max_axis = (max_average_duration * 1.2).ceil
-
-    line_chart reports.map { |r| [ r[:date_label], r[:average_duration_hours] ] },
-    adapter: "chartjs",
-    colors: [ "#6A9B76" ],
-    curve: true,
-    library: {
-      scales: {
-        y: {
-          min: 0,
-          max: average_duration_max_axis,
-          title: { display: true, text: "平均時間(h)" }
-        }
-      }
-    }
-  end
 end
