@@ -4,7 +4,7 @@ FactoryBot.define do
     category { :stretch }
 
     trait :other do
-      name{ "自由運動"}
+      name { "自由運動" }
       category { :other }
     end
   end

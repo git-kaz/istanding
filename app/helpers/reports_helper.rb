@@ -49,5 +49,4 @@ module ReportsHelper
       }
     }
   end
-
 end

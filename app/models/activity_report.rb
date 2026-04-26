@@ -32,8 +32,8 @@ class ActivityReport
     date_only_range.map do |date|
       new(
         date.all_day,
-        all_sessions[date] || 0,  
-        all_logs[date] || 0                
+        all_sessions[date] || 0,
+        all_logs[date] || 0
         )
     end
   end
@@ -51,7 +51,7 @@ class ActivityReport
     log_by_date = user.activity_logs
                        .where(created_at: full_range)
                        .group("DATE(created_at)")
-                       .count  
+                       .count
 
     # 各periodのデータを振り分けてレポートを生成
     periods.map do |range|
