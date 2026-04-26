@@ -89,13 +89,13 @@
     <button data-action="click->history#switch" data-history-target="tab" data-tab="monthly" class="px-8 py-2.5 rounded-xl text-sm font-black text-text-secondary hover:text-text-main transition-all">月別</button>
   </div>
 
-  <%# 3. グラフエリア %>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+
+
 
     
   
-  <%# 左側：合計座位時間 %>
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
+  <%# 合計座位時間 %>
+  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 mb-8 shadow-sm">
     <h3 class="text-md font-black text-text-main mb-6 flex items-center gap-2">
       合計座位時間と運動回数
     </h3>
@@ -112,24 +112,6 @@
       <%= activity_mixed_chart(@monthly_reports) %>
     </div>
   </div>
-
-  <%# 右側：平均座位時間 %>
-  <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-sm">
-    <h3 class="text-md font-black text-text-main mb-6 flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-secondary"></span> 平均座位時間 (分)
-    </h3>
-
-    <div data-history-target="dailyPane">
-      <%= average_duration_chart(@daily_reports) %>
-    </div>
-    <div data-history-target="weeklyPane" class="hidden">
-      <%= average_duration_chart(@weekly_reports) %>
-    </div>
-    <div data-history-target="monthlyPane" class="hidden">
-      <%= average_duration_chart(@monthly_reports) %>
-    </div>
-  </div>
-</div>
 
   <%# 4. 運動履歴リスト %>
   <div class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">

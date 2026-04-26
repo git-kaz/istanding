@@ -1,34 +1,30 @@
 class ActivityReport
-  attr_reader :period, :total_duration_hours, :exercise_count, :active_days_count, :average_duration_hours, :date_label
+  attr_reader :period, :total_duration_hours, :exercise_count, :date_label
 
   # 全てハッシュ化するために計算結果はインスタンスに保存
   def initialize(period, sessions, logs)
     @period = period
 
     # 座位時間の計算
-    total_seconds = if sessions.respond_to?(:sum) && !sessions.is_a?(Array)
-                      sessions.sum(:duration)
-    else
-                      sessions.sum { |s| s.duration || 0 }
-    end
+    total_seconds = sessions
     @total_duration_hours = (total_seconds  / 3600.0).round(1)
+
     # 運動回数の計算
-    @exercise_count = logs.respond_to?(:count) ? logs.count : logs.size
-
-    # 活動日数の計算(リレーションか配列化によって取得方法を変える)
-    session_dates = sessions.respond_to?(:pluck) ? sessions.pluck(:created_at).map(&:to_date) : sessions.map { |s| s.created_at.to_date }
-    log_dates = logs.respond_to?(:pluck) ? logs.pluck(:created_at).map(&:to_date) : logs.map { |l| l.created_at.to_date }
-    @active_days_count = (session_dates + log_dates).uniq.count
-
-    # 平均座位時間の計算
-    @average_duration_hours = @active_days_count.zero? ? 0.0 : (@total_duration_hours / @active_days_count).round(1)
+    @exercise_count = logs
   end
 
   # 日別レポートをまとめて生成するクラスメソッド
   def self.generate_daily_reports(user, date_range)
     # N+1クエリを避けるために期間内のデータを一気に取得
-    all_sessions = user.sitting_sessions.where(created_at: date_range).group_by { |s| s.created_at.to_date }
-    all_logs = user.activity_logs.where(created_at: date_range).group_by { |l| l.created_at.to_date }
+    all_sessions = user.sitting_sessions
+                        .where(created_at: date_range)
+                        .group("DATE(created_at)")
+                        .sum(:duration)
+
+    all_logs = user.activity_logs
+                    .where(created_at: date_range)
+                    .group("DATE(created_at)")
+                    .count
 
     # TimeWithZoneはイテレートできないのでDateに変換
     date_only_range = date_range.begin.to_date..date_range.end.to_date
@@ -36,9 +32,9 @@ class ActivityReport
     date_only_range.map do |date|
       new(
         date.all_day,
-        all_sessions[date] || [],
-        all_logs[date] || []
-      )
+        all_sessions[date] || 0,
+        all_logs[date] || 0
+        )
     end
   end
 
@@ -46,18 +42,22 @@ class ActivityReport
   def self.generate_by_period(user, periods)
     # 　全期間をまとめて取得
     full_range = periods.first.begin..periods.last.end
-    all_sessions = user.sitting_sessions.where(created_at: full_range)
-                       .group_by { |s| periods.find { |r| r.cover?(s.created_at) } }
-    all_logs = user.activity_logs.where(created_at: full_range)
-                        .group_by { |l| periods.find { |r| r.cover?(l.created_at) } }
+
+    session_by_date = user.sitting_sessions
+                          .where(created_at: full_range)
+                          .group("DATE(created_at)")
+                          .sum(:duration)
+
+    log_by_date = user.activity_logs
+                       .where(created_at: full_range)
+                       .group("DATE(created_at)")
+                       .count
 
     # 各periodのデータを振り分けてレポートを生成
     periods.map do |range|
-      new(
-        range,
-        all_sessions[range] || [],
-        all_logs[range] || []
-        )
+      period_sessions = session_by_date.select { |date, _| range.cover?(date) }.values.sum
+      period_logs = log_by_date.select { |date, _| range.cover?(date) }.values.sum
+      new(range, period_sessions, period_logs)
     end
   end
 
@@ -95,8 +95,6 @@ class ActivityReport
     {
       total_duration_hours: total_duration_hours,
       exercise_count: exercise_count,
-      active_days_count: @active_days_count,
-      average_duration_hours: @average_duration_hours,
       date_label: date_label
     }
   end
