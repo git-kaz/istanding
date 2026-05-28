@@ -56,6 +56,8 @@ production:
   primary: &primary_production
     <<: *default
     url: <%= ENV['DATABASE_URL'] %>
+    prepared_statements: false
+    advisory_locks: false
   # Solid Queue用：同じURL（メインDB）を使う
   queue:
     <<: *primary_production
