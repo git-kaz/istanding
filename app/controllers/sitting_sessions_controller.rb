@@ -43,7 +43,7 @@ class SittingSessionsController < ApplicationController
     # ダメージを計算
     current_user.take_damage(@sitting_session.duration)
 
-    
+
 
     # N+1を防ぐために一回のアクセスで3つの画像を取得
     @exercises = Exercise.order("RANDOM()").limit(3).includes(image_attachment: :blob)
