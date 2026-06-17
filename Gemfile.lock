@@ -153,8 +153,8 @@ GEM
     ffi (1.17.3-x86_64-linux-musl)
     globalid (1.3.0)
       activesupport (>= 6.1)
-    groupdate (6.7.0)
-      activesupport (>= 7.1)
+    groupdate (6.8.0)
+      activesupport (>= 7.2)
     hashie (5.1.0)
       logger
     i18n (1.15.0)
@@ -586,7 +586,7 @@ CHECKSUMS
   ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
   ffi (1.17.3-x86_64-linux-musl) sha256=086b221c3a68320b7564066f46fed23449a44f7a1935f1fe5a245bd89d9aea56
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
-  groupdate (6.7.0) sha256=beaa8d5bf3856814681914a1d4a20e77436a2214b85d0017dc2ea5c355fb6777
+  groupdate (6.8.0) sha256=16f90ea18ca981c38e41e592416480b28353aa5e5cc3e7cb13a68b8fb5d40510
   hashie (5.1.0) sha256=c266471896f323c446ea8207f8ffac985d2718df0a0ba98651a3057096ca3870
   i18n (1.15.0) sha256=ed20037ed7ca75dd36ec486b5fb9696e8e0cfe48f4f80980017932d93e70527f
   image_processing (1.14.0) sha256=754cc169c9c262980889bec6bfd325ed1dafad34f85242b5a07b60af004742fb
