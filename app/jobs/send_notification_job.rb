@@ -8,8 +8,8 @@ class SendNotificationJob < ApplicationJob
 
     return if session.nil?
 
-    # sessionが存在するときだけ通知
-    return unless session
+    # 手動終了(completed)やリセット(cancelled)のときは通知をスキップ
+    return if session.completed? || session.cancelled?
 
     user = session.user
     return if user.endpoint.blank?

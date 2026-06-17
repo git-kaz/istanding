@@ -32,6 +32,13 @@ export default class extends Controller {
             const notifyAt = new Date(this.notifyAtValue)
             this.remainingTime = Math.floor((notifyAt - new Date()) / 1000)
 
+            // 古いタイマーが残っている場合は処理を抜ける
+            if (this.remainingTime <= 0) {
+                this.remainingTime = 0
+                this.updateDisplay()
+                return
+            }
+
             this.startButtonTarget.classList.add("hidden")
             this.runningButtonTargets.forEach(button => button.classList.remove("hidden"))
 
@@ -40,19 +47,12 @@ export default class extends Controller {
             this.runTimer()
         }
 
-        // パターン1: 新規タブで開いた場合（URLパラメータ）
+        // 新規タブで開いた場合（URLパラメータ）
         const params = new URLSearchParams(window.location.search)
         if (params.get('session_id')) {
             window.history.replaceState({}, document.title, window.location.pathname)
             this.finish()
         }
-
-        // パターン2: 既存タブがあった場合（postMessage）
-        // navigator.serviceWorker.addEventListener('message', (event) => {
-        //     if (event.data?.type === 'SHOW_MODAL') {
-        //         this.finish()
-        //     }
-        // })
     }
 
     setTime(event) {

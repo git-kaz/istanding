@@ -32,8 +32,10 @@ class SittingSessionsController < ApplicationController
     # 休憩するで早期に終了したらdurationを更新し、通知もキャンセル
     @sitting_session.update(duration: (Time.current - @sitting_session.start_at).to_i)
 
-    job = SolidQueue::Job.find_by(active_job_id: @sitting_session.job_id)
-    job&.discard if params[:manual].present?
+    # 休憩するボタンで終了した時に通知を送らないようにする
+    if params[:manual] == "true" || params[:manual] == true
+      @sitting_session.completed!
+    end
 
     # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
     @other_exercise = Exercise.find_by(category: :other)
@@ -41,8 +43,7 @@ class SittingSessionsController < ApplicationController
     # ダメージを計算
     current_user.take_damage(@sitting_session.duration)
 
-    # 休憩するボタンで終了した時に通知を送らないようにする
-    @sitting_session.completed!
+    
 
     # N+1を防ぐために一回のアクセスで3つの画像を取得
     @exercises = Exercise.order("RANDOM()").limit(3).includes(image_attachment: :blob)
@@ -56,8 +57,8 @@ class SittingSessionsController < ApplicationController
     @sitting_session = current_user.sitting_sessions.active.last
     return head :not_found unless @sitting_session
 
-    SolidQueue::Job.find_by(active_job_id: @sitting_session.job_id)&.discard
     @sitting_session.cancelled!
+    head :ok
   end
 
   def subscribe
