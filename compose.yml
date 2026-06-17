@@ -27,6 +27,7 @@ services:
       - node_modules:/myapp/node_modules
     environment:
       TZ: Asia/Tokyo
+      REDIS_URL: "rediss://default:gQAAAAAAAU8rAAIgcDEwNWI3YWE1NmZjMjg0NmM2YTE5YTExNTZjMjg1MGU5Ng@mature-woodcock-85803.upstash.io:6379"
     ports:
       - "3000:3000"
     depends_on:
