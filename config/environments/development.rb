@@ -83,4 +83,6 @@ Rails.application.configure do
   config.hosts << "nontolerably-unequiangular-bernardine.ngrok-free.dev"
 
   routes.default_url_options = { host: "nontolerably-unequiangular-bernardine.ngrok-free.dev", protocol: "https" }
+
+  ENV["REDIS_URL"] = "redis://redis:6379"
 end
