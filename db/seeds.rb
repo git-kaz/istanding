@@ -147,6 +147,13 @@ exercises_data = [
       首は痛めやすいので強くやりすぎないように
     TEXT
     benefits: "首が硬くなると頭痛や眼精疲労の原因にも。"
+  },
+  {
+    name: "自由な運動（その他）",
+    category: :other,
+    cloudinary_public_id: "other_exercise",
+    instructions: "タイマー終了後、ご自身で自由に行った運動を記録します。",
+    benefits: "ご自身の体調に合わせて自由に体を動かしましょう！"
   }
 ]
 
@@ -157,4 +164,8 @@ exercises_data.each do |data|
     e.cloudinary_public_id = data[:cloudinary_public_id]
     e.instructions = data[:instructions].strip
     e.benefits = data[:benefits].strip
-    e.active =
+    e.active = true # 初期値として有効化
+  end
+end
+
+puts "完了！"
