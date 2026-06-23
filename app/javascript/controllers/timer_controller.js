@@ -133,7 +133,7 @@ export default class extends Controller {
 
             if (this.remainingTime <= 0) {
                 this.stop()
-                setTimeout(() => { this.finish() }, 1000)
+                this.finish()
             }
         }, 1000)
     }
