@@ -1,6 +1,0 @@
-:concurrency: 1
-:queues:
-  - default
-
-# upstashの月間上限が50万コマンドのため調整
-:average_scheduled_poll_interval: 15
