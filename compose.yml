@@ -14,17 +14,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
+
   web:
     build:
       context: .
@@ -38,16 +28,14 @@ services:
       - node_modules:/myapp/node_modules
     environment:
       TZ: Asia/Tokyo
-      REDIS_URL: "rediss://default:gQAAAAAAAU8rAAIgcDEwNWI3YWE1NmZjMjg0NmM2YTE5YTExNTZjMjg1MGU5Ng@mature-woodcock-85803.upstash.io:6379"
+
     ports:
       - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+
 volumes:
   bundle_data:
   postgresql_data:
   node_modules:
-  redis_data:
