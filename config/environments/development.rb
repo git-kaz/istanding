@@ -57,7 +57,7 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 
-  config.active_job.queue_adapter = :sidekiq
+  config.active_job.queue_adapter = :good_job
   # Highlight code that triggered redirect in logs.
   config.action_dispatch.verbose_redirect_logs = true
 
@@ -83,6 +83,4 @@ Rails.application.configure do
   config.hosts << "nontolerably-unequiangular-bernardine.ngrok-free.dev"
 
   routes.default_url_options = { host: "nontolerably-unequiangular-bernardine.ngrok-free.dev", protocol: "https" }
-
-  ENV["REDIS_URL"] = "redis://redis:6379"
 end

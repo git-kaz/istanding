@@ -66,8 +66,7 @@ gem "meta-tags"
 gem "mini_magick"
 
 # solidqueueの代用
-gem "sidekiq"
-gem "redis"
+gem "good_job"
 
 gem "foreman"
 
