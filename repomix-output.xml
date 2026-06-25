@@ -219,7 +219,6 @@ config/
     devise.rb
     filter_parameter_logging.rb
     inflections.rb
-    memory_logger.rb
     meta_tags.rb
   locales/
     devise.en.yml
@@ -263,6 +262,7 @@ db/
     20260401024910_remove_active_from_exercises.rb
     20260401025018_add_active_to_exercises.rb
     20260423213053_add_job_to_sitting_sessions.rb
+    20260620045843_add_status_to_sitting_sessions.rb
   schema.rb
   seeds.rb
 lib/
@@ -359,6 +359,7 @@ Dockerfile
 Dockerfile.dev
 Gemfile
 package.json
+Procfile
 Procfile.dev
 Rakefile
 README.md
@@ -1056,6 +1057,35 @@ class Users::UnlocksController < Devise::UnlocksController
   # def after_unlock_path_for(resource)
   #   super(resource)
   # end
+end
+</file>
+
+<file path="app/controllers/exercises_controller.rb">
+class ExercisesController < ApplicationController
+  def index
+  end
+
+  def show
+    @exercise = Exercise.find(params[:id])
+    @tips_index, @health_tip = HealthTip.random_tips
+
+    @ogp_url = ogp_image_url(index: @tips_index)
+
+    set_meta_tags og: {
+      title: "iStanding - 座りすぎを防ぐタイマーアプリ",
+      image: @ogp_url,
+      type: "article"
+    },
+    twitter: {
+      card: "summary_large_image",
+      image: @ogp_url
+    }
+  end
+
+  def random
+    @exercise = Exercise.active.order("RANDOM()").first
+    redirect_to exercise_path(@exercise)
+  end
 end
 </file>
 
@@ -3808,18 +3838,6 @@ Rails.application.config.filter_parameters += [
 # end
 </file>
 
-<file path="config/initializers/memory_logger.rb">
-if Rails.env.production?
-  Thread.new do
-    loop do
-      memory_mb = `cat /proc/self/status | grep VmRSS`.match(/(\d+)/)[1].to_i / 1024
-      Rails.logger.info "[MemoryMonitor] RSS: #{memory_mb} MB"
-      sleep 60 # 1分ごとに出力
-    end
-  end
-end
-</file>
-
 <file path="config/initializers/meta_tags.rb">
 # frozen_string_literal: true
 
@@ -4607,6 +4625,28 @@ class AddNoteAndDurationMinutesToActivityLogs < ActiveRecord::Migration[8.1]
   def change
     add_column :activity_logs, :note, :text
     add_column :activity_logs, :duration_minutes, :integer
+  end
+end
+</file>
+
+<file path="db/migrate/20260401024910_remove_active_from_exercises.rb">
+class RemoveActiveFromExercises < ActiveRecord::Migration[8.1]
+  def change
+    # column_exists? を使って、カラムがある時だけ削除するようにガードを入れる
+    if column_exists?(:exercises, :active)
+      remove_column :exercises, :active, :boolean
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20260401025018_add_active_to_exercises.rb">
+class AddActiveToExercises < ActiveRecord::Migration[8.1]
+  def change
+    # カラムがまだ存在しない時だけ追加する
+    unless column_exists?(:exercises, :active)
+      add_column :exercises, :active, :boolean, default: true, null: false
+    end
   end
 end
 </file>
@@ -6489,31 +6529,23 @@ class ApplicationController < ActionController::Base
 end
 </file>
 
-<file path="app/controllers/exercises_controller.rb">
-class ExercisesController < ApplicationController
+<file path="app/controllers/top_controller.rb">
+class TopController < ApplicationController
+  before_action :authenticate_user!
+
   def index
-  end
+    # 1日の座位時間合計
+    @total_seconds = current_user.sitting_sessions.today.sum(:duration)
+    # 1日の運動回数
+    @exercise_count = current_user.activity_logs.today.count
+    # タイマーにnotify_atを渡すための変数
+    @active_session = current_user.sitting_sessions.active.last
+    # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
+    @other_exercise = Exercise.find_by(category: :other)
 
-  def show
-    @exercise = Exercise.find(params[:id])
-    @tips_index, @health_tip = HealthTip.random_tips
-
-    @ogp_url = ogp_image_url(index: @tips_index)
-
-    set_meta_tags og: {
-      title: "iStanding - 座りすぎを防ぐタイマーアプリ",
-      image: @ogp_url,
-      type: "article"
-    },
-    twitter: {
-      card: "summary_large_image",
-      image: @ogp_url
-    }
-  end
-
-  def random
-    @exercise = Exercise.active.order("RANDOM()").first
-    redirect_to exercise_path(@exercise)
+    if params[:reopen_modal] == "true"
+      @exercises = Exercise.order("RANDOM()").limit(3)
+    end
   end
 end
 </file>
@@ -6836,6 +6868,174 @@ end
 </html>
 </file>
 
+<file path="app/views/top/index.html.erb">
+<div class="min-h-screen bg-background-dark p-4 md:p-6 overflow-x-hidden"
+    data-controller="notification timer"
+    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>"
+    data-timer-notify-at-value="<%= @active_session&.notify_at&.iso8601 %>"
+    data-timer-audio-url-value="/chime.mp3">
+
+  <%# メインコンテナ: lg:flex-row で横並び、items-start で上揃えに調整 %>
+  <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-12 transition-all duration-500">
+
+    <%# --- 左カラム: タイマーエリア --- %>
+    <div class="flex flex-col items-center px-4 py-10 md:px-8 md:py-12 rounded-[4rem]
+                bg-input-bg-light/80 backdrop-blur-3xl
+                border border-white/40
+                shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5
+                w-full max-w-lg shrink-0">
+
+      <%# タイマー円 %>
+      <div class="relative flex items-center justify-center w-72 h-72 md:w-80 md:h-80 mb-8">
+        <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
+          <circle cx="150" cy="150" r="135"
+                  stroke="currentColor" stroke-width="2" fill="transparent"
+                  class="text-border-light opacity-50" />
+          <circle cx="150" cy="150" r="135"
+                  stroke="currentColor" stroke-width="6" fill="transparent"
+                  data-timer-target="circle"
+                  class="text-primary transition-all duration-1000 ease-linear"
+                  style="stroke-linecap: round;" />
+        </svg>
+
+        <div class="absolute flex flex-col items-center justify-center">
+          <div class="text-7xl font-extralight tracking-tighter text-text-main" data-timer-target="display">
+            00:00
+          </div>
+        </div>
+      </div>
+
+      <%# 時間選択ボタン（セグメントコントロール） %>
+      <div class="w-full mb-6">
+        <div class="flex bg-primary/20 rounded-3xl p-1 gap-1">
+          <% SittingSession::SETTING_DURATIONS.each_with_index do |minutes, index| %>
+            <button type="button"
+              class="flex-1 py-2 rounded-3xl text-lg font-bold transition-all cursor-pointer duration-button whitespace-nowrap text-text-secondary hover:text-text-main"
+                data-action="click->timer#setTime"
+                data-timer-minutes-param="<%= minutes %>">
+              <%= minutes %><span class="text-xs ml-0.5 font-medium">分</span>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-2 mb-4 transition-all duration-300 hidden" 
+           data-timer-target="errorMessage">
+        <span class="material-symbols-outlined text-red-500 text-xl font-bold">error</span>
+        <p class="text-red-500 text-sm font-bold tracking-tight">時間を選択してください</p>
+      </div>
+
+      <%# スタート・休憩するボタン %>
+      <div class="flex flex-col items-center space-y-4 w-full">
+        <button type="button"
+          class="bg-primary text-white py-5 px-12 rounded-[1.5rem] text-xl font-black tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer w-full max-w-[240px]"
+          data-action="click->timer#start"
+          data-timer-target="startButton">
+          スタート
+        </button>
+        
+        <button type="button"
+          data-timer-target="runningButton"
+          data-action="click->timer#finish"
+          data-timer-manual-param="true"
+          class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-primary/20 text-text-main border border-primary/50 shadow-lg hover:bg-primary/30 transition-all active:scale-95 cursor-pointer hidden w-full max-w-[240px]">
+          休憩する
+        </button>
+
+        <button type="button"
+          data-timer-target="runningButton"
+          data-action="click->timer#reset"
+          class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-white text-primary ring-2 ring-primary shadow-lg hover:bg-primary/10 transition-all active:scale-95 cursor-pointer hidden w-full max-w-[240px]">
+          リセット
+        </button>
+      </div>
+      <%# 通知音トグル %>
+      <div class="flex items-center space-x-2 mt-4">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" 
+                 checked 
+                 data-timer-target="mute" 
+                 class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          <span class="ml-3 text-sm font-medium text-gray-900">終了時に通知音を鳴らす</span>
+        </label>
+      </div>
+    </div> <%# タイマーカードの閉じタグ %>
+
+    <%# --- 右カラム: 統計・HPエリア --- %>
+    <div class="w-full max-w-lg space-y-6 flex-grow">
+      <%# HPゲージカード全体 %>
+      <div class="bg-white/60 backdrop-blur-xl px-8 py-9 rounded-[3rem] border border-white shadow-sm flex flex-col items-center">
+        
+        <%# HPゲージ本体 %>
+        <div id="hp_card" class="w-full mb-8">
+          <%= render "shared/hp_card" %>
+        </div>
+
+        <%# アクションボタン %>
+        <div class="w-full mb-8">
+          <%= button_to random_exercises_path, 
+              method: :post,
+              class: "group w-full py-4 rounded-2xl bg-white border-2 border-primary/30 text-primary font-black tracking-widest
+                     flex items-center justify-center gap-2 shadow-sm
+                     transition-all hover:bg-primary hover:text-white hover:border-primary hover:scale-[1.02] active:scale-[0.98] cursor-pointer" do %>
+            <span class="material-symbols-outlined text-2xl group-hover:animate-bounce">fitness_center</span>
+            <span>とりあえず運動して回復</span>
+          <% end %>
+        </div>
+
+        <%# ステータス説明 %>
+        <div class="w-full space-y-4 mb-8">
+          <div class="flex items-center gap-4 px-4 py-3 bg-red-50/50 rounded-2xl border border-red-100">
+            <span class="material-symbols-outlined text-red-500 text-3xl">heart_broken</span>
+            <div class="flex flex-col">
+              <span class="text-xs font-black text-red-600 uppercase tracking-tighter">Damage</span>
+              <span class="text-sm font-bold text-red-800">座りすぎでHPが減少します</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 px-4 py-3 bg-primary/10 rounded-2xl border border-primary/20">
+            <span class="material-symbols-outlined text-primary text-3xl">ecg_heart</span>
+            <div class="flex flex-col">
+              <span class="text-xs font-black text-primary uppercase tracking-tighter">Recovery</span>
+              <span class="text-sm font-bold text-text-main">運動を行うとHPが回復します</span>
+            </div>
+          </div>
+        </div>
+
+        <%# 区切り線 %>
+        <div class="w-full border-t border-white/60 mb-8"></div>
+
+        <%# 統計データ %>
+        <div class="grid grid-cols-2 gap-4 w-full">
+          <div class="bg-white/40 rounded-2xl p-4 border border-white/60 shadow-lg text-center">
+            <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-1">座位時間</p>
+            <div class="flex items-baseline justify-center gap-1">
+              <span class="text-3xl font-black text-text-main"><%= (@total_seconds / 3600.0).round(1) %></span>
+              <span class="text-xs font-bold text-text-secondary">h</span>
+            </div>
+          </div>
+          <div class="bg-white/40 rounded-2xl p-4 border border-white/60 shadow-lg text-center">
+            <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-1">運動回数</p>
+            <div class="flex items-baseline justify-center gap-1">
+              <span class="text-3xl font-black text-text-main"><%= @exercise_count %></span>
+              <span class="text-xs font-bold text-text-secondary">Sets</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <%# 右カラムの閉じタグ %>
+
+  </div> <%# メインコンテナの閉じタグ %>
+
+  <div id="modal_container">
+    <% if params[:reopen_modal] == "true" && @exercises.present? %>
+      <%= render partial: "shared/modal", locals: { exercises: @exercises, sitting_session_id: params[:sitting_session_id] } %>
+    <% end %>
+  </div>
+</div>
+</file>
+
 <file path="config/application.rb">
 require_relative "boot"
 
@@ -6873,17 +7073,9 @@ end
 :concurrency: 1
 :queues:
   - default
-</file>
 
-<file path="db/migrate/20260401025018_add_active_to_exercises.rb">
-class AddActiveToExercises < ActiveRecord::Migration[8.1]
-  def change
-    # カラムがまだ存在しない時だけ追加する
-    unless column_exists?(:exercises, :active)
-      add_column :exercises, :active, :boolean, default: true, null: false
-    end
-  end
-end
+# upstashの月間上限が50万コマンドのため調整
+:average_scheduled_poll_interval: 15
 </file>
 
 <file path="db/migrate/20260423213053_add_job_to_sitting_sessions.rb">
@@ -6891,117 +7083,6 @@ class AddJobToSittingSessions < ActiveRecord::Migration[8.1]
   def change
     add_column :sitting_sessions, :job_id, :string
   end
-end
-</file>
-
-<file path="db/schema.rb">
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
-#
-# This file is the source Rails uses to define your schema when running `bin/rails
-# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
-# be faster and is potentially less error prone than running all of your
-# migrations from scratch. Old migrations may fail to apply correctly if those
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2026_04_23_213053) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
-  create_table "active_storage_attachments", force: :cascade do |t|
-    t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
-    t.string "name", null: false
-    t.bigint "record_id", null: false
-    t.string "record_type", null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
-  end
-
-  create_table "active_storage_blobs", force: :cascade do |t|
-    t.bigint "byte_size", null: false
-    t.string "checksum"
-    t.string "content_type"
-    t.datetime "created_at", null: false
-    t.string "filename", null: false
-    t.string "key", null: false
-    t.text "metadata"
-    t.string "service_name", null: false
-    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
-  end
-
-  create_table "active_storage_variant_records", force: :cascade do |t|
-    t.bigint "blob_id", null: false
-    t.string "variation_digest", null: false
-    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "activity_logs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration_minutes"
-    t.bigint "exercise_id", null: false
-    t.text "note"
-    t.bigint "sitting_session_id"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
-    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
-    t.index ["user_id"], name: "index_activity_logs_on_user_id"
-  end
-
-  create_table "exercises", force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.text "benefits"
-    t.integer "category"
-    t.string "cloudinary_public_id"
-    t.datetime "created_at", null: false
-    t.text "instructions"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "sitting_sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.string "job_id"
-    t.boolean "notified"
-    t.datetime "notify_at"
-    t.datetime "start_at"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.boolean "admin", default: false, null: false
-    t.string "auth"
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "endpoint"
-    t.integer "hp", default: 100
-    t.string "p256dh"
-    t.string "provider"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
-    t.string "uid"
-    t.datetime "updated_at", null: false
-    t.string "username", default: "", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  end
-
-  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "activity_logs", "exercises"
-  add_foreign_key "activity_logs", "sitting_sessions"
-  add_foreign_key "activity_logs", "users"
-  add_foreign_key "sitting_sessions", "users"
 end
 </file>
 
@@ -7139,32 +7220,16 @@ backup.dump
 backup.dump
 </file>
 
+<file path="Procfile">
+web: bundle exec rails server -b 0.0.0.0 -p $PORT
+worker: bundle exec sidekiq -C config/sidekiq.yml
+</file>
+
 <file path="Procfile.dev">
 web: env RUBY_DEBUG_OPEN=true bin/rails server -b 0.0.0.0 -p 3000
 js: yarn build --watch
 css: yarn build:css --watch
 worker: bundle exec sidekiq
-</file>
-
-<file path="app/controllers/top_controller.rb">
-class TopController < ApplicationController
-  before_action :authenticate_user!
-
-  def index
-    # 1日の座位時間合計
-    @total_seconds = current_user.sitting_sessions.today.sum(:duration)
-    # 1日の運動回数
-    @exercise_count = current_user.activity_logs.today.count
-    # タイマーにnotify_atを渡すための変数
-    @active_session = current_user.sitting_sessions.active.last
-    # 自由な運動を記録するためにotherカテゴリのexercise_idを渡す
-    @other_exercise = Exercise.find_by(category: :other)
-
-    if params[:reopen_modal] == "true"
-      @exercises = Exercise.order("RANDOM()").limit(3)
-    end
-  end
-end
 </file>
 
 <file path="app/jobs/send_notification_job.rb">
@@ -7498,14 +7563,125 @@ pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
 workers 0
 </file>
 
-<file path="db/migrate/20260401024910_remove_active_from_exercises.rb">
-class RemoveActiveFromExercises < ActiveRecord::Migration[8.1]
+<file path="db/migrate/20260620045843_add_status_to_sitting_sessions.rb">
+class AddStatusToSittingSessions < ActiveRecord::Migration[8.1]
   def change
-    # column_exists? を使って、カラムがある時だけ削除するようにガードを入れる
-    if column_exists?(:exercises, :active)
-      remove_column :exercises, :active, :boolean
-    end
+    # statusカラムの存在により本番エラーを防ぐため、カラムが存在する場合は追加しないようにする
+    return if column_exists?(:sitting_sessions, :status)
+    add_column :sitting_sessions, :status, :integer, default: 0, null: false
   end
+end
+</file>
+
+<file path="db/schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_06_20_045843) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "activity_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration_minutes"
+    t.bigint "exercise_id", null: false
+    t.text "note"
+    t.bigint "sitting_session_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["exercise_id"], name: "index_activity_logs_on_exercise_id"
+    t.index ["sitting_session_id"], name: "index_activity_logs_on_sitting_session_id"
+    t.index ["user_id"], name: "index_activity_logs_on_user_id"
+  end
+
+  create_table "exercises", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.text "benefits"
+    t.integer "category"
+    t.string "cloudinary_public_id"
+    t.datetime "created_at", null: false
+    t.text "instructions"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sitting_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.string "job_id"
+    t.boolean "notified"
+    t.datetime "notify_at"
+    t.datetime "start_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sitting_sessions_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.boolean "admin", default: false, null: false
+    t.string "auth"
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "endpoint"
+    t.integer "hp", default: 100
+    t.string "p256dh"
+    t.string "provider"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.string "uid"
+    t.datetime "updated_at", null: false
+    t.string "username", default: "", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activity_logs", "exercises"
+  add_foreign_key "activity_logs", "sitting_sessions"
+  add_foreign_key "activity_logs", "users"
+  add_foreign_key "sitting_sessions", "users"
 end
 </file>
 
@@ -7791,6 +7967,61 @@ volumes:
   redis_data:
 </file>
 
+<file path="app/helpers/reports_helper.rb">
+module ReportsHelper
+  # 運動回数と座位時間の複合グラフを生成
+  def activity_mixed_chart(reports, title: nil)
+    # 　運動の最大を取得してメモリのスケールを調整
+    max_exercise = reports.map { |r| r[:exercise_count].to_i }.max || 0
+    exercise_max_axis = max_exercise <= 5 ? 10 : (max_exercise * 1.2).ceil
+
+    # 　合計座位時間の最大を取得してメモリのスケールを調整
+    max_total_duration = reports.map { |r| r[:total_duration_hours].to_f }.max || 0
+    total_duration_max_axis = (max_total_duration * 1.2).ceil
+
+
+    column_chart [
+      {
+        name: "合計座位時間(h)",
+        data: reports.map { |r| [ r[:date_label], r[:total_duration_hours] ] },
+        color: "#6A9B76",
+        library: {
+          type: "line",
+          yAxisID: "y",
+          tension: 0.4,
+          borderWidth: 3 }
+      },
+      {
+        name: "運動回数(回)",
+        data: reports.map { |r| [ r[:date_label], r[:exercise_count] ] },
+        color: "#E07A5F",
+        type: "line",
+        library: { yAxisID: "y1" }
+      }
+    ],
+    title: title,
+    library: {
+      scales: {
+        'y': {
+          position: "left",
+          min: 0,
+          max: total_duration_max_axis,
+          title: { display: true, text: "時間(h)" },
+          grid: { display: true }
+        },
+        'y1': {
+          position: "right",
+          min: 0,
+          max: exercise_max_axis,
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: "回数(回)" }
+        }
+      }
+    }
+  end
+end
+</file>
+
 <file path="Gemfile">
 source "https://rubygems.org"
 
@@ -7863,6 +8094,8 @@ gem "mini_magick"
 gem "sidekiq"
 gem "redis"
 
+gem "foreman"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -7891,229 +8124,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-</file>
-
-<file path="app/helpers/reports_helper.rb">
-module ReportsHelper
-  # 運動回数と座位時間の複合グラフを生成
-  def activity_mixed_chart(reports, title: nil)
-    # 　運動の最大を取得してメモリのスケールを調整
-    max_exercise = reports.map { |r| r[:exercise_count].to_i }.max || 0
-    exercise_max_axis = max_exercise <= 5 ? 10 : (max_exercise * 1.2).ceil
-
-    # 　合計座位時間の最大を取得してメモリのスケールを調整
-    max_total_duration = reports.map { |r| r[:total_duration_hours].to_f }.max || 0
-    total_duration_max_axis = (max_total_duration * 1.2).ceil
-
-
-    column_chart [
-      {
-        name: "合計座位時間(h)",
-        data: reports.map { |r| [ r[:date_label], r[:total_duration_hours] ] },
-        color: "#6A9B76",
-        library: {
-          type: "line",
-          yAxisID: "y",
-          tension: 0.4,
-          borderWidth: 3 }
-      },
-      {
-        name: "運動回数(回)",
-        data: reports.map { |r| [ r[:date_label], r[:exercise_count] ] },
-        color: "#E07A5F",
-        type: "line",
-        library: { yAxisID: "y1" }
-      }
-    ],
-    title: title,
-    library: {
-      scales: {
-        'y': {
-          position: "left",
-          min: 0,
-          max: total_duration_max_axis,
-          title: { display: true, text: "時間(h)" },
-          grid: { display: true }
-        },
-        'y1': {
-          position: "right",
-          min: 0,
-          max: exercise_max_axis,
-          grid: { drawOnChartArea: false },
-          title: { display: true, text: "回数(回)" }
-        }
-      }
-    }
-  end
-end
-</file>
-
-<file path="app/views/top/index.html.erb">
-<div class="min-h-screen bg-background-dark p-4 md:p-6 overflow-x-hidden"
-    data-controller="notification timer"
-    data-notification-public-key-value="<%= Rails.application.credentials.dig(:webpush, :public_key) %>"
-    data-timer-notify-at-value="<%= @active_session&.notify_at&.iso8601 %>"
-    data-timer-audio-url-value="/chime.mp3">
-
-  <%# メインコンテナ: lg:flex-row で横並び、items-start で上揃えに調整 %>
-  <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-12 transition-all duration-500">
-
-    <%# --- 左カラム: タイマーエリア --- %>
-    <div class="flex flex-col items-center px-4 py-10 md:px-8 md:py-12 rounded-[4rem]
-                bg-input-bg-light/80 backdrop-blur-3xl
-                border border-white/40
-                shadow-[0_20px_50px_rgba(0,0,0,0.05)] ring-1 ring-text-main/5
-                w-full max-w-lg shrink-0">
-
-      <%# タイマー円 %>
-      <div class="relative flex items-center justify-center w-72 h-72 md:w-80 md:h-80 mb-8">
-        <svg viewBox="0 0 300 300" class="w-full h-full transform -rotate-270 -scale-x-100">
-          <circle cx="150" cy="150" r="135"
-                  stroke="currentColor" stroke-width="2" fill="transparent"
-                  class="text-border-light opacity-50" />
-          <circle cx="150" cy="150" r="135"
-                  stroke="currentColor" stroke-width="6" fill="transparent"
-                  data-timer-target="circle"
-                  class="text-primary transition-all duration-1000 ease-linear"
-                  style="stroke-linecap: round;" />
-        </svg>
-
-        <div class="absolute flex flex-col items-center justify-center">
-          <div class="text-7xl font-extralight tracking-tighter text-text-main" data-timer-target="display">
-            00:00
-          </div>
-        </div>
-      </div>
-
-      <%# 時間選択ボタン（セグメントコントロール） %>
-      <div class="w-full mb-6">
-        <div class="flex bg-primary/20 rounded-3xl p-1 gap-1">
-          <% SittingSession::SETTING_DURATIONS.each_with_index do |minutes, index| %>
-            <button type="button"
-              class="flex-1 py-2 rounded-3xl text-lg font-bold transition-all cursor-pointer duration-button whitespace-nowrap text-text-secondary hover:text-text-main"
-                data-action="click->timer#setTime"
-                data-timer-minutes-param="<%= minutes %>">
-              <%= minutes %><span class="text-xs ml-0.5 font-medium">分</span>
-            </button>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-center gap-2 mb-4 transition-all duration-300 hidden" 
-           data-timer-target="errorMessage">
-        <span class="material-symbols-outlined text-red-500 text-xl font-bold">error</span>
-        <p class="text-red-500 text-sm font-bold tracking-tight">時間を選択してください</p>
-      </div>
-
-      <%# スタート・休憩するボタン %>
-      <div class="flex flex-col items-center space-y-4 w-full">
-        <button type="button"
-          class="bg-primary text-white py-5 px-12 rounded-[1.5rem] text-xl font-black tracking-widest shadow-lg hover:bg-primary-hover transition-all active:scale-[0.96] cursor-pointer w-full max-w-[240px]"
-          data-action="click->timer#start"
-          data-timer-target="startButton">
-          スタート
-        </button>
-        
-        <button type="button"
-          data-timer-target="runningButton"
-          data-action="click->timer#finish"
-          data-timer-manual-param="true"
-          class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-primary/20 text-text-main border border-primary/50 shadow-lg hover:bg-primary/30 transition-all active:scale-95 cursor-pointer hidden w-full max-w-[240px]">
-          休憩する
-        </button>
-
-        <button type="button"
-          data-timer-target="runningButton"
-          data-action="click->timer#reset"
-          class="py-4 px-12 rounded-2xl text-lg font-bold tracking-widest bg-white text-primary ring-2 ring-primary shadow-lg hover:bg-primary/10 transition-all active:scale-95 cursor-pointer hidden w-full max-w-[240px]">
-          リセット
-        </button>
-      </div>
-      <%# 通知音トグル %>
-      <div class="flex items-center space-x-2 mt-4">
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" 
-                 checked 
-                 data-timer-target="mute" 
-                 class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-          <span class="ml-3 text-sm font-medium text-gray-900">終了時に通知音を鳴らす</span>
-        </label>
-      </div>
-    </div> <%# タイマーカードの閉じタグ %>
-
-    <%# --- 右カラム: 統計・HPエリア --- %>
-    <div class="w-full max-w-lg space-y-6 flex-grow">
-      <%# HPゲージカード全体 %>
-      <div class="bg-white/60 backdrop-blur-xl px-8 py-9 rounded-[3rem] border border-white shadow-sm flex flex-col items-center">
-        
-        <%# HPゲージ本体 %>
-        <div id="hp_card" class="w-full mb-8">
-          <%= render "shared/hp_card" %>
-        </div>
-
-        <%# アクションボタン %>
-        <div class="w-full mb-8">
-          <%= button_to random_exercises_path, 
-              method: :post,
-              class: "group w-full py-4 rounded-2xl bg-white border-2 border-primary/30 text-primary font-black tracking-widest
-                     flex items-center justify-center gap-2 shadow-sm
-                     transition-all hover:bg-primary hover:text-white hover:border-primary hover:scale-[1.02] active:scale-[0.98] cursor-pointer" do %>
-            <span class="material-symbols-outlined text-2xl group-hover:animate-bounce">fitness_center</span>
-            <span>とりあえず運動して回復</span>
-          <% end %>
-        </div>
-
-        <%# ステータス説明 %>
-        <div class="w-full space-y-4 mb-8">
-          <div class="flex items-center gap-4 px-4 py-3 bg-red-50/50 rounded-2xl border border-red-100">
-            <span class="material-symbols-outlined text-red-500 text-3xl">heart_broken</span>
-            <div class="flex flex-col">
-              <span class="text-xs font-black text-red-600 uppercase tracking-tighter">Damage</span>
-              <span class="text-sm font-bold text-red-800">座りすぎでHPが減少します</span>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-4 px-4 py-3 bg-primary/10 rounded-2xl border border-primary/20">
-            <span class="material-symbols-outlined text-primary text-3xl">ecg_heart</span>
-            <div class="flex flex-col">
-              <span class="text-xs font-black text-primary uppercase tracking-tighter">Recovery</span>
-              <span class="text-sm font-bold text-text-main">運動を行うとHPが回復します</span>
-            </div>
-          </div>
-        </div>
-
-        <%# 区切り線 %>
-        <div class="w-full border-t border-white/60 mb-8"></div>
-
-        <%# 統計データ %>
-        <div class="grid grid-cols-2 gap-4 w-full">
-          <div class="bg-white/40 rounded-2xl p-4 border border-white/60 shadow-lg text-center">
-            <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-1">座位時間</p>
-            <div class="flex items-baseline justify-center gap-1">
-              <span class="text-3xl font-black text-text-main"><%= (@total_seconds / 3600.0).round(1) %></span>
-              <span class="text-xs font-bold text-text-secondary">h</span>
-            </div>
-          </div>
-          <div class="bg-white/40 rounded-2xl p-4 border border-white/60 shadow-lg text-center">
-            <p class="text-xs font-black text-text-secondary uppercase tracking-widest mb-1">運動回数</p>
-            <div class="flex items-baseline justify-center gap-1">
-              <span class="text-3xl font-black text-text-main"><%= @exercise_count %></span>
-              <span class="text-xs font-bold text-text-secondary">Sets</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> <%# 右カラムの閉じタグ %>
-
-  </div> <%# メインコンテナの閉じタグ %>
-
-  <div id="modal_container">
-    <% if params[:reopen_modal] == "true" && @exercises.present? %>
-      <%= render partial: "shared/modal", locals: { exercises: @exercises, sitting_session_id: params[:sitting_session_id] } %>
-    <% end %>
-  </div>
-</div>
 </file>
 
 <file path="app/models/sitting_session.rb">
