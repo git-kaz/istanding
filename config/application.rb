@@ -18,6 +18,9 @@ module Istanding
 
     config.i18n.default_locale = :ja
 
+    # mini_magickの使用を明記
+    config.active_storage.variant_processor = :mini_magick
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
